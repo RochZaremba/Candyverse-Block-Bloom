@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
 import '../game/presentation/game_screen.dart';
-import '../settings/settings_model.dart';
+import '../settings/settings_sheet.dart';
 import '../core/feedback/feedback_service.dart';
 import 'candy_backdrop.dart';
 
@@ -86,7 +86,8 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   TextButton.icon(
-                    onPressed: () => _showSettings(context),
+                    onPressed: () =>
+                        showFeedbackSettings(context, theme: theme),
                     icon: const Icon(Icons.tune_rounded),
                     label: const Text('Dźwięk i ruch'),
                   ),
@@ -112,62 +113,6 @@ class HomeScreen extends StatelessWidget {
       ),
     ),
   );
-  void _showSettings(BuildContext context) {
-    final settings = SettingsScope.maybeOf(context);
-    if (settings == null) return;
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: theme.color('creamWhite'),
-      builder: (context) => SafeArea(
-        child: SingleChildScrollView(
-          child: ListenableBuilder(
-            listenable: settings,
-            builder: (_, _) => Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text(
-                    'Dźwięk i ruch',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
-                  ),
-                ),
-                SwitchListTile(
-                  title: const Text('Dźwięk'),
-                  value: settings.sound,
-                  onChanged: settings.setSound,
-                ),
-                SwitchListTile(
-                  title: const Text('Haptyka'),
-                  value: settings.haptics,
-                  onChanged: settings.setHaptics,
-                ),
-                SwitchListTile(
-                  title: const Text('Ograniczony ruch'),
-                  subtitle: const Text('Mniej animacji i bez drobinek.'),
-                  value: settings.reduceMotion,
-                  onChanged: settings.setReduceMotion,
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
-                    'Ustawienia obowiązują do zamknięcia aplikacji.',
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Gotowe'),
-                ),
-                const SizedBox(height: 12),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 /// Original glossy candy bloom, the visual signature of the Home screen.
