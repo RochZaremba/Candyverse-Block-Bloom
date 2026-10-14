@@ -1,15 +1,15 @@
 # STATUS — aktualizuj na końcu każdej sesji
 
 **Data inicjalizacji:** 2026-10-14  
-**Stan:** Dokumentacja wygenerowana; implementacja Fluttera **nie rozpoczęta**.  
-**Ostatni potwierdzony commit:** brak (ZIP nie ma historii Git).  
-**Repo/remote:** nie podano; agent ma odczytać faktyczny stan po uruchomieniu.
+**Stan:** T-001 weryfikowany: projekt Flutter/Android i podstawowy Home zaimplementowane; brak rozgrywki.  
+**Ostatni potwierdzony commit:** `a35c0e4` — bootstrap Flutter, Home, testy i CI (baza dokumentacji: `d34394e`).  
+**Repo/remote:** `RochZaremba/Candyverse-Block-Bloom`, origin HTTPS; branch `chore/flutter-bootstrap`. GitHub CLI zalogowane, uprawnienia ADMIN; main bez branch protection.
 
 ## Task tracker
 
 | Task | Status | PR / commit / uwagi |
 | --- | --- | --- |
-| T-001 Bootstrap | TODO | — |
+| T-001 Bootstrap | IN_PROGRESS | `a35c0e4`; lokalne testy zielone; build APK i CI w toku |
 | T-002 Engine | TODO | — |
 | T-003 Scoring/RNG | TODO | — |
 | T-004 Touch UI | TODO | — |
@@ -25,22 +25,11 @@ Dopuszczalne statusy: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE` (po kryteriach ak
 
 ## Aktualna sesja / handoff
 
-- **Zrobione:** przygotowano specyfikację, ADR, test plan, privacy i release checklist.
-- **W trakcie:** nic.
-- **Testy wykonane:** walidacja struktury dokumentów (weryfikacja ZIP); nie wykonano testów Fluttera.
-- **Blokery:** brak danych wydawniczych (nazwa finalna, applicationId, dane publikującego, polityka prywatności URL, release key); nie blokują T-001.
-- **Następne jedno zadanie:** **T-001** — sprawdź repo, skonfiguruj Flutter stable i Android, uruchom bazowy Home, zrób commit + PR/merge jeśli dostępne.
-
-## Szablon aktualizacji po każdej sesji
-
-```text
-Data:
-Branch / commit / PR (konkretne ID lub brak):
-Tasks zmienione (bez udawania DONE):
-Pliki / kluczowe decyzje:
-Testy + wynik (komendy):
-Co nie działa / zablokowane:
-Następne jedno zadanie:
-```
-
-Agent powinien aktualizować górną sekcję, a nie tylko dopisywać historię na końcu. Nie oznaczaj TODO jako DONE, jeśli wymagania graficzne lub testy są niespełnione.
+- **Data:** 2026-10-14.
+- **Zrobione:** `flutter create --platforms=android`, Flutter stable 3.47.2/Dart 3.13.2; compile/target SDK 36, minSdk 24; start w pionie; Home, centralne tokeny, autorska dekoracja wektorowa; CI format/analyze/test/docs/debug APK. README zawiera komendy uruchomienia.
+- **Decyzje:** zgodne z istniejącymi ADR; brak nowej decyzji architektonicznej. Tymczasowy applicationId `com.example.candyverse`; podpis release wciąż debug. Roboto Apache 2.0 wyłącznie w testach, licencja dołączona.
+- **W trakcie:** build Androida i PR/CI. Home nie zawiera przycisków udających grę; pełny Home, assety i pozostałe funkcje wymagają dalszych etapów.
+- **Testy wykonane:** `dart format --output=none --set-exit-if-changed .` OK; `flutter analyze` bez uwag; `flutter test` 6/6 OK (320/412 dp, tekst 1×/2×, golden 320 dp); `python3 scripts/check_docs.py` OK. Referencja `test/goldens/home_320.png` obejrzana. Pierwszy przebieg testów przerwany z powodu ładowania assetu w fake async; poprawiono wspólny setup, kolejne pełne przebiegi zielone.
+- **Środowisko:** Android SDK 36 i 36.1 dostępne. `flutter doctor -v` zgłasza część niezaakceptowanych licencji; brak Chrome nie blokuje Androida. `adb devices` nie pokazuje telefonu, brak AVD — nie wykonano smoke testu na Androidzie ani profilingu.
+- **Blokery wydania:** finalny applicationId, dane publikującego/URL polityki i klucz podpisujący; nie blokują bootstrapu. Gra nie jest gotowa do publikacji.
+- **Następne jedno zadanie:** zakończyć weryfikację **T-001** (build/CI i merge); potem **T-002** — modele i czysty silnik planszy.

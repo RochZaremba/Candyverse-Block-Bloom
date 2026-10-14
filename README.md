@@ -1,16 +1,33 @@
 # Candyverse: Block & Bloom — pakiet startowy dla Codexa
 
-> **Status: sama dokumentacja, nie gotowa aplikacja.** Projekt Flutter zostanie utworzony przez agenta w zadaniu `T-001`. Aktualizacja: 2026-10-14.
+> **Status: bootstrap aplikacji (T-001), nie gotowa gra.** Flutter stable 3.47.2, Android API 36, podstawowy Home. Rozgrywka, wyspa i zapis nie są jeszcze zaimplementowane. Aktualizacja: 2026-10-14.
 
 Kolorowa gra mobilna 2D na Androida: **block puzzle 8×8 + lekkie ulepszenia roguelite + rozwijanie cukierkowej wyspy**. Pierwsze wydanie ma być dopracowane wizualnie, offline, bez reklam, zakupów, kont i backendu. Odbiorcy: głównie 10–16 lat, także starsi.
 
 ## Szybki start
 
-1. Utwórz puste repozytorium GitHub (najlepiej prywatne) i sklonuj je lokalnie / podłącz do Codexa.
-2. Wypakuj **zawartość** tego ZIP-a do katalogu głównego repozytorium (tak, by `AGENTS.md` i `README.md` znalazły się obok `.git/`). Nie usuwaj istniejących plików przy ewentualnym konflikcie.
-3. Przeczytaj [AGENTS.md](AGENTS.md), [docs/INDEX.md](docs/INDEX.md), [docs/STATUS.md](docs/STATUS.md).
-4. Zatwierdź dokumentację jako pierwszy commit, np. `docs: initialize Candyverse project specification`.
-5. Uruchom Codexa w repozytorium z promptem z [START_CODEX.md](START_CODEX.md).
+Wymagane: Flutter stable **3.47.2** (Dart 3.13.2), JDK zgodny z Gradle 9.3.1 (CI: 21), Android SDK platform 36 oraz zaakceptowane lokalnie licencje SDK.
+
+```sh
+flutter pub get
+flutter run
+```
+
+Podłącz telefon Android lub uruchom emulator przed `flutter run`. Projekt zawiera wyłącznie platformę Android, `minSdk 24`, `compileSdk/targetSdk 36`. `com.example.candyverse` to tymczasowy identyfikator developerski; release używa na razie podpisu debug i nie nadaje się do publikacji.
+
+Kontrole przed PR:
+
+```sh
+dart format --output=none --set-exit-if-changed .
+flutter analyze
+flutter test
+python3 scripts/check_docs.py
+flutter build apk --debug
+```
+
+Referencja Home: [`test/goldens/home_320.png`](test/goldens/home_320.png). Testy obejmują 320/412 dp i skalę tekstu 1×/2×. Fonty Roboto w `test/fonts/` (Apache 2.0, dołączona licencja) służą wyłącznie powtarzalnym testom wizualnym. Kontrole GitHub Actions używają tej samej wersji Fluttera.
+
+Czytaj [AGENTS.md](AGENTS.md), [docs/INDEX.md](docs/INDEX.md) i [docs/STATUS.md](docs/STATUS.md) przed wznowieniem prac. Następny etap: **T-002 — czysty silnik Dart**.
 
 ## Dokumenty źródłowe (nie zastępuj ich jednym wielkim promptem)
 
