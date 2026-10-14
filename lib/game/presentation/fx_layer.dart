@@ -46,13 +46,18 @@ class _FxLayerState extends State<FxLayer>
   void didChangeDependencies() {
     super.didChangeDependencies();
     reduced = SettingsScope.reducedMotionOf(context);
-    if (reduced) animation.stop();
+    if (reduced) animation.value = 1;
   }
 
   @override
   void didUpdateWidget(FxLayer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.event?.id != oldWidget.event?.id && active && !reduced) {
+      animation.duration = Duration(
+        milliseconds: widget.event?.cleared.isEmpty ?? true
+            ? widget.theme.tilePlaceMs
+            : widget.theme.lineClearMs,
+      );
       animation.forward(from: 0);
     }
   }
@@ -60,7 +65,7 @@ class _FxLayerState extends State<FxLayer>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     active = state == AppLifecycleState.resumed;
-    if (!active) animation.stop();
+    if (!active) animation.value = 1;
   }
 
   @override
@@ -118,6 +123,19 @@ class _FxPainter extends CustomPainter {
       );
     }
     if (event!.cleared.isEmpty) return;
+    // A small local glow precedes the confetti; never flash the full screen.
+    for (final cell in event!.cleared) {
+      final center = Offset((cell.col + .5) * unit, (cell.row + .5) * unit);
+      canvas.drawCircle(
+        center,
+        unit * (.35 + progress * .2),
+        paint
+          ..style = PaintingStyle.fill
+          ..color = theme
+              .color('lemonYellow')
+              .withValues(alpha: math.max(0, 1 - progress * 3) * .3),
+      );
+    }
     final count = math.min(theme.maxParticles, event!.cleared.length * 3);
     final names = ['candyPink', 'turquoise', 'lemonYellow', 'electricPurple'];
     for (var i = 0; i < count; i++) {

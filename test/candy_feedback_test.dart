@@ -12,6 +12,8 @@ void main() {
   const channel = MethodChannel('test/candy-feedback');
   late List<MethodCall> audio;
   late List<MethodCall> haptics;
+  late AppTheme theme;
+  setUpAll(() async => theme = await AppTheme.load());
   setUp(() {
     audio = [];
     haptics = [];
@@ -84,7 +86,6 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     tester.platformDispatcher.textScaleFactorTestValue = 2;
     addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-    final theme = await AppTheme.load();
     await tester.pumpWidget(CandyverseApp(theme: theme));
     await tester.ensureVisible(find.text('Dźwięk i ruch'));
     await tester.tap(find.text('Dźwięk i ruch'));
@@ -105,7 +106,6 @@ void main() {
   testWidgets('FX never captures input and OS reduction prevents ticker work', (
     tester,
   ) async {
-    final theme = await tester.runAsync(AppTheme.load);
     final settings = SettingsModel();
     int tapped = 0;
     CandyFxEvent? event;
@@ -125,7 +125,7 @@ void main() {
                   ),
                 ),
                 Positioned.fill(
-                  child: FxLayer(theme: theme!, event: event),
+                  child: FxLayer(theme: theme, event: event),
                 ),
               ],
             ),
@@ -145,6 +145,52 @@ void main() {
     expect(tapped, 1);
     expect(tester.binding.transientCallbackCount, 0);
     expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    settings.dispose();
+  });
+
+  testWidgets('FX animates briefly and preference or pause stops its ticker', (
+    tester,
+  ) async {
+    final settings = SettingsModel();
+    CandyFxEvent? event;
+    Widget app() => SettingsScope(
+      settings: settings,
+      child: MaterialApp(
+        home: SizedBox.square(
+          dimension: 320,
+          child: FxLayer(theme: theme, event: event),
+        ),
+      ),
+    );
+    await tester.pumpWidget(app());
+    event = CandyFxEvent(id: 1, placed: [(row: 3, col: 4)], cleared: []);
+    await tester.pumpWidget(app());
+    await tester.pump(const Duration(milliseconds: 80));
+    expect(tester.binding.transientCallbackCount, greaterThan(0));
+    await tester.pumpAndSettle();
+    expect(tester.binding.transientCallbackCount, 0);
+    event = CandyFxEvent(
+      id: 2,
+      placed: [(row: 3, col: 4)],
+      cleared: [for (var col = 0; col < 8; col++) (row: 3, col: col)],
+    );
+    await tester.pumpWidget(app());
+    await tester.pump(const Duration(milliseconds: 80));
+    settings.setReduceMotion(true);
+    await tester.pump();
+    expect(tester.binding.transientCallbackCount, 0);
+    settings.setReduceMotion(false);
+    await tester.pump();
+    event = CandyFxEvent(id: 3, placed: [(row: 0, col: 0)], cleared: []);
+    await tester.pumpWidget(app());
+    expect(tester.binding.transientCallbackCount, greaterThan(0));
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump();
+    expect(tester.binding.transientCallbackCount, 0);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+    expect(tester.binding.transientCallbackCount, 0);
     await tester.pumpWidget(const SizedBox());
     settings.dispose();
   });
