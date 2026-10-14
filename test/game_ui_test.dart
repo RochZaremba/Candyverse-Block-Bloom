@@ -364,6 +364,14 @@ void main() {
             const Offset(0, 64),
       );
       await tester.pump();
+      final before = controller.state;
+      final boardTap = await tester.startGesture(
+        tester.getCenter(find.byKey(const ValueKey('cell-4-4'))),
+        pointer: 3,
+      );
+      await boardTap.up();
+      await tester.pump();
+      expect(controller.state, same(before));
       final second = await tester.startGesture(
         tester.getCenter(find.byKey(const ValueKey('tray-1'))),
         pointer: 2,

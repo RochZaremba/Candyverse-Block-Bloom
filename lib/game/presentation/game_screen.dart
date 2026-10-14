@@ -337,8 +337,9 @@ class _GameScreenState extends State<GameScreen> {
             onTap: piece == null
                 ? null
                 : () => setState(() {
-                    if (activeDragSlot == null)
+                    if (activeDragSlot == null) {
                       selected = selected == slot ? null : slot;
+                    }
                   }),
             onPanStart: piece == null
                 ? null
