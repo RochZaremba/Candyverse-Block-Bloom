@@ -1,4 +1,4 @@
-package com.example.candyverse
+package com.renvo.candyverse
 
 import android.media.AudioAttributes
 import android.media.SoundPool

@@ -31,3 +31,5 @@ Istniejące ADR-y:
 - [0010 Upgrade queue](0010-upgrade-queue.md)
 
 - [0011 Save write gate and recovery](0011-save-write-gate-and-recovery.md)
+
+- [0012 Android backup exclusion](0012-android-backup-exclusion.md)
