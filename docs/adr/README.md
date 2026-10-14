@@ -27,3 +27,5 @@ Istniejące ADR-y:
 - [0008 Deterministic trays](0008-deterministic-trays.md)
 
 - [0009 Offline feedback](0009-offline-feedback.md)
+
+- [0010 Upgrade queue](0010-upgrade-queue.md)

@@ -1,3 +1,4 @@
+import '../../upgrades/domain/upgrade.dart';
 import 'board.dart';
 import 'cell.dart';
 import 'game_action.dart';
@@ -144,7 +145,9 @@ class GameEngine {
   }
 
   PlacementResult placePiece(GameState state, PlacePiece action) {
-    if (action.slot < 0 || action.slot >= GameState.traySize) {
+    if (state.phase != RunPhase.playing ||
+        action.slot < 0 ||
+        action.slot >= GameState.traySize) {
       return PlacementResult._(state: state, accepted: false);
     }
     final piece = state.tray[action.slot];
@@ -172,13 +175,19 @@ class GameEngine {
           );
     final nextTray = refilled ? _pickTray(clear.board, random) : tray;
     return PlacementResult._(
-      state: state.copyWith(
-        board: clear.board,
-        tray: nextTray,
-        score: state.score + moveScore.points,
-        streak: moveScore.streak,
-        totalClearedLines: state.totalClearedLines + clear.lineCount,
-        rngState: random?.state,
+      state: resolvePhase(
+        state.copyWith(
+          board: clear.board,
+          tray: nextTray,
+          score: state.score + moveScore.points,
+          streak: moveScore.streak,
+          totalClearedLines: state.totalClearedLines + clear.lineCount,
+          rngState: random?.state,
+          pendingUpgradeChoices:
+              state.pendingUpgradeChoices +
+              (state.totalClearedLines + clear.lineCount) ~/ 5 -
+              state.totalClearedLines ~/ 5,
+        ),
       ),
       accepted: true,
       clear: clear,
@@ -187,4 +196,92 @@ class GameEngine {
       scoreDelta: moveScore.points,
     );
   }
+
+  List<Upgrade> availableUpgrades(GameState state) => [
+    if (state.sugarRushLevel < 2) Upgrade.sugarRush,
+    if (state.luckyJellyLevel < 2) Upgrade.luckyJelly,
+    if (state.eraserAcquired < 2) Upgrade.rainbowEraser,
+  ];
+
+  /// Choice draws share the production snapshot RNG. The explicit tray test
+  /// adapter alone can use a fixed deterministic seed when no RNG is provided.
+  GameState resolvePhase(GameState state) {
+    if (state.phase == RunPhase.upgrade || state.phase == RunPhase.gameOver) {
+      return state;
+    }
+    if (state.pendingUpgradeChoices > 0) {
+      final choices = availableUpgrades(state);
+      if (choices.isNotEmpty) {
+        final random = state.rngState != null
+            ? SeededRandom.fromState(state.rngState!)
+            : seed == null
+            ? SeededRandom(0)
+            : throw StateError('Seeded runs require an RNG snapshot.');
+        for (var i = choices.length - 1; i > 0; i--) {
+          final j = random.nextInt(i + 1);
+          final previous = choices[i];
+          choices[i] = choices[j];
+          choices[j] = previous;
+        }
+        return state.copyWith(
+          phase: RunPhase.upgrade,
+          upgradeChoices: choices,
+          rngState: random.state,
+        );
+      }
+      state = state.copyWith(pendingUpgradeChoices: 0);
+    }
+    return state.copyWith(
+      phase: !isGameOver(state)
+          ? RunPhase.playing
+          : state.eraserUses > 0 && state.board.occupiedCount > 0
+          ? RunPhase.needsEraserDecision
+          : RunPhase.gameOver,
+    );
+  }
+
+  GameState chooseUpgrade(GameState state, Upgrade upgrade) {
+    if (state.phase != RunPhase.upgrade ||
+        !state.upgradeChoices.contains(upgrade) ||
+        !availableUpgrades(state).contains(upgrade)) {
+      return state;
+    }
+    return resolvePhase(
+      state.copyWith(
+        sugarRushLevel:
+            state.sugarRushLevel + (upgrade == Upgrade.sugarRush ? 1 : 0),
+        luckyJellyLevel:
+            state.luckyJellyLevel + (upgrade == Upgrade.luckyJelly ? 1 : 0),
+        eraserAcquired:
+            state.eraserAcquired + (upgrade == Upgrade.rainbowEraser ? 1 : 0),
+        eraserUses:
+            state.eraserUses + (upgrade == Upgrade.rainbowEraser ? 1 : 0),
+        pendingUpgradeChoices: state.pendingUpgradeChoices - 1,
+        phase: RunPhase.playing,
+        upgradeChoices: const [],
+      ),
+    );
+  }
+
+  GameState useEraser(GameState state, Cell cell) {
+    if ((state.phase != RunPhase.playing &&
+            state.phase != RunPhase.needsEraserDecision) ||
+        state.eraserUses == 0 ||
+        !Board.contains(cell) ||
+        state.board.at(cell) == null) {
+      return state;
+    }
+    return resolvePhase(
+      state.copyWith(
+        board: state.board.withCells({cell: null}),
+        eraserUses: state.eraserUses - 1,
+        phase: RunPhase.playing,
+      ),
+    );
+  }
+
+  GameState declineEraser(GameState state) =>
+      state.phase == RunPhase.needsEraserDecision
+      ? state.copyWith(phase: RunPhase.gameOver)
+      : state;
 }

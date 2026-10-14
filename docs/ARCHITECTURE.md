@@ -98,6 +98,12 @@ Home otwiera realną grę. Wynik i liczba linii pochodzą z domeny; monety są t
 
 Zaakceptowany ruch tworzy `CandyFxEvent` i odpala cue place/clear. `FxLayer` jest nad samym gridem w IgnorePointer/RepaintBoundary; ma najwyżej 40 drobinek i czas z tokenów, respektuje ustawienie/OS reduced-motion oraz pause. Odrzucony ruch nie emituje FX/audio. Wspólny `showFeedbackSettings` działa z Home i aktywnej gry. Preferencje sesyjne zostaną zapisane w T-008; UI uczciwie informuje o obecnym ograniczeniu.
 
+## Zaimplementowany kontrakt T-006
+
+`GameState` ma fazy `playing/upgrade/needsEraserDecision/gameOver`, kolejkę wyborów, zapisane wylosowane karty, poziom Lucky Jelly i lifetime/remaining eraser counters. Silnik rozstrzyga kolejkę przed brakiem ruchów; wybór erasera może uratować run. Próg rośnie o różnicę ilorazów totalLines/5, więc multi-clear nie traci milestone. Snapshot RNG zawiera losowania kart. Szczegóły ADR-0010.
+
+UI blokuje placement od fazy upgrade, po tokenowym lineClear pokazuje prawdziwe karty z opisami i emblematami; user/OS reduced-motion pokazuje je od razu. Eraser wymaga zajętego pola i potwierdzenia, nie przyznaje punktów/monet i nie resetuje combo. Karty/eraser korzystają z feedbacku T-005; saldo nadal nie rośnie przed T-008. `pendingCoins` liczone jednokrotnie dla całego runu z Lucky Jelly.
+
 ## Android / platform
 
 - Portrait, Android API target >= 36 wg stanu na 2026-10-14; `minSdk 24` jako preferencja, potwierdź dostępność zależności.

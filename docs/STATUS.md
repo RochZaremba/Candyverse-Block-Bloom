@@ -1,10 +1,10 @@
 # STATUS — aktualizuj na końcu każdej sesji
 
 **Data aktualizacji:** 2026-10-14
-**Stan:** T-001–T-005 przetestowane lokalnie. Oprawa, lokalne SFX, FX i ustawienia feedbacku działają; T-006 gotowe na osobnym branchu do integracji. Brak wyspy/zapisu/i18n.
-**Potwierdzone commity:** T-005 `96cf704`, `c00a742`, `e2ddf36`, `1d657bc`, `2148fcc`; merge T-004 `fa9fec6`, merge T-003 `cc85322`.
-**PR:** #1–#4 MERGED; [#5 — T-005](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/5). Najnowszy head/merge odczytaj przez `gh pr view 5`/`git log`.
-**Repo/remote:** `RochZaremba/Candyverse-Block-Bloom`, fetch HTTPS/push SSH. Root prowadzi integrację, dokumentację i PR-y; zmiany workerów są zachowane w commitach.
+**Stan:** T-001–T-006 przetestowane lokalnie, gra ma feedback i realne upgrades/eraser. T-005 PR #5 MERGED (`1f2d92c`), CI `38638144507` SUCCESS; T-006 osobny PR po bazowym merge. T-007 powstaje samodzielnie po odmowie startu workera, brak ekonomii/save/i18n.
+**Potwierdzone commity:** T-006 `c3cd0e2`, `7e4cf6c`, `eec3e6c`, `91ed2a7`, `3b6712b`; T-005 `2148fcc`, `8920ba5`; merge T-004 `fa9fec6`, T-003 `cc85322`.
+**PR:** #1–#4 MERGED; [#5 — T-005](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/5) MERGED; [#6 — T-006](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/6) weryfikowany; najnowszy head i merge sprawdź przez `gh pr view 6`. Najnowsze head/merge odczytaj przez `gh pr view`/`git log`.
+**Repo/remote:** `RochZaremba/Candyverse-Block-Bloom`, fetch HTTPS/push SSH. Workerzy ukończyli T-005/T-006; root dalej sam (T-007 worker odmówił startu z powodu braku kredytów workspace).
 
 ## Task tracker
 
@@ -14,8 +14,8 @@
 | T-002 Engine | DONE | `d65c100`; 21 testów domeny w Dart, 27 testów łącznie; PR #2; lokalny debug APK OK |
 | T-003 Scoring/RNG | DONE | `c74f03b`, `f27948e`; 39/39 Dart, 45/45 Flutter; PR #3; lokalny debug APK OK |
 | T-004 Touch UI | DONE | `725561e`, `0af536b`, `6bfeacf`; 60 testów Flutter, 39 Dart, golden; PR #4; lokalny APK OK |
-| T-005 Visual/VFX/SFX | DONE | `96cf704`, `c00a742`, `e2ddf36`, `1d657bc`, `2148fcc`; 66 Flutter/39 Dart, native APK OK; PR #5 |
-| T-006 Upgrades | IN_PROGRESS | worker na `feat/roguelite`; domena i realny wybór kart/eraser |
+| T-005 Visual/VFX/SFX | DONE | `96cf704`, `c00a742`, `e2ddf36`, `1d657bc`, `2148fcc`; 66 Flutter/39 Dart, native APK OK; PR #6 |
+| T-006 Upgrades | DONE | `c3cd0e2`, `7e4cf6c`, `eec3e6c`, `91ed2a7`, `3b6712b`; 90 Flutter/54 Dart/native APK OK; PR #6 |
 | T-007 Island | TODO | — |
 | T-008 Save/economy | TODO | — |
 | T-009 Settings/i18n | TODO | — |
@@ -26,12 +26,11 @@ Dopuszczalne statusy: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE` (po kryteriach ak
 
 ## Aktualna sesja / handoff
 
-- **Zrobione T-005:** centralne tokeny promieni/czasów/limitu cząsteczek; spójny Home/kafelki; oryginalne krótkie WAV i offline SoundPool; mute/haptyka/reduced-motion; feedback zaakceptowanego placement/clear; board-local FX bez blokowania dotyku; kontrolki w Home i podczas gry; lifecycle stop/dispose. Licencje w `assets/ASSET_LICENSES.md`, ADR-0009 zaakceptowany.
-- **Testy:** `flutter test` 66/66 (pełny przebieg po hookach: `/home/roch/.cache/candyverse/t005-full.log`); `dart test test/game` 39/39; format/analyze/docs OK. Nowy test integracji sprawdza clear/place/no feedback dla reject, brak blokowania podczas FX i faktyczne live mute/haptics. Game/Home/ghost/GameOver goldens odświeżone i obejrzane. Testy viewportu/skali i session settings przechodzą.
-- **APK:** finalny `flutter build apk --debug` OK; native public FlutterLoader lookup oraz WAV ZIP compression=0 potwierdzone. Zainstalowany APK pre-integration T-005 i uruchomiony `com.example.candyverse/.MainActivity` na API36; activity resumed potwierdzone. Pierwszy screenshot był czarny przed ukończeniem renderowania; następny `t005-home-awake.png` pokazuje poprawny Home i został obejrzany. Pełny manualny smoke ruchów/odsłuchu jeszcze niepotwierdzony. Emulator bez audio/akceleracji nie zastępuje odsłuchu/haptyki na telefonie ani profilingu FPS.
-- **Potwierdzone CI:** PR #4 run `38635291570` SUCCESS, merge `fa9fec6`. CI T-005 uruchomimy na aktualnym PR head; merge dopiero po SUCCESS.
-- **T-006:** domena i UI gotowe w `/tmp/candyverse-t006`, branch `feat/roguelite`, commity `c3cd0e2`, `7e4cf6c`, `eec3e6c`; Dart54/54 i UI9/9 OK. Pełny przebieg przed integracją wymaga 3 aktualizacji Game golden. Root łączy hooki T-005 i tokeny reduced-motion/czasów. Nie oznaczaj DONE bez zintegrowanych testów.
-- **T-007:** utworzony czysty worktree `/home/roch/programing/Renvo/candyverse-workers/t007`/`feat/island`; worker NIE rozpoczął kodowania — zgłoszony brak kredytów workspace. Root może kontynuować sam; nie twierdzimy, że scena istnieje.
-- **Środowisko:** AVD `candyverse_api36` AOSP ATD, programowo bez `/dev/kvm`, proces odłączony. Zabrakło quota `/tmp` przy równoległych buildach: APK zachowane w `/home/roch/.cache/candyverse/artifacts`, `flutter clean` T-003/T-004 zwolnił3.8GB; worker odtworzył ucięty plik i ponowił testy. Dalsze checkouty/temporaria pod fizycznym `/home`, nie tmpfs.
-- **Niedokończone:** integracja T-006, T-007 wyspa, T-008 ekonomia/save, T-009 localization/settings, QA/release. Publikacja wymaga docelowego ID, danych wydawcy/URL polityki i klucza podpisującego.
-- **Następne jedno zadanie:** **T-006 — integracja i finalne testy kart/erasera**, potem T-007 samodzielnie, jeśli kredyty workerów nadal niedostępne.
+- **Zrobione T-006:** dokładnie3 efekty; seedowane distinct karty, progi5/10/15 z kolejką; caps2 poziomy Sugar/Lucky i lifetime2 eraser; brak pustych kart; eraser occupied/confirm/cancel, no score/coins/RNG/combo, no-move exception i rezygnacja; realny pendingCoins Lucky; phase guards blokują ruch podczas wyboru; hooks FX/audio/settings T-005 zintegrowane.
+- **Testy:** format/analyze OK; `dart test test/game`54/54; `flutter test`90/90 po merge i aktualizacji Game/ghost/karty golden. Obejrzano `upgrades_412.png`, tekst/card targets czytelne. Native debug APK OK19.1s. Logi pełnych przebiegów w `/home/roch/.cache/candyverse/t006-*.log`.
+- **Decyzje:** ADR-0010 — kolejka, RNG snapshot kart i lifetime cap erasera; ADR-0009 native feedback. Brak zmian zakresu GDD.
+- **PR/CI:** T-005 PR#5 MERGED, końcowe CI `38638144507` SUCCESS, commit `1f2d92c`. T-006 nie scalać przed bazowym merge; root zachowuje osobne PR-y pionowych etapów.
+- **Android:** API36 AOSP ATD w trybie programowym, boot_completed=1. APK T-005 zainstalowany/start/resumed oraz prawdziwy Home screenshot `t005-home-awake.png` obejrzany. Sprawdzany Home→Game; pełny smoke ulepszeń/odsłuch/haptyka/FPS nadal niewykonany. Nie deklarować60FPS na tej emulacji.
+- **Środowisko:** poprzedni quota tmpfs rozwiązany przez zachowanie APK i flutter clean tylko zakończonych buildów. Checkout T-007 i przyszłe artefakty na fizycznym `/home`. Brak kredytów zatrzymał worker T-007 zanim zmienił pliki; root może wykonać go samodzielnie.
+- **Niedokończone:** T-007 scena/bohaterowie, T-008 ekonomia+save, T-009 komplet ekranów/i18n/reset, T-010 QA/performance, T-011 release. Wydanie wymaga finalnego ID, wydawcy/kontaktu, URL polityki i klucza.
+- **Następne jedno zadanie:** **T-007 — autorska wyspa z3 budynkami×3 poziomy i4 postaciami**, worktree `/home/roch/programing/Renvo/candyverse-workers/t007`, branch `feat/island`; po potwierdzeniu merge PR#5/T-006.
