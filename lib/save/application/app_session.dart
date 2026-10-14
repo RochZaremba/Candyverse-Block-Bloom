@@ -32,6 +32,7 @@ class AppSession extends ChangeNotifier {
   bool _disposed = false;
   int _generation = 0;
   bool _resetting = false;
+  bool resetNeedsRetry = false;
   Future<void> _settingsTail = Future.value();
   int _settingsRevision = 0;
   int _savedSettingsRevision = 0;
@@ -46,6 +47,7 @@ class AppSession extends ChangeNotifier {
     bool Function()? shouldWrite,
   }) {
     final operation = _writeTail.then((_) async {
+      if (resetNeedsRetry) throw const SaveResetUncertain();
       if (shouldWrite != null && !shouldWrite()) return;
       final revision = _settingsRevision;
       final value = change(_save).copyWith(settings: settings.snapshot);
@@ -60,7 +62,7 @@ class AppSession extends ChangeNotifier {
   }
 
   Future<GameController> openRun() async {
-    if (busy || (_game?.blocked ?? false)) {
+    if (busy || resetNeedsRetry || (_game?.blocked ?? false)) {
       throw StateError('Save operation already running.');
     }
     busy = true;
@@ -92,7 +94,7 @@ class AppSession extends ChangeNotifier {
   }
 
   Future<void> _checkpoint(GameState game, int generation) async {
-    if (_resetting || generation != _generation) {
+    if (_resetting || resetNeedsRetry || generation != _generation) {
       throw StateError('This run belongs to a reset profile.');
     }
     await _settingsTail;
@@ -106,7 +108,7 @@ class AppSession extends ChangeNotifier {
   }
 
   Future<void> _restart(int generation) async {
-    if (_resetting || generation != _generation) {
+    if (_resetting || resetNeedsRetry || generation != _generation) {
       throw StateError('This run belongs to a reset profile.');
     }
     await _settingsTail;
@@ -123,7 +125,7 @@ class AppSession extends ChangeNotifier {
   }
 
   Future<bool> purchase(BuildingKind kind) async {
-    if (busy || (_game?.blocked ?? false)) return false;
+    if (busy || resetNeedsRetry || (_game?.blocked ?? false)) return false;
     busy = true;
     _notify();
     try {
@@ -152,6 +154,7 @@ class AppSession extends ChangeNotifier {
       final operation = _writeTail.then((_) => repository.reset());
       _writeTail = operation.then((_) {}, onError: (Object e) {});
       await operation;
+      resetNeedsRetry = false;
       _generation++;
       _save = AppSaveV1();
       _game?.removeListener(_gameSaveChanged);
@@ -161,10 +164,15 @@ class AppSession extends ChangeNotifier {
       _settingsRevision = 0;
       _savedSettingsRevision = 0;
       error = null;
-    } catch (_) {
-      error = settings.language == 'en'
-          ? 'Could not delete data. Try again.'
-          : 'Nie udało się usunąć danych. Spróbuj ponownie.';
+    } catch (e) {
+      if (e is SaveResetUncertain) resetNeedsRetry = true;
+      error = resetNeedsRetry
+          ? (settings.language == 'en'
+                ? 'Could not confirm data deletion. Retry the reset before continuing.'
+                : 'Nie można potwierdzić usunięcia danych. Ponów reset przed kontynuowaniem.')
+          : (settings.language == 'en'
+                ? 'Could not delete data. Try again.'
+                : 'Nie udało się usunąć danych. Spróbuj ponownie.');
       rethrow;
     } finally {
       _resetting = false;
@@ -174,7 +182,10 @@ class AppSession extends ChangeNotifier {
   }
 
   bool get _canWriteSettings =>
-      !_disposed && !_resetting && !(_game?.blocked ?? false);
+      !_disposed &&
+      !_resetting &&
+      !resetNeedsRetry &&
+      !(_game?.blocked ?? false);
 
   void _gameSaveChanged() {
     if (_canWriteSettings && _settingsRevision != _savedSettingsRevision) {
@@ -216,7 +227,7 @@ class AppSession extends ChangeNotifier {
   }
 
   Future<void> retrySettingsSave() async {
-    if (busy || _resetting) return;
+    if (busy || _resetting || resetNeedsRetry) return;
     _saveSettings();
     await flushSettings();
   }
