@@ -96,8 +96,8 @@ class SettingsScreen extends StatelessWidget {
                     title: Text(t('Prywatność', 'Privacy')),
                     subtitle: Text(
                       t(
-                        'Dane zostają na tym urządzeniu.',
-                        'Your data stays on this device.',
+                        'Lokalny postęp i ustawienia.',
+                        'Local progress and preferences.',
                       ),
                     ),
                     trailing: const Icon(Icons.chevron_right),
@@ -107,8 +107,8 @@ class SettingsScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     child: Text(
                       t(
-                        'Postęp i ustawienia są zapisane lokalnie. Odinstalowanie może usunąć zapis. Brak zapisu w chmurze.',
-                        'Progress and preferences are saved locally. Uninstalling may remove your save. There is no cloud save.',
+                        'Postęp i ustawienia są zapisane lokalnie. Odinstalowanie może usunąć zapis. Wydawca nie prowadzi zapisu w chmurze. Kopia systemu Android lub przenoszenie urządzenia mogą zachować dane zgodnie z ustawieniami systemu.',
+                        'Progress and preferences are saved locally. Uninstalling may remove your save. The publisher has no cloud save. Android system backup or device transfer may preserve data according to system settings.',
                       ),
                     ),
                   ),
@@ -172,8 +172,8 @@ class SettingsScreen extends StatelessWidget {
         content: SingleChildScrollView(
           child: Text(
             strings.text(
-              'Candyverse działa offline. Nie ma kont, reklam, płatnych zakupów ani analityki. Zapis rozgrywki, monety, wyspa i ustawienia są przechowywane na tym urządzeniu. Nie wysyłamy tych danych do wydawcy. Możesz usunąć je w ustawieniach.\n\nWydawca: Renvo\nKontakt: rochzaremba@gmail.com',
-              'Candyverse works offline. There are no accounts, ads, paid purchases or analytics. Your game, coins, island and preferences are stored on this device. We do not send this data to the publisher. You can delete it in settings.\n\nPublisher: Renvo\nContact: rochzaremba@gmail.com',
+              'Candyverse działa offline. Nie ma kont, reklam, płatnych zakupów ani analityki. Zapis rozgrywki, monety, wyspa i ustawienia są przechowywane na tym urządzeniu. Nie wysyłamy tych danych do wydawcy. Możesz usunąć je w ustawieniach. System Android może tworzyć kopie lub przenosić dane zgodnie z ustawieniami systemu.\n\nWydawca: Renvo\nKontakt: rochzaremba@gmail.com',
+              'Candyverse works offline. There are no accounts, ads, paid purchases or analytics. Your game, coins, island and preferences are stored on this device. We do not send this data to the publisher. You can delete it in settings. Android may back up or transfer data according to system settings.\n\nPublisher: Renvo\nContact: rochzaremba@gmail.com',
             ),
           ),
         ),
@@ -196,8 +196,8 @@ class SettingsScreen extends StatelessWidget {
         content: SingleChildScrollView(
           child: Text(
             strings.text(
-              'Usuniesz monety, wyspę, rekord, bieżącą grę i ustawienia. Nie można tego cofnąć. Nie ma kopii w chmurze.',
-              'This deletes coins, your island, best score, current game and preferences. This cannot be undone. There is no cloud backup.',
+              'Usuniesz monety, wyspę, rekord, bieżącą grę i ustawienia. Nie można tego cofnąć. Nie ma kopii u wydawcy.',
+              'This deletes coins, your island, best score, current game and preferences. This cannot be undone. The publisher has no backup.',
             ),
           ),
         ),
