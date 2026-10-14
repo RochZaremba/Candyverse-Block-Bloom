@@ -1,5 +1,5 @@
 # Assets
 
-W katalogu znajduje się wyłącznie `design_tokens.json`. Rzeczywiste grafiki, SFX i fonty powstaną podczas implementacji (T-005/T-007) lub zostaną dodane ze sprawdzoną licencją.
+`design_tokens.json` jest źródłem palety i parametrów animacji. `audio/` zawiera trzy oryginalne, lokalne efekty PCM WAV; skrypt `scripts/generate_audio.py` pozwala je odtworzyć. Licencje i autorstwo: [ASSET_LICENSES.md](ASSET_LICENSES.md).
 
-Agent ma utrzymywać katalog licencji w `assets/ASSET_LICENSES.md` przy dodaniu pierwszego zasobu. Dla każdej grafiki/dźwięku/fontu: nazwa, źródło, autor, licencja, zakres dystrybucji/atrybucji. Własne grafiki oznacz jako własne, a treści generowane przez AI opisuj zgodnie z warunkami narzędzia.
+Grafika Home/kafelków/FX jest oryginalna i malowana kodem Fluttera. Fonty Roboto służące goldenom są w `test/fonts/` z licencją Apache 2.0. Wyspa i bohaterowie należą do T-007. Przy dodaniu zasobów aktualizuj katalog licencji; nie używaj generycznych emoji ani niesprawdzonych ilustracji.
