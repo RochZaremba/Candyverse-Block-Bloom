@@ -76,9 +76,15 @@ Zasada finalizacji runu: pure function `completeRun(state, runId)` sprawdza czy 
 
 `placePiece(state, action)` zwraca `PlacementResult`: nowy stan, akceptację, pola umieszczenia, metadane jednoczesnego czyszczenia oraz flagę refill. Odrzucony ruch zwraca dokładnie ten sam obiekt stanu, bez pobrania zestawu. `isGameOver(result.state)` sprawdza pozostałe figury już po clear/refill. To reguła bazowa; wyjątek erasera i fazy ulepszeń należą do T-006.
 
-Silnik wymaga `TraySource(Board)`, zwracającego dokładnie trzy figury. Wywołuje go przy starcie i po zużyciu całej trójki, przekazując planszę po czyszczeniu. **Nie ma jeszcze generatora produkcyjnego**: T-003 dostarczy `RandomSource`, wagi, fair refill i serializowalny stan RNG. Na razie testy wstrzykują jawne zestawy. Punktacja i progresja nie są częścią stanu T-002. Kontrakt odpowiada ADR-0002; nie wprowadzono nowej decyzji architektonicznej.
+W T-002 wprowadzono granicę `TraySource(Board)` dla jawnych trójek. T-003 dodaje produkcyjny generator opisany poniżej; callback pozostaje adapterem dla testów. Punktacja i snapshot RNG są już częścią stanu, a ekonomia/zapis będą dodane w kolejnych etapach.
 
 `dart test test/game` sprawdza domenę w zwykłej maszynie Dart, a `flutter test` uruchamia także widget/golden Home. Pakiet `test` jest zależnością developerską, bez wpływu na zależności runtime aplikacji.
+
+## Zaimplementowany kontrakt T-003
+
+`GameEngine.seeded(seed: ...)` jest produkcyjną granicą startu runu; zachowano `GameEngine(traySource: ...)` dla jawnych trójek/testów. `GameState` zawiera teraz `score`, `streak`, `totalClearedLines`, `sugarRushLevel`, opcjonalny `rngState` oraz niezmienne `copyWith`. `PlacementResult.scoreDelta` udostępnia punkty bieżącego ruchu.
+
+`RandomSource`/`SeededRandom` i `TrayGenerator` pozostają pure Dart. Każdy produkcyjny ruch odtwarza RNG ze stanu runu; tylko start/refill losują figury i skiny. Snapshot z T-008 musi przechowywać RNG, maski i skiny, bez ponownego losowania przy restore. `pickTray(board)` jest deterministycznym podglądem trójki z początkowego seeda, a nie akcją runu. `TraySource` nie serializuje stanu zewnętrznej funkcji. Balance jest kopiowany do niezmiennego snapshotu na wejściu silnika/generatora. Konkretny algorytm, wagi i kolejność mnożników opisuje ADR-0008.
 
 ## Android / platform
 

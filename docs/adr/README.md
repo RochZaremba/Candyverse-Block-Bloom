@@ -23,3 +23,5 @@ Istniejące ADR-y:
 - [0005 Scope and rendering](0005-scope-visuals.md)
 - [0006 Git/PR process](0006-git-pr-process.md)
 - [0007 Run economy](0007-run-economy.md)
+
+- [0008 Deterministic trays](0008-deterministic-trays.md)
