@@ -1,3 +1,5 @@
+import '../../core/localization/app_strings.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../app/app.dart';
@@ -68,7 +70,8 @@ class _SaveBootstrapState extends State<SaveBootstrap> {
                     if (loading)
                       const CircularProgressIndicator()
                     else ...[
-                      const Text(
+                      appText(
+                        context,
                         'Nie można otworzyć zapisu',
                         style: TextStyle(
                           fontSize: 24,
@@ -76,17 +79,18 @@ class _SaveBootstrapState extends State<SaveBootstrap> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
+                      appText(
+                        context,
                         'Twój zapis nie został zastąpiony. Możesz ponowić próbę.',
                       ),
                       FilledButton(
                         onPressed: _load,
-                        child: const Text('Spróbuj ponownie'),
+                        child: appText(context, 'Spróbuj ponownie'),
                       ),
                       if (failure is SaveRecoveryRequired)
                         TextButton(
                           onPressed: () => _recoverFrom(context),
-                          child: const Text('Rozpocznij od nowa'),
+                          child: appText(context, 'Rozpocznij od nowa'),
                         ),
                     ],
                   ],
@@ -104,18 +108,19 @@ class _SaveBootstrapState extends State<SaveBootstrap> {
     final yes = await showDialog<bool>(
       context: dialogContext,
       builder: (context) => AlertDialog(
-        title: const Text('Zastąpić uszkodzony zapis?'),
-        content: const Text(
+        title: appText(context, 'Zastąpić uszkodzony zapis?'),
+        content: appText(
+          context,
           'Postęp z tego zapisu zostanie utracony. Kopia pozostanie lokalnie do diagnostyki.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Anuluj'),
+            child: appText(context, 'Anuluj'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Rozpocznij od nowa'),
+            child: appText(context, 'Rozpocznij od nowa'),
           ),
         ],
       ),

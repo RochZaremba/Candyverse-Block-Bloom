@@ -1,3 +1,5 @@
+import '../../core/localization/app_strings.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -114,8 +116,9 @@ class _IslandSceneState extends State<IslandScene>
                 width: math.max(48.0, 88 * scale),
                 height: math.max(48.0, 90 * scale),
                 child: Semantics(
-                  label:
-                      '${buildingName(BuildingKind.values[i])}, poziom ${widget.island.level(BuildingKind.values[i])}',
+                  label: AppStrings.of(context).translate(
+                    '${buildingName(BuildingKind.values[i])}, poziom ${widget.island.level(BuildingKind.values[i])}',
+                  ),
                   button: widget.onBuildingTap != null,
                   child: GestureDetector(
                     key: ValueKey('building-${BuildingKind.values[i].name}'),
@@ -210,7 +213,9 @@ class _CharacterSpriteState extends State<_CharacterSprite>
 
   @override
   Widget build(BuildContext context) => Semantics(
-    label: '${characterName(widget.kind)}${greeting ? ' wita Cię' : ''}',
+    label: AppStrings.of(
+      context,
+    ).translate('${characterName(widget.kind)}${greeting ? ' wita Cię' : ''}'),
     button: true,
     child: GestureDetector(
       key: ValueKey('character-${widget.kind.name}'),

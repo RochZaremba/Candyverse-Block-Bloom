@@ -177,8 +177,8 @@ void main() {
     await tester.pumpWidget(
       CandyverseApp(theme: theme, session: AppSession.memory()),
     );
-    await tester.ensureVisible(find.text('Dźwięk i ruch'));
-    await tester.tap(find.text('Dźwięk i ruch'));
+    await tester.ensureVisible(find.text('Ustawienia'));
+    await tester.tap(find.text('Ustawienia'));
     await tester.pumpAndSettle();
     final switches = find.byType(SwitchListTile);
     expect(switches, findsNWidgets(3));
@@ -187,8 +187,13 @@ void main() {
     await tester.tap(switches.first);
     await tester.pumpAndSettle();
     expect(settings.sound, false);
-    await tester.ensureVisible(switches.at(2));
-    await tester.tap(switches.at(2));
+    await tester.ensureVisible(
+      find.descendant(of: switches.at(2), matching: find.byType(Switch)),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(of: switches.at(2), matching: find.byType(Switch)),
+    );
     await tester.pumpAndSettle();
     expect(settings.reduceMotion, true);
     expect(tester.takeException(), isNull);
