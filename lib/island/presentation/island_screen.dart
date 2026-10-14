@@ -1,0 +1,116 @@
+import 'package:flutter/material.dart';
+
+import '../../core/theme/app_theme.dart';
+import '../../home/candy_backdrop.dart';
+import '../domain/island_state.dart';
+import 'island_scene.dart';
+
+class IslandScreen extends StatelessWidget {
+  const IslandScreen({
+    required this.theme,
+    required this.island,
+    this.wallet,
+    this.onPurchase,
+    super.key,
+  });
+  final AppTheme theme;
+  final IslandState island;
+  final int? wallet;
+  final ValueChanged<BuildingKind>? onPurchase;
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: CandyBackdrop(
+      theme: theme,
+      child: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: 'Wróć do menu',
+                    icon: const Icon(Icons.arrow_back_rounded),
+                  ),
+                  const Expanded(
+                    child: Text(
+                      'Twoja cukierkowa wyspa',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 48),
+                ],
+              ),
+              const SizedBox(height: 12),
+              if (wallet != null)
+                Text(
+                  'Candy Coins: $wallet',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 520),
+                child: IslandScene(
+                  theme: theme,
+                  island: island,
+                  onBuildingTap: (kind) => _details(context, kind),
+                ),
+              ),
+              const Text(
+                'Dotknij mieszkańca, aby się przywitać.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              for (final kind in BuildingKind.values)
+                Card(
+                  color: theme.color('creamWhite'),
+                  child: ListTile(
+                    title: Text(buildingName(kind)),
+                    subtitle: Text('Poziom ${island.level(kind)}/3'),
+                    onTap: () => _details(context, kind),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+  void _details(BuildContext context, BuildingKind kind) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(buildingName(kind)),
+        content: Text(
+          'Poziom ${island.level(kind)} z 3.\n${switch (kind) {
+            BuildingKind.candyTree => 'Miękkie korony pełne kolorowych cukierków.',
+            BuildingKind.jellyHouse => 'Przytulny galaretkowy domek dla mieszkańców.',
+            BuildingKind.rainbowFountain => 'Tęczowe łuki nad błękitną wodą.',
+          }}',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Wróć na wyspę'),
+          ),
+          if (onPurchase != null && island.level(kind) < 3)
+            FilledButton(
+              onPressed: () {
+                Navigator.pop(context);
+                onPurchase!(kind);
+              },
+              child: const Text('Rozbuduj'),
+            ),
+        ],
+      ),
+    );
+  }
+}
