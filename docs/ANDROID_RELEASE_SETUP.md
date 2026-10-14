@@ -67,7 +67,10 @@ describes the distinction between alignment and runtime behavior.
 ## Original branding
 
 `scripts/generate_brand_icon.py` produces the original Candyverse mark from code
-and checked-in palette tokens. Pillow is a development-only rasterization tool,
+and checked-in palette tokens. The full-square store icon is512×512,32-bit RGBA
+PNG, opaque, tagged sRGB and below1MB, following the
+[Google Play icon specification](https://developer.android.com/distribute/google-play/resources/icon-design-specifications).
+Pillow is a development-only rasterization tool,
 not an Android SDK. Outputs include a full 512px square store icon, legacy density
 PNG launchers, adaptive foreground/background vectors and Android13 monochrome.
 The icon does not use Flutter's placeholder, emoji, stock imagery or another brand.

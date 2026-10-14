@@ -6,7 +6,7 @@ Development-only dependency: Pillow. Outputs Android launcher resources and a
 """
 import json
 from pathlib import Path
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, PngImagePlugin
 
 ROOT = Path(__file__).resolve().parent.parent
 PALETTE = json.loads((ROOT / 'assets/design_tokens.json').read_text())['palette']
@@ -78,7 +78,9 @@ def main():
     for directory, size in [('mdpi', 48), ('hdpi', 72), ('xhdpi', 96),
                             ('xxhdpi', 144), ('xxxhdpi', 192)]:
         raster(size).save(resources / f'mipmap-{directory}/ic_launcher.png')
-    raster(512).save(brand / 'store_icon_512.png')
+    metadata = PngImagePlugin.PngInfo()
+    metadata.add(b'sRGB', b'\x00')
+    raster(512).convert('RGBA').save(brand / 'store_icon_512.png', pnginfo=metadata)
     raster(1080).save(brand / 'icon_preview.png')
     svg_shapes = '\n'.join(f'<path fill="{color}" d="{path_for(kind, box, r)}"/>'
                            for kind, box, color, r in SHAPES)

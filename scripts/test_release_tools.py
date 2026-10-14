@@ -20,6 +20,16 @@ def native_library(segments):
 
 
 class ReleaseToolsTests(unittest.TestCase):
+    def test_store_icon_matches_play_file_requirements(self):
+        from PIL import Image
+        path = Path(__file__).resolve().parent.parent/'assets/brand/store_icon_512.png'
+        with Image.open(path) as icon:
+            self.assertEqual(icon.size, (512, 512))
+            self.assertEqual(icon.mode, 'RGBA')
+            self.assertEqual(icon.getchannel('A').getextrema(), (255, 255))
+            self.assertIn('srgb', icon.info)
+        self.assertLess(path.stat().st_size, 1024*1024)
+
     def test_rejects_4kb_load_even_if_relro_is_aligned(self):
         with self.assertRaisesRegex(ValueError, 'PT_LOAD'):
             validate_elf(native_library([(1, 4096, 0, 0, 16384)]))
