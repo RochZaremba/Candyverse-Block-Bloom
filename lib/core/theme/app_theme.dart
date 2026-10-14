@@ -32,7 +32,14 @@ class AppTheme {
       onSurface: color('ink'),
     ),
     scaffoldBackgroundColor: color('creamWhite'),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(minimumSize: const Size(48, 48)),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+    ),
     textTheme: ThemeData.light().textTheme.apply(
+      fontFamily: 'Roboto',
       bodyColor: color('ink'),
       displayColor: color('ink'),
     ),

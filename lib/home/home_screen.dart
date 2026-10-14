@@ -3,8 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
+import '../game/presentation/game_screen.dart';
 
-/// Bootstrap Home. Play is added with the tested engine and touch UI.
+/// Candy Home leading directly into a real engine-backed run.
 class HomeScreen extends StatelessWidget {
   const HomeScreen({required this.theme, super.key});
 
@@ -60,6 +61,25 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 32),
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: theme.color('ink'),
+                      foregroundColor: theme.color('creamWhite'),
+                      minimumSize: const Size(220, 64),
+                      textStyle: const TextStyle(
+                        fontFamily: 'Roboto',
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => GameScreen(theme: theme),
+                      ),
+                    ),
+                    child: const Text('GRAJ'),
+                  ),
+                  const SizedBox(height: 20),
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
