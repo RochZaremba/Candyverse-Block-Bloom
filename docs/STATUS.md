@@ -1,9 +1,9 @@
 # STATUS — aktualizuj na końcu każdej sesji
 
 **Data aktualizacji:** 2026-10-14
-**Stan:** T-001–T-006 przetestowane lokalnie, gra ma feedback i realne upgrades/eraser. T-005 PR #5 MERGED (`1f2d92c`), CI `38638144507` SUCCESS; T-006 osobny PR po bazowym merge. T-007 jeszcze bez kodu, brak ekonomii/save/i18n.
+**Stan:** T-001–T-006 przetestowane lokalnie, gra ma feedback i realne upgrades/eraser. T-005 PR #5 MERGED (`1f2d92c`), CI `38638144507` SUCCESS; T-006 osobny PR po bazowym merge. T-007 powstaje samodzielnie po odmowie startu workera, brak ekonomii/save/i18n.
 **Potwierdzone commity:** T-006 `c3cd0e2`, `7e4cf6c`, `eec3e6c`, `91ed2a7`, `3b6712b`; T-005 `2148fcc`, `8920ba5`; merge T-004 `fa9fec6`, T-003 `cc85322`.
-**PR:** #1–#4 MERGED; [#5 — T-005](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/5) MERGED; PR T-006 przygotowywany. Najnowsze head/merge odczytaj przez `gh pr view`/`git log`.
+**PR:** #1–#4 MERGED; [#5 — T-005](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/5) MERGED; [#6 — T-006](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/6) weryfikowany; najnowszy head i merge sprawdź przez `gh pr view 6`. Najnowsze head/merge odczytaj przez `gh pr view`/`git log`.
 **Repo/remote:** `RochZaremba/Candyverse-Block-Bloom`, fetch HTTPS/push SSH. Workerzy ukończyli T-005/T-006; root dalej sam (T-007 worker odmówił startu z powodu braku kredytów workspace).
 
 ## Task tracker
@@ -14,8 +14,8 @@
 | T-002 Engine | DONE | `d65c100`; 21 testów domeny w Dart, 27 testów łącznie; PR #2; lokalny debug APK OK |
 | T-003 Scoring/RNG | DONE | `c74f03b`, `f27948e`; 39/39 Dart, 45/45 Flutter; PR #3; lokalny debug APK OK |
 | T-004 Touch UI | DONE | `725561e`, `0af536b`, `6bfeacf`; 60 testów Flutter, 39 Dart, golden; PR #4; lokalny APK OK |
-| T-005 Visual/VFX/SFX | DONE | `96cf704`, `c00a742`, `e2ddf36`, `1d657bc`, `2148fcc`; 66 Flutter/39 Dart, native APK OK; PR przygotowywany |
-| T-006 Upgrades | DONE | `c3cd0e2`, `7e4cf6c`, `eec3e6c`, `91ed2a7`, `3b6712b`; 90 Flutter/54 Dart/native APK OK; PR przygotowywany |
+| T-005 Visual/VFX/SFX | DONE | `96cf704`, `c00a742`, `e2ddf36`, `1d657bc`, `2148fcc`; 66 Flutter/39 Dart, native APK OK; PR #6 |
+| T-006 Upgrades | DONE | `c3cd0e2`, `7e4cf6c`, `eec3e6c`, `91ed2a7`, `3b6712b`; 90 Flutter/54 Dart/native APK OK; PR #6 |
 | T-007 Island | TODO | — |
 | T-008 Save/economy | TODO | — |
 | T-009 Settings/i18n | TODO | — |
