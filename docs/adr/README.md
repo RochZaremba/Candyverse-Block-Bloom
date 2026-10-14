@@ -25,3 +25,5 @@ Istniejące ADR-y:
 - [0007 Run economy](0007-run-economy.md)
 
 - [0008 Deterministic trays](0008-deterministic-trays.md)
+
+- [0009 Offline feedback](0009-offline-feedback.md)

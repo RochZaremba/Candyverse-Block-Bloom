@@ -1,6 +1,6 @@
 # Candyverse: Block & Bloom — pakiet startowy dla Codexa
 
-> **Status: bootstrap i silnik z punktacją/RNG (T-001–T-003), nie gotowa gra.** Flutter stable 3.47.2, Android API 36, podstawowy Home. Silnik Dart ma 14 figur, placement, clear, punktację/combo oraz seedowany, uczciwy refill z kolorowymi skinami. Interfejs rozgrywki, wyspa i zapis są w kolejnych etapach. Aktualizacja: 2026-10-14.
+> **Status: grywalna plansza i sterowanie dotykiem (T-001–T-005), nie gotowa gra.** Flutter stable 3.47.2, Android API 36, podstawowy Home. Silnik Dart ma 14 figur, placement, clear, punktację/combo oraz seedowany, uczciwy refill z kolorowymi skinami. Home → Game → Game Over/Replay działa; dostępne są drag z ghostem i wybór figury + dotknięcie pola. Działają też board-local VFX, lokalne SFX, mute/haptyka/reduced-motion (na razie ustawienia sesyjne). Ulepszenia, wyspa i trwały zapis są w kolejnych etapach. Aktualizacja: 2026-10-14.
 
 Kolorowa gra mobilna 2D na Androida: **block puzzle 8×8 + lekkie ulepszenia roguelite + rozwijanie cukierkowej wyspy**. Pierwsze wydanie ma być dopracowane wizualnie, offline, bez reklam, zakupów, kont i backendu. Odbiorcy: głównie 10–16 lat, także starsi.
 
@@ -26,9 +26,9 @@ python3 scripts/check_docs.py
 flutter build apk --debug
 ```
 
-Referencja Home: [`test/goldens/home_320.png`](test/goldens/home_320.png). Testy obejmują 320/412 dp i skalę tekstu 1×/2×. Fonty Roboto w `test/fonts/` (Apache 2.0, dołączona licencja) służą wyłącznie powtarzalnym testom wizualnym. Kontrole GitHub Actions używają tej samej wersji Fluttera.
+Referencje Game/ghost/Game Over: `test/goldens/game_*.png`. Referencja Home: [`test/goldens/home_320.png`](test/goldens/home_320.png). Testy obejmują 320/412 dp i skalę tekstu 1×/2×. Fonty Roboto w `test/fonts/` (Apache 2.0, dołączona licencja) służą wyłącznie powtarzalnym testom wizualnym. Kontrole GitHub Actions używają tej samej wersji Fluttera.
 
-Czytaj [AGENTS.md](AGENTS.md), [docs/INDEX.md](docs/INDEX.md) i [docs/STATUS.md](docs/STATUS.md) przed wznowieniem prac. Następny etap: **T-004 — interfejs gry i sterowanie dotykiem**.
+Czytaj [AGENTS.md](AGENTS.md), [docs/INDEX.md](docs/INDEX.md) i [docs/STATUS.md](docs/STATUS.md) przed wznowieniem prac. Następny etap: **T-006 — trzy ulepszenia runu** (kod gotowy do integracji; T-007 wyspa następnie).
 
 ## Dokumenty źródłowe (nie zastępuj ich jednym wielkim promptem)
 

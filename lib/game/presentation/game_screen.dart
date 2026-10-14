@@ -7,6 +7,10 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../upgrades/domain/upgrade.dart';
 import '../../upgrades/presentation/upgrade_choices.dart';
+import '../../core/feedback/feedback_service.dart';
+import '../../settings/settings_sheet.dart';
+import '../../settings/settings_model.dart';
+import 'fx_layer.dart';
 import '../application/game_controller.dart';
 import '../domain/board.dart';
 import '../domain/cell.dart';
@@ -28,6 +32,8 @@ class _GameScreenState extends State<GameScreen> {
   late final GameController controller;
   final boardKey = GlobalKey();
   final stackKey = GlobalKey();
+  CandyFxEvent? fxEvent;
+  int fxId = 0;
   int? selected;
   Cell? preview;
   Offset? pointer;
@@ -52,6 +58,17 @@ class _GameScreenState extends State<GameScreen> {
     upgradeReady = controller.state.phase == RunPhase.upgrade;
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (controller.state.phase == RunPhase.upgrade &&
+        SettingsScope.reducedMotionOf(context)) {
+      upgradeTimer?.cancel();
+      upgradeTimer = null;
+      upgradeReady = true;
+    }
+  }
+
   void _refresh() {
     if (controller.state.phase != RunPhase.playing &&
         controller.state.phase != RunPhase.needsEraserDecision) {
@@ -60,11 +77,11 @@ class _GameScreenState extends State<GameScreen> {
     if (controller.state.phase == RunPhase.upgrade &&
         !upgradeReady &&
         upgradeTimer == null) {
-      final reduced = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+      final reduced = SettingsScope.reducedMotionOf(context);
       if (reduced) {
         upgradeReady = true;
       } else {
-        upgradeTimer = Timer(const Duration(milliseconds: 350), () {
+        upgradeTimer = Timer(Duration(milliseconds: theme.lineClearMs), () {
           upgradeTimer = null;
           if (mounted) setState(() => upgradeReady = true);
         });
@@ -109,7 +126,13 @@ class _GameScreenState extends State<GameScreen> {
       confirmingErase = false;
       if (confirm == true) erasing = false;
     });
-    if (confirm == true) controller.useEraser(cell);
+    if (confirm == true) {
+      final before = controller.state;
+      controller.useEraser(cell);
+      if (!identical(before, controller.state)) {
+        FeedbackScope.maybeOf(context)?.play(CandyCue.place);
+      }
+    }
   }
 
   @override
@@ -145,6 +168,15 @@ class _GameScreenState extends State<GameScreen> {
       return;
     }
     final result = controller.place(selected!, origin);
+    if (result.accepted) {
+      FeedbackScope.maybeOf(context)
+          ?.play(result.clear!.lineCount > 0 ? CandyCue.clear : CandyCue.place);
+      fxEvent = CandyFxEvent(
+        id: ++fxId,
+        placed: result.placedCells,
+        cleared: result.clear!.cells,
+      );
+    }
     setState(() {
       feedback = result.accepted
           ? result.clear!.lineCount > 0
@@ -232,7 +264,12 @@ class _GameScreenState extends State<GameScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 48),
+                        IconButton(
+                          tooltip: 'Dźwięk i ruch',
+                          onPressed: () =>
+                              showFeedbackSettings(context, theme: theme),
+                          icon: const Icon(Icons.tune_rounded),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -310,7 +347,18 @@ class _GameScreenState extends State<GameScreen> {
                           ),
                         ],
                       ),
-                      child: AspectRatio(aspectRatio: 1, child: _board()),
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            _board(),
+                            Positioned.fill(
+                              child: FxLayer(theme: theme, event: fxEvent),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     Row(
@@ -341,7 +389,13 @@ class _GameScreenState extends State<GameScreen> {
                   theme: theme,
                   choices: controller.state.upgradeChoices,
                   pending: controller.state.pendingUpgradeChoices,
-                  onChoose: controller.chooseUpgrade,
+                  onChoose: (upgrade) {
+                    final before = controller.state;
+                    controller.chooseUpgrade(upgrade);
+                    if (!identical(before, controller.state)) {
+                      FeedbackScope.maybeOf(context)?.play(CandyCue.upgrade);
+                    }
+                  },
                 ),
               ),
             ),
@@ -591,6 +645,7 @@ class _GameScreenState extends State<GameScreen> {
               setState(() {
                 selected = null;
                 preview = null;
+                fxEvent = null;
                 feedback = 'Przeciągnij klocek lub wybierz go i dotknij pola.';
               });
               controller.restart();
