@@ -172,8 +172,8 @@ class SettingsScreen extends StatelessWidget {
         content: SingleChildScrollView(
           child: Text(
             strings.text(
-              'Candyverse działa offline. Nie ma kont, reklam, zakupów ani analityki. Zapis rozgrywki, monety, wyspa i ustawienia są przechowywane na tym urządzeniu. Nie wysyłamy tych danych do wydawcy. Możesz usunąć je w ustawieniach.\n\nWydawca: Renvo\nKontakt: rochzaremba@gmail.com',
-              'Candyverse works offline. There are no accounts, ads, purchases or analytics. Your game, coins, island and preferences are stored on this device. We do not send this data to the publisher. You can delete it in settings.\n\nPublisher: Renvo\nContact: rochzaremba@gmail.com',
+              'Candyverse działa offline. Nie ma kont, reklam, płatnych zakupów ani analityki. Zapis rozgrywki, monety, wyspa i ustawienia są przechowywane na tym urządzeniu. Nie wysyłamy tych danych do wydawcy. Możesz usunąć je w ustawieniach.\n\nWydawca: Renvo\nKontakt: rochzaremba@gmail.com',
+              'Candyverse works offline. There are no accounts, ads, paid purchases or analytics. Your game, coins, island and preferences are stored on this device. We do not send this data to the publisher. You can delete it in settings.\n\nPublisher: Renvo\nContact: rochzaremba@gmail.com',
             ),
           ),
         ),
