@@ -30,6 +30,8 @@ class AppSession extends ChangeNotifier {
   bool busy = false;
   String? error;
   bool _disposed = false;
+  int _generation = 0;
+  bool _resetting = false;
   Future<void> _settingsTail = Future.value();
   void _notify() {
     if (!_disposed) notifyListeners();
@@ -63,11 +65,12 @@ class AppSession extends ChangeNotifier {
       if (_game?.isGameOver == true) {
         _game!.restore(GameEngine.seeded(seed: run.seed), run.game);
       }
+      final generation = _generation;
       return _game ??= GameController(
         engine: GameEngine.seeded(seed: run.seed),
         initialState: run.game,
-        onSnapshot: _checkpoint,
-        onRestart: _restart,
+        onSnapshot: (game) => _checkpoint(game, generation),
+        onRestart: () => _restart(generation),
       );
     } catch (_) {
       error = 'Nie udało się zapisać podejścia. Spróbuj ponownie.';
@@ -78,19 +81,33 @@ class AppSession extends ChangeNotifier {
     }
   }
 
-  Future<void> _checkpoint(GameState game) async {
+  Future<void> _checkpoint(GameState game, int generation) async {
+    if (_resetting || generation != _generation) {
+      throw StateError('This run belongs to a reset profile.');
+    }
     await _settingsTail;
+    if (generation != _generation) throw StateError('Profile reset.');
     final run = _save.activeRun;
     if (run == null) throw StateError('No active run to checkpoint.');
-    await _commit((s) => s.checkpoint(run.id, game));
+    await _commit((s) {
+      if (generation != _generation) throw StateError('Profile reset.');
+      return s.checkpoint(run.id, game);
+    });
   }
 
-  Future<void> _restart() async {
+  Future<void> _restart(int generation) async {
+    if (_resetting || generation != _generation) {
+      throw StateError('This run belongs to a reset profile.');
+    }
     await _settingsTail;
+    if (generation != _generation) throw StateError('Profile reset.');
     if (_save.activeRun != null) {
       throw StateError('Active run cannot be replaced.');
     }
-    await _commit((s) => s.startRun(seedSource()));
+    await _commit((s) {
+      if (generation != _generation) throw StateError('Profile reset.');
+      return s.startRun(seedSource());
+    });
     final run = _save.activeRun!;
     _game!.restore(GameEngine.seeded(seed: run.seed), run.game);
   }
@@ -114,7 +131,37 @@ class AppSession extends ChangeNotifier {
     }
   }
 
+  Future<void> resetData() async {
+    if (busy || _resetting) throw StateError('Save operation already running.');
+    busy = true;
+    _resetting = true;
+    _notify();
+    try {
+      // Accepted writes finish before deletion, and no new mutation can enter.
+      await _settingsTail;
+      final operation = _writeTail.then((_) => repository.reset());
+      _writeTail = operation.then((_) {}, onError: (Object e) {});
+      await operation;
+      _generation++;
+      _save = AppSaveV1();
+      _game?.dispose();
+      _game = null;
+      settings.restore(_save.settings);
+      error = null;
+    } catch (_) {
+      error = settings.language == 'en'
+          ? 'Could not delete data. Try again.'
+          : 'Nie udało się usunąć danych. Spróbuj ponownie.';
+      rethrow;
+    } finally {
+      _resetting = false;
+      busy = false;
+      _notify();
+    }
+  }
+
   void _saveSettings() {
+    if (_resetting) return;
     // Read current progression inside the queued task, never capture an old
     // wallet while a previous game write is still completing.
     _settingsTail = _settingsTail.then((_) async {
@@ -125,6 +172,12 @@ class AppSession extends ChangeNotifier {
         _notify();
       }
     });
+  }
+
+  Future<void> retrySettingsSave() async {
+    if (busy || _resetting) return;
+    _saveSettings();
+    await flushSettings();
   }
 
   Future<void> flushSettings() => _settingsTail;

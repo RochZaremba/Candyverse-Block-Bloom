@@ -60,7 +60,9 @@ class SaveRepository {
 
   Future<void> save(AppSaveV1 value) => storage.write(key, value.encode());
   Future<void> reset() async {
-    await storage.remove(key);
+    // Delete diagnostics first: a failure must not remove the playable profile.
+    // The canonical key is the final destructive operation.
     await storage.remove(quarantineKey);
+    await storage.remove(key);
   }
 }
