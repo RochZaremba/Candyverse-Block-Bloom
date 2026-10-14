@@ -110,11 +110,17 @@ UI blokuje placement od fazy upgrade, po tokenowym lineClear pokazuje prawdziwe 
 
 `IslandScreen` obsługuje realne informacje o obiektach i reakcje mieszkańców. Portfel/purchase callback są opcjonalnym wejściem dla T-008; bez adaptera nie wyświetlamy atrap zakupu. Poziomy0–3 są faktycznie różnymi renderami, sprawdzonymi goldenami. Grafika code-native i licencje opisane w assets/ASSET_LICENSES.md.
 
+## Zaimplementowany kontrakt T-008
+
+`save/domain/AppSaveV1` przechowuje jeden profil: ID podejścia, rekord, saldo, wyspę, ustawienia, aktywny run i ostatni rezultat. Maski tray odtwarzamy przez niezmienny katalog V1; zapis zawiera ID oraz skin, board, seed i RNG, kolejkę i konkretne karty, oba liczniki gumki, fazę i kontrolowane pendingCoins. Decoder waliduje wersję, zakresy, katalog i spójność nagrody/fazy.
+
+`AppSession` serializuje zapisy, publikuje zakupy dopiero po powodzeniu i dostarcza długowieczny kontroler runu. `GameController` pozostaje prezentacją silnika; produkcyjny callback checkpoint blokuje kolejne wejście do końca zapisu. Wynik jest odsłaniany po finalizacji; retry alokuje nowy ID przed rozpoczęciem gry. Wariant bez callbacku służy izolowanym testom UI. Home pokazuje saldo/rekord i WZNÓW dla zapisanej gry. Ustawienia są utrwalane w tym samym profilu. `SaveBootstrap` rozróżnia błąd odczytu i uszkodzony/nowszy JSON, pokazując retry i jawne potwierdzenie odzyskiwania (ADR-0011).
+
 ## Android / platform
 
 - Portrait, Android API target >= 36 wg stanu na 2026-10-14; `minSdk 24` jako preferencja, potwierdź dostępność zależności.
 - Nie włączaj `INTERNET` w release bez rzeczywistej potrzeby.
-- Pakiet `applicationId` pozostaje do decyzji właściciela przed publikacją; `com.example.*` tylko w fazie dev.
+- Właściciel zatwierdził `com.renvo.candyverse`; migracja developerskiego `com.example.candyverse` i sprawdzenie manifestu/buildów w T-011.
 - Build signing secrets poza Git i CI logami.
 - Publikacja jest osobnym etapem wymagającym weryfikacji przez właściciela.
 

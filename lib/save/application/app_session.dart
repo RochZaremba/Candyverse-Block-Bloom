@@ -38,7 +38,7 @@ class AppSession extends ChangeNotifier {
   Future<void> _writeTail = Future.value();
   Future<void> _commit(AppSaveV1 Function(AppSaveV1) change) {
     final operation = _writeTail.then((_) async {
-      final value = change(_save);
+      final value = change(_save).copyWith(settings: settings.snapshot);
       await repository.save(value);
       _save = value;
       error = null;
