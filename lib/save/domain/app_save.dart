@@ -321,6 +321,7 @@ GameState _decodeGame(Map<String, dynamic> d) {
   );
   final engine = GameEngine.seeded(seed: 0);
   if (_int(d, 'pendingCoins') != g.pendingCoins ||
+      (g.phase != RunPhase.upgrade && g.pendingUpgradeChoices != 0) ||
       (g.phase == RunPhase.playing &&
           (g.pendingUpgradeChoices != 0 || engine.isGameOver(g))) ||
       (g.phase == RunPhase.needsEraserDecision &&

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:test/test.dart';
 import 'package:candyverse/save/domain/app_save.dart';
 import 'package:candyverse/game/domain/game_engine.dart';
+import 'package:candyverse/game/domain/board.dart';
 import 'package:candyverse/game/domain/game_action.dart';
 import 'package:candyverse/upgrades/domain/upgrade.dart';
 import 'package:candyverse/island/domain/island_state.dart';
@@ -87,6 +88,23 @@ void main() {
     expect(save.wallet, 115);
     final poor = AppSaveV1(wallet: 9);
     expect(identical(poor.purchase(BuildingKind.candyTree), poor), isTrue);
+  });
+  test('ambiguous eraser phase cannot redraw choices during restore', () {
+    final save = AppSaveV1().startRun(4);
+    final invalid = save.activeRun!.game.copyWith(
+      board: Board.fromRows([
+        for (var r = 0; r < 8; r++) List.filled(8, 'candyPink'),
+      ]),
+      totalClearedLines: 5,
+      pendingUpgradeChoices: 1,
+      eraserAcquired: 1,
+      eraserUses: 1,
+      phase: RunPhase.needsEraserDecision,
+    );
+    expect(
+      () => AppSaveV1.decode(save.checkpoint(1, invalid).encode()),
+      throwsFormatException,
+    );
   });
   test('bad schemas, counters, board, masks and RNG are rejected', () {
     final raw =
