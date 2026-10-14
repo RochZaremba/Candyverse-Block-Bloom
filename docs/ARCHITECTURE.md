@@ -70,6 +70,16 @@ Zasada finalizacji runu: pure function `completeRun(state, runId)` sprawdza czy 
 - `SaveRepository`: `load`, `save`, `migrate`; testy ze sztucznym backendem.
 - UI: prezentacja, walidowane akcje, krótki feedback haptic/audio, lifecycle pause.
 
+## Zaimplementowany kontrakt T-002
+
+`lib/game/domain/` zawiera niezmienne `Board`, `Piece`, `GameState`, akcję `PlacePiece` oraz `GameEngine`. `Cell` to rekord `(row, col)` używany także dla offsetów masek. Plansza przechowuje `String?` jako identyfikator skina; `null` oznacza puste pole. Modele kopiują kolekcje i odrzucają nieprawidłowe dane.
+
+`placePiece(state, action)` zwraca `PlacementResult`: nowy stan, akceptację, pola umieszczenia, metadane jednoczesnego czyszczenia oraz flagę refill. Odrzucony ruch zwraca dokładnie ten sam obiekt stanu, bez pobrania zestawu. `isGameOver(result.state)` sprawdza pozostałe figury już po clear/refill. To reguła bazowa; wyjątek erasera i fazy ulepszeń należą do T-006.
+
+Silnik wymaga `TraySource(Board)`, zwracającego dokładnie trzy figury. Wywołuje go przy starcie i po zużyciu całej trójki, przekazując planszę po czyszczeniu. **Nie ma jeszcze generatora produkcyjnego**: T-003 dostarczy `RandomSource`, wagi, fair refill i serializowalny stan RNG. Na razie testy wstrzykują jawne zestawy. Punktacja i progresja nie są częścią stanu T-002. Kontrakt odpowiada ADR-0002; nie wprowadzono nowej decyzji architektonicznej.
+
+`dart test test/game` sprawdza domenę w zwykłej maszynie Dart, a `flutter test` uruchamia także widget/golden Home. Pakiet `test` jest zależnością developerską, bez wpływu na zależności runtime aplikacji.
+
 ## Android / platform
 
 - Portrait, Android API target >= 36 wg stanu na 2026-10-14; `minSdk 24` jako preferencja, potwierdź dostępność zależności.
