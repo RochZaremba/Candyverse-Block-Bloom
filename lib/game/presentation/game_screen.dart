@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../upgrades/domain/upgrade.dart';
+import '../../upgrades/presentation/upgrade_choices.dart';
 import '../application/game_controller.dart';
 import '../domain/board.dart';
 import '../domain/cell.dart';
@@ -30,6 +34,14 @@ class _GameScreenState extends State<GameScreen> {
   bool dragCanceled = false;
   int? activeDragSlot;
   String feedback = 'Przeciągnij klocek lub wybierz go i dotknij pola.';
+  Timer? upgradeTimer;
+  bool upgradeReady = false;
+  bool erasing = false;
+  bool confirmingErase = false;
+  bool get playing =>
+      controller.state.phase == RunPhase.playing &&
+      !erasing &&
+      !confirmingErase;
   AppTheme get theme => widget.theme;
 
   @override
@@ -37,18 +49,75 @@ class _GameScreenState extends State<GameScreen> {
     super.initState();
     controller = widget.controller ?? GameController.fresh();
     controller.addListener(_refresh);
+    upgradeReady = controller.state.phase == RunPhase.upgrade;
   }
 
-  void _refresh() => setState(() {});
+  void _refresh() {
+    if (controller.state.phase == RunPhase.upgrade &&
+        !upgradeReady &&
+        upgradeTimer == null) {
+      final reduced = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+      if (reduced) {
+        upgradeReady = true;
+      } else {
+        upgradeTimer = Timer(const Duration(milliseconds: 350), () {
+          upgradeTimer = null;
+          if (mounted) setState(() => upgradeReady = true);
+        });
+      }
+    }
+    if (controller.state.phase != RunPhase.upgrade) {
+      upgradeTimer?.cancel();
+      upgradeTimer = null;
+      upgradeReady = false;
+    }
+    setState(() {});
+  }
+
+  Future<void> _erase(Cell cell) async {
+    if (!erasing ||
+        confirmingErase ||
+        controller.state.board.at(cell) == null) {
+      return;
+    }
+    setState(() => confirmingErase = true);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Wymazać to pole?'),
+        content: Text(
+          'Wiersz ${cell.row + 1}, kolumna ${cell.col + 1}. Zużyjesz jedno użycie Rainbow Eraser. Bez punktów i monet.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Anuluj'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Wymaż pole'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted) return;
+    setState(() {
+      confirmingErase = false;
+      if (confirm == true) erasing = false;
+    });
+    if (confirm == true) controller.useEraser(cell);
+  }
 
   @override
   void dispose() {
+    upgradeTimer?.cancel();
     controller.removeListener(_refresh);
     if (widget.controller == null) controller.dispose();
     super.dispose();
   }
 
   void _drag(Offset global) {
+    if (!playing) return;
     final box = boardKey.currentContext?.findRenderObject() as RenderBox?;
     if (box == null) return;
     // First cell is lifted above the finger so its destination stays visible.
@@ -64,7 +133,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _place(Cell? origin) {
-    if (selected == null || origin == null) {
+    if (!playing || selected == null || origin == null) {
       setState(() {
         pointer = null;
         preview = null;
@@ -172,11 +241,52 @@ class _GameScreenState extends State<GameScreen> {
                         Expanded(
                           child: _metric(
                             'MONETY W GRZE',
-                            '${controller.state.totalClearedLines * 5}',
+                            '${controller.state.pendingCoins}',
                           ),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Następne ulepszenie: ${controller.state.totalClearedLines}/${controller.state.nextUpgradeMilestone} linii',
+                      textAlign: TextAlign.center,
+                    ),
+                    if (controller.state.eraserUses > 0 &&
+                        controller.state.phase != RunPhase.upgrade)
+                      FilledButton.icon(
+                        onPressed: confirmingErase
+                            ? null
+                            : () => setState(() {
+                                erasing = !erasing;
+                                selected = null;
+                                preview = null;
+                                pointer = null;
+                              }),
+                        icon: const Icon(Icons.auto_fix_high_rounded),
+                        label: Text(
+                          erasing
+                              ? 'Anuluj wybór pola'
+                              : 'Rainbow Eraser (${controller.state.eraserUses})',
+                        ),
+                      ),
+                    if (erasing)
+                      const Text(
+                        'Dotknij zajętego pola, aby je wymazać.',
+                        textAlign: TextAlign.center,
+                      ),
+                    if (controller.state.phase ==
+                        RunPhase.needsEraserDecision) ...[
+                      const Text(
+                        'Klocki nie pasują. Możesz spróbować wymazać jedno pole.',
+                        textAlign: TextAlign.center,
+                      ),
+                      TextButton(
+                        onPressed: confirmingErase
+                            ? null
+                            : controller.declineEraser,
+                        child: const Text('Zakończ podejście'),
+                      ),
+                    ],
                     const SizedBox(height: 18),
                     Container(
                       padding: const EdgeInsets.all(8),
@@ -219,6 +329,17 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ),
           ),
+          if (controller.state.phase == RunPhase.upgrade && upgradeReady)
+            Positioned.fill(
+              child: BlockSemantics(
+                child: UpgradeChoices(
+                  theme: theme,
+                  choices: controller.state.upgradeChoices,
+                  pending: controller.state.pendingUpgradeChoices,
+                  onChoose: controller.chooseUpgrade,
+                ),
+              ),
+            ),
           if (pointer != null &&
               selected != null &&
               controller.state.tray[selected!] != null)
@@ -276,7 +397,11 @@ class _GameScreenState extends State<GameScreen> {
           button: true,
           child: GestureDetector(
             key: ValueKey('cell-${cell.row}-${cell.col}'),
-            onTap: selected == null || activeDragSlot != null
+            onTap: confirmingErase
+                ? null
+                : erasing && skin != null
+                ? () => _erase(cell)
+                : !playing || selected == null || activeDragSlot != null
                 ? null
                 : () => _place(cell),
             child: CandyTile(
@@ -334,14 +459,14 @@ class _GameScreenState extends State<GameScreen> {
           },
           child: GestureDetector(
             key: ValueKey('tray-$slot'),
-            onTap: piece == null
+            onTap: !playing || piece == null
                 ? null
                 : () => setState(() {
                     if (activeDragSlot == null) {
                       selected = selected == slot ? null : slot;
                     }
                   }),
-            onPanStart: piece == null
+            onPanStart: !playing || piece == null
                 ? null
                 : (details) {
                     if (activeDragSlot != null) return;
@@ -349,12 +474,12 @@ class _GameScreenState extends State<GameScreen> {
                     selected = slot;
                     _drag(details.globalPosition);
                   },
-            onPanUpdate: piece == null
+            onPanUpdate: !playing || piece == null
                 ? null
                 : (details) {
                     if (activeDragSlot == slot) _drag(details.globalPosition);
                   },
-            onPanEnd: piece == null
+            onPanEnd: !playing || piece == null
                 ? null
                 : (_) {
                     if (activeDragSlot != slot) return;
@@ -454,10 +579,7 @@ class _GameScreenState extends State<GameScreen> {
           const SizedBox(height: 24),
           _metric('TWÓJ WYNIK', '${controller.state.score}'),
           const SizedBox(height: 12),
-          _metric(
-            'MONETY Z PODEJŚCIA',
-            '${controller.state.totalClearedLines * 5}',
-          ),
+          _metric('MONETY Z PODEJŚCIA', '${controller.state.pendingCoins}'),
           const SizedBox(height: 24),
           FilledButton(
             onPressed: () {

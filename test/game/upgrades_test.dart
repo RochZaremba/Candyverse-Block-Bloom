@@ -209,4 +209,71 @@ void main() {
       );
     },
   );
+  for (final milestone in [5, 10, 15]) {
+    test('single clear crosses milestone $milestone exactly once', () {
+      final e = engine();
+      final board = Board.empty().withCells({
+        for (var c = 0; c < 7; c++) (row: 0, col: c): 'pink',
+      });
+      final reached = e
+          .placePiece(
+            state(board: board, lines: milestone - 1),
+            PlacePiece(slot: 0, origin: (row: 0, col: 7)),
+          )
+          .state;
+      expect(reached.pendingUpgradeChoices, 1);
+      expect(reached.totalClearedLines, milestone);
+      final chosen = e.chooseUpgrade(reached, Upgrade.luckyJelly);
+      final placed = e
+          .placePiece(chosen, PlacePiece(slot: 1, origin: (row: 1, col: 1)))
+          .state;
+      expect(placed.phase, RunPhase.playing);
+      expect(placed.pendingUpgradeChoices, 0);
+      expect(placed.totalClearedLines, milestone);
+    });
+  }
+
+  test('exhausted upgrades skip future milestone without consuming RNG', () {
+    final e = engine();
+    final fullLevels = state(
+      lines: 29,
+      sugar: 2,
+      lucky: 2,
+      acquired: 2,
+      uses: 0,
+      board: Board.empty().withCells({
+        for (var c = 0; c < 7; c++) (row: 0, col: c): 'pink',
+      }),
+    );
+    final next = e
+        .placePiece(fullLevels, PlacePiece(slot: 0, origin: (row: 0, col: 7)))
+        .state;
+    expect(next.phase, RunPhase.playing);
+    expect(next.pendingUpgradeChoices, 0);
+    expect(next.rngState, fullLevels.rngState);
+  });
+
+  test('queued eraser choice is resolved before no-move decision', () {
+    final e = engine();
+    final full = Board.fromRows(
+      List.generate(8, (_) => List.filled(8, 'pink')),
+    );
+    final pending = e.resolvePhase(state(board: full, pending: 1));
+    expect(pending.phase, RunPhase.upgrade);
+    final rescued = e.chooseUpgrade(pending, Upgrade.rainbowEraser);
+    expect(rescued.phase, RunPhase.needsEraserDecision);
+    expect(rescued.eraserUses, 1);
+  });
+
+  test('eraser invalid targets and empty board preserve snapshot', () {
+    final e = engine();
+    final original = state(acquired: 1, uses: 1);
+    for (final cell in [
+      (row: -1, col: 0),
+      (row: 8, col: 0),
+      (row: 0, col: 0),
+    ]) {
+      expect(e.useEraser(original, cell), same(original));
+    }
+  });
 }
