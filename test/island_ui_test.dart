@@ -1,3 +1,5 @@
+import 'package:candyverse/save/application/app_session.dart';
+
 import 'dart:io';
 
 import 'package:candyverse/app/app.dart';
@@ -144,7 +146,9 @@ void main() {
     tester,
   ) async {
     viewport(tester);
-    await tester.pumpWidget(CandyverseApp(theme: theme));
+    await tester.pumpWidget(
+      CandyverseApp(theme: theme, session: AppSession.memory()),
+    );
     await tester.ensureVisible(find.text('Odwiedź wyspę'));
     await tester.tap(find.text('Odwiedź wyspę'));
     await tester.pumpAndSettle();

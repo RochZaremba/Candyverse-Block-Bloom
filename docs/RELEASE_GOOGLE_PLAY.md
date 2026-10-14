@@ -13,8 +13,8 @@
 ## Do uzupełnienia przez właściciela
 
 - [ ] Ostateczna nazwa po sprawdzeniu kolizji marki / znaków towarowych.
-- [ ] Własny, unikalny, docelowy `applicationId` (zanim udostępnisz pierwszą wersję w Play, późniejsza zmiana może oznaczać inną aplikację).
-- [ ] Nazwa wydawcy i prawdziwy kontakt do privacy policy.
+- [x] Docelowy `applicationId`: **`com.renvo.candyverse`**, zatwierdzony przez właściciela 2026-10-14. Konfiguracja developerska zostanie zmieniona i zweryfikowana w T-011; nie sprawdzono jeszcze dostępności identyfikatora w Play Console.
+- [x] Wydawca: **Renvo**, kontakt: **rochzaremba@gmail.com** (dane podane przez właściciela 2026-10-14).
 - [ ] Publiczny, aktywny link do privacy policy bez placeholderów (może być statyczna strona GitHub Pages, nawet gdy repo z kodem jest prywatne).
 - [ ] Klucz upload do podpisu `.aab`, przechowywany poza repo, backup klucza i haseł.
 - [ ] Realne grafiki sklepu (ikona, feature graphic, screenshoty) zgodne z rzeczywistą grą i licencjami.

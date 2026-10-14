@@ -1,3 +1,5 @@
+import 'package:candyverse/save/application/app_session.dart';
+
 import 'dart:io';
 
 import 'package:candyverse/app/app.dart';
@@ -108,7 +110,9 @@ void main() {
       addTearDown(
         tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
       );
-      await tester.pumpWidget(CandyverseApp(theme: theme));
+      await tester.pumpWidget(
+        CandyverseApp(theme: theme, session: AppSession.memory()),
+      );
       await tester.tap(find.text('GRAJ'));
       await tester.pumpAndSettle();
       expect(find.byType(GameScreen), findsOneWidget);
@@ -122,7 +126,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Wróć do menu').last);
       await tester.pumpAndSettle();
-      expect(find.text('GRAJ'), findsOneWidget);
+      expect(find.text('WZNÓW'), findsOneWidget);
     },
   );
 

@@ -1,6 +1,6 @@
 # Candyverse: Block & Bloom — pakiet startowy dla Codexa
 
-> **Status: grywalna plansza i sterowanie dotykiem (T-001–T-007), nie gotowa gra.** Flutter stable 3.47.2, Android API 36, podstawowy Home. Silnik Dart ma 14 figur, placement, clear, punktację/combo oraz seedowany, uczciwy refill z kolorowymi skinami. Home → Game → Game Over/Replay działa; dostępne są drag z ghostem i wybór figury + dotknięcie pola. Działają też board-local VFX, lokalne SFX, mute/haptyka/reduced-motion (na razie ustawienia sesyjne). Działają Sugar Rush/Lucky Jelly/Rainbow Eraser, kolejka wyborów co5 linii i potwierdzane wymazywanie pola. Wyspa ma trzy obiekty z poziomami0–3 i czterech animowanych mieszkańców. Portfel, zakupy i trwały zapis należą do następnego etapu. Aktualizacja: 2026-10-14.
+> **Status: grywalna plansza i sterowanie dotykiem (T-001–T-008), nie gotowa gra.** Flutter stable 3.47.2, Android API 36, podstawowy Home. Silnik Dart ma 14 figur, placement, clear, punktację/combo oraz seedowany, uczciwy refill z kolorowymi skinami. Home → Game → Game Over/Replay działa; dostępne są drag z ghostem i wybór figury + dotknięcie pola. Działają też board-local VFX, lokalne SFX, mute/haptyka/reduced-motion z zapisem ustawień. Działają Sugar Rush/Lucky Jelly/Rainbow Eraser, kolejka wyborów co5 linii i potwierdzane wymazywanie pola. Wyspa ma trzy obiekty z poziomami0–3 i czterech animowanych mieszkańców. Działają portfel, zakupy kolejnych poziomów i trwały zapis/odczyt z resume oraz idempotentną nagrodą. Pełne Settings/reset i PL/EN należą do T-009. Aktualizacja: 2026-10-15.
 
 Kolorowa gra mobilna 2D na Androida: **block puzzle 8×8 + lekkie ulepszenia roguelite + rozwijanie cukierkowej wyspy**. Pierwsze wydanie ma być dopracowane wizualnie, offline, bez reklam, zakupów, kont i backendu. Odbiorcy: głównie 10–16 lat, także starsi.
 
@@ -28,7 +28,7 @@ flutter build apk --debug
 
 Referencje Game/ghost/Game Over: `test/goldens/game_*.png`. Referencja Home: [`test/goldens/home_320.png`](test/goldens/home_320.png). Testy obejmują 320/412 dp i skalę tekstu 1×/2×. Fonty Roboto w `test/fonts/` (Apache 2.0, dołączona licencja) służą wyłącznie powtarzalnym testom wizualnym. Kontrole GitHub Actions używają tej samej wersji Fluttera.
 
-Czytaj [AGENTS.md](AGENTS.md), [docs/INDEX.md](docs/INDEX.md) i [docs/STATUS.md](docs/STATUS.md) przed wznowieniem prac. Następny etap: **T-008 — ekonomia i trwały zapis/resume**.
+Czytaj [AGENTS.md](AGENTS.md), [docs/INDEX.md](docs/INDEX.md) i [docs/STATUS.md](docs/STATUS.md) przed wznowieniem prac. Następny etap: **T-009 — Settings/reset i PL/EN**.
 
 ## Dokumenty źródłowe (nie zastępuj ich jednym wielkim promptem)
 

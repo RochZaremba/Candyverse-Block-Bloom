@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
 import 'settings_model.dart';
 
-/// Shared, functional session controls for Home and the active run.
+/// Shared, functional controls for Home and the active run.
 void showFeedbackSettings(BuildContext context, {required AppTheme theme}) {
   final settings = SettingsScope.maybeOf(context);
   if (settings == null) return;
@@ -41,10 +41,12 @@ void showFeedbackSettings(BuildContext context, {required AppTheme theme}) {
                 value: settings.reduceMotion,
                 onChanged: settings.setReduceMotion,
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Text(
-                  'Ustawienia obowiązują do zamknięcia aplikacji.',
+                  settings.persisted
+                      ? 'Ustawienia są zapisywane na tym urządzeniu.'
+                      : 'Ustawienia obowiązują do zamknięcia aplikacji.',
                   textAlign: TextAlign.center,
                 ),
               ),

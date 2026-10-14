@@ -6,16 +6,19 @@ import '../settings/settings_sheet.dart';
 import '../core/feedback/feedback_service.dart';
 import 'candy_backdrop.dart';
 import '../island/domain/island_state.dart';
+import '../save/application/app_session.dart';
 import '../island/presentation/island_scene.dart';
 import '../island/presentation/island_screen.dart';
 
 /// Candy Home leading directly into a real engine-backed run.
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({required this.theme, this.island, super.key});
+  const HomeScreen({required this.theme, this.island, this.session, super.key});
 
   final AppTheme theme;
   final IslandState? island;
-  IslandState get currentIsland => island ?? IslandState();
+  final AppSession? session;
+  IslandState get currentIsland =>
+      session?.save.island ?? island ?? IslandState();
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -65,6 +68,15 @@ class HomeScreen extends StatelessWidget {
                     'Ułóż. Połącz. Rozkwitaj.',
                     style: TextStyle(fontSize: 16, color: theme.color('ink')),
                   ),
+                  if (session != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      'Rekord: ${session!.save.bestScore}  •  Candy Coins: ${session!.save.wallet}',
+                      textAlign: TextAlign.center,
+                    ),
+                    if (session!.error != null)
+                      Text(session!.error!, textAlign: TextAlign.center),
+                  ],
                   const SizedBox(height: 24),
                   FilledButton(
                     style: FilledButton.styleFrom(
@@ -77,22 +89,88 @@ class HomeScreen extends StatelessWidget {
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    onPressed: () {
-                      FeedbackScope.maybeOf(context)?.play(CandyCue.place);
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => GameScreen(theme: theme),
-                        ),
-                      );
-                    },
-                    child: const Text('GRAJ'),
+                    onPressed: session?.busy == true
+                        ? null
+                        : () async {
+                            FeedbackScope.maybeOf(context)
+                                ?.play(CandyCue.place);
+                            try {
+                              final controller = await session?.openRun();
+                              if (!context.mounted) return;
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => GameScreen(
+                                    theme: theme,
+                                    controller: controller,
+                                  ),
+                                ),
+                              );
+                            } catch (_) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      session!.error ??
+                                          'Błąd zapisu. Spróbuj ponownie.',
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                    child: Text(
+                      session?.save.activeRun == null ? 'GRAJ' : 'WZNÓW',
+                    ),
                   ),
                   const SizedBox(height: 12),
                   TextButton.icon(
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute<void>(
-                        builder: (_) =>
-                            IslandScreen(theme: theme, island: currentIsland),
+                        builder: (_) => session == null
+                            ? IslandScreen(theme: theme, island: currentIsland)
+                            : ListenableBuilder(
+                                listenable: session!,
+                                builder: (context, _) => IslandScreen(
+                                  theme: theme,
+                                  island: session!.save.island,
+                                  wallet: session!.save.wallet,
+                                  price: session!.save.price,
+                                  onPurchase: session!.busy
+                                      ? null
+                                      : (kind) async {
+                                          try {
+                                            final bought = await session!
+                                                .purchase(kind);
+                                            if (!context.mounted) return;
+                                            if (bought) {
+                                              FeedbackScope.maybeOf(context)
+                                                  ?.play(CandyCue.upgrade);
+                                            }
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  bought ? 'Wyspa rozkwita!' : 'Za mało Candy Coins. Zdobywasz je po zakończeniu podejścia.',
+                                                ),
+                                              ),
+                                            );
+                                          } catch (_) {
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        session!.error ??
+                                                            'Błąd zapisu.',
+                                                      ),
+                                                    ),
+                                                  );
+                                            }
+                                          }
+                                        },
+                                ),
+                              ),
                       ),
                     ),
                     icon: const Icon(Icons.landscape_rounded),
