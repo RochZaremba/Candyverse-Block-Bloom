@@ -9,6 +9,11 @@ android {
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
+    // SoundPool loads bundled PCM directly through AssetFileDescriptor.
+    androidResources {
+        noCompress += "wav"
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

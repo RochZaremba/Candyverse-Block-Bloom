@@ -5,10 +5,21 @@ import 'package:flutter/services.dart';
 
 /// The checked-in design tokens are the single source of visual values.
 class AppTheme {
-  AppTheme._(this.palette, this.panelRadius);
+  AppTheme._(
+    this.palette,
+    this.panelRadius,
+    this.tileRadius,
+    this.tilePlaceMs,
+    this.lineClearMs,
+    this.maxParticles,
+  );
 
   final Map<String, Color> palette;
   final double panelRadius;
+  final double tileRadius;
+  final int tilePlaceMs;
+  final int lineClearMs;
+  final int maxParticles;
 
   static Future<AppTheme> load() async {
     final json = jsonDecode(
@@ -20,7 +31,14 @@ class AppTheme {
         Color(int.parse((hex as String).replaceFirst('#', 'FF'), radix: 16)),
       ),
     );
-    return AppTheme._(palette, (json['radiusDp']['panel'] as num).toDouble());
+    return AppTheme._(
+      palette,
+      (json['radiusDp']['panel'] as num).toDouble(),
+      (json['radiusDp']['tile'] as num).toDouble(),
+      json['motionMs']['tilePlace'] as int,
+      json['motionMs']['lineClear'] as int,
+      json['particles']['maxConcurrent'] as int,
+    );
   }
 
   Color color(String name) => palette[name]!;

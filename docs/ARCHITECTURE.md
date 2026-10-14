@@ -92,6 +92,12 @@ W T-002 wprowadzono granicę `TraySource(Board)` dla jawnych trójek. T-003 doda
 
 Home otwiera realną grę. Wynik i liczba linii pochodzą z domeny; monety są tylko pending (bazowo 5 × linie), bez portfela przed T-008. Game-over zawiera retry i powrót do menu. Wyjście z aktywnego runu na razie wymaga potwierdzenia; trwałe resume/lifecycle snapshot zostanie dodane w T-008. Nie ma atrap ustawień, wyspy i kart upgrade. Testy obejmują drag, błędy, cancel, multi-touch, granice, refill, wynik, back i małe ekrany/tekst 2× oraz goldens na prawdziwych fontach.
 
+## Zaimplementowany kontrakt T-005
+
+`SettingsScope` i `FeedbackScope` znajdują się ponad MaterialApp, więc są wspólne dla wszystkich tras. `FeedbackService` bramkuje niezależnie dźwięk i haptykę, zatrzymuje audio przy mute/tle/dispose i nie blokuje akcji gry w razie błędu kanału. Android odtwarza trzy oryginalne WAV przez SoundPool; pakowanie WAV bez kompresji oraz lifecycle opisuje ADR-0009.
+
+Zaakceptowany ruch tworzy `CandyFxEvent` i odpala cue place/clear. `FxLayer` jest nad samym gridem w IgnorePointer/RepaintBoundary; ma najwyżej 40 drobinek i czas z tokenów, respektuje ustawienie/OS reduced-motion oraz pause. Odrzucony ruch nie emituje FX/audio. Wspólny `showFeedbackSettings` działa z Home i aktywnej gry. Preferencje sesyjne zostaną zapisane w T-008; UI uczciwie informuje o obecnym ograniczeniu.
+
 ## Android / platform
 
 - Portrait, Android API target >= 36 wg stanu na 2026-10-14; `minSdk 24` jako preferencja, potwierdź dostępność zależności.

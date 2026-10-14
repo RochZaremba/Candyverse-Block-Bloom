@@ -3,6 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../core/feedback/feedback_service.dart';
+import '../../settings/settings_sheet.dart';
+import 'fx_layer.dart';
 import '../application/game_controller.dart';
 import '../domain/board.dart';
 import '../domain/cell.dart';
@@ -24,6 +27,8 @@ class _GameScreenState extends State<GameScreen> {
   late final GameController controller;
   final boardKey = GlobalKey();
   final stackKey = GlobalKey();
+  CandyFxEvent? fxEvent;
+  int fxId = 0;
   int? selected;
   Cell? preview;
   Offset? pointer;
@@ -72,6 +77,15 @@ class _GameScreenState extends State<GameScreen> {
       return;
     }
     final result = controller.place(selected!, origin);
+    if (result.accepted) {
+      FeedbackScope.maybeOf(context)
+          ?.play(result.clear!.lineCount > 0 ? CandyCue.clear : CandyCue.place);
+      fxEvent = CandyFxEvent(
+        id: ++fxId,
+        placed: result.placedCells,
+        cleared: result.clear!.cells,
+      );
+    }
     setState(() {
       feedback = result.accepted
           ? result.clear!.lineCount > 0
@@ -159,7 +173,12 @@ class _GameScreenState extends State<GameScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 48),
+                        IconButton(
+                          tooltip: 'Dźwięk i ruch',
+                          onPressed: () =>
+                              showFeedbackSettings(context, theme: theme),
+                          icon: const Icon(Icons.tune_rounded),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -195,7 +214,18 @@ class _GameScreenState extends State<GameScreen> {
                           ),
                         ],
                       ),
-                      child: AspectRatio(aspectRatio: 1, child: _board()),
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            _board(),
+                            Positioned.fill(
+                              child: FxLayer(theme: theme, event: fxEvent),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     Row(
@@ -464,6 +494,7 @@ class _GameScreenState extends State<GameScreen> {
               setState(() {
                 selected = null;
                 preview = null;
+                fxEvent = null;
                 feedback = 'Przeciągnij klocek lub wybierz go i dotknij pola.';
               });
               controller.restart();
