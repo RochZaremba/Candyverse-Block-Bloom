@@ -49,7 +49,9 @@ class AppSession extends ChangeNotifier {
   }
 
   Future<GameController> openRun() async {
-    if (busy) throw StateError('Save operation already running.');
+    if (busy || (_game?.blocked ?? false)) {
+      throw StateError('Save operation already running.');
+    }
     busy = true;
     _notify();
     try {

@@ -53,6 +53,7 @@ void main() {
     expect(controller.saving, isTrue);
     expect(controller.isGameOver, isFalse);
     expect(session.save.wallet, 0);
+    await expectLater(session.openRun(), throwsStateError);
     expect(controller.place(0, (row: 0, col: 0)).accepted, isFalse);
     storage.fail = true;
     storage.gate!.complete();
