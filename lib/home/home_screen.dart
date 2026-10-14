@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
 import '../game/presentation/game_screen.dart';
+import '../settings/settings_model.dart';
+import '../core/feedback/feedback_service.dart';
+import 'candy_backdrop.dart';
 
 /// Candy Home leading directly into a real engine-backed run.
 class HomeScreen extends StatelessWidget {
@@ -13,14 +16,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    body: DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [theme.color('bubblegumPink'), theme.color('creamWhite')],
-        ),
-      ),
+    body: CandyBackdrop(
+      theme: theme,
       child: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -38,7 +35,7 @@ class HomeScreen extends StatelessWidget {
                       child: CustomPaint(painter: _CandyBloomPainter(theme)),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 12),
                   Text(
                     'Candyverse',
                     textAlign: TextAlign.center,
@@ -60,7 +57,12 @@ class HomeScreen extends StatelessWidget {
                       color: theme.color('ink'),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Ułóż. Połącz. Rozkwitaj.',
+                    style: TextStyle(fontSize: 16, color: theme.color('ink')),
+                  ),
+                  const SizedBox(height: 24),
                   FilledButton(
                     style: FilledButton.styleFrom(
                       backgroundColor: theme.color('ink'),
@@ -72,14 +74,23 @@ class HomeScreen extends StatelessWidget {
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => GameScreen(theme: theme),
-                      ),
-                    ),
+                    onPressed: () {
+                      FeedbackScope.maybeOf(context)?.play(CandyCue.place);
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => GameScreen(theme: theme),
+                        ),
+                      );
+                    },
                     child: const Text('GRAJ'),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
+                  TextButton.icon(
+                    onPressed: () => _showSettings(context),
+                    icon: const Icon(Icons.tune_rounded),
+                    label: const Text('Dźwięk i ruch'),
+                  ),
+                  const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
@@ -101,9 +112,65 @@ class HomeScreen extends StatelessWidget {
       ),
     ),
   );
+  void _showSettings(BuildContext context) {
+    final settings = SettingsScope.maybeOf(context);
+    if (settings == null) return;
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: theme.color('creamWhite'),
+      builder: (context) => SafeArea(
+        child: SingleChildScrollView(
+          child: ListenableBuilder(
+            listenable: settings,
+            builder: (_, _) => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text(
+                    'Dźwięk i ruch',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+                  ),
+                ),
+                SwitchListTile(
+                  title: const Text('Dźwięk'),
+                  value: settings.sound,
+                  onChanged: settings.setSound,
+                ),
+                SwitchListTile(
+                  title: const Text('Haptyka'),
+                  value: settings.haptics,
+                  onChanged: settings.setHaptics,
+                ),
+                SwitchListTile(
+                  title: const Text('Ograniczony ruch'),
+                  subtitle: const Text('Mniej animacji i bez drobinek.'),
+                  value: settings.reduceMotion,
+                  onChanged: settings.setReduceMotion,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    'Ustawienia obowiązują do zamknięcia aplikacji.',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Gotowe'),
+                ),
+                const SizedBox(height: 12),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-/// Original vector decoration, not a substitute for the T-005/T-007 assets.
+/// Original glossy candy bloom, the visual signature of the Home screen.
 class _CandyBloomPainter extends CustomPainter {
   _CandyBloomPainter(this.theme);
 

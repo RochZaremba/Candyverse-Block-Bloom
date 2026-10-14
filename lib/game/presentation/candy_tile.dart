@@ -25,7 +25,7 @@ class CandyTile extends StatelessWidget {
         padding: const EdgeInsets.all(2),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(9),
+            borderRadius: BorderRadius.circular(theme.tileRadius * .75),
             color: skin == null
                 ? theme.color('ink').withValues(alpha: .07)
                 : null,
@@ -37,6 +37,7 @@ class CandyTile extends StatelessWidget {
                     colors: [
                       Color.lerp(color, theme.color('creamWhite'), .4)!,
                       color,
+                      Color.lerp(color, theme.color('ink'), .10)!,
                     ],
                   ),
             border: Border.all(
