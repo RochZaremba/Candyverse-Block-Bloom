@@ -1,0 +1,37 @@
+{
+  "$schemaNote": "Source of truth for candy colors and motion; pure data, no networking",
+  "palette": {
+    "candyPink": "#FF5DA2",
+    "bubblegumPink": "#FF8CC6",
+    "electricPurple": "#A58AFF",
+    "blueberry": "#6E78FF",
+    "turquoise": "#44E1D8",
+    "lemonYellow": "#FFEA73",
+    "mangoOrange": "#FFBD59",
+    "candyLime": "#BDF764",
+    "creamWhite": "#FFF4DD",
+    "ink": "#372858",
+    "danger": "#D84E7F"
+  },
+  "radiusDp": {
+    "tile": 12,
+    "button": 22,
+    "card": 24,
+    "panel": 28
+  },
+  "minimumTouchTargetDp": 48,
+  "motionMs": {
+    "tilePlace": 180,
+    "lineClear": 350,
+    "cardPop": 240,
+    "purchase": 350
+  },
+  "particles": {
+    "maxConcurrent": 40
+  },
+  "a11y": {
+    "reducedMotion": "reduce or disable nonessential animations",
+    "soundToggle": true,
+    "hapticsToggle": true
+  }
+}

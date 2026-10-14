@@ -1,0 +1,22 @@
+# Flutter / Dart (uzupełnij po `flutter create` w razie potrzeby)
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+coverage/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+.idea/
+.vscode/
+# Signing and local secrets
+android/key.properties
+*.jks
+*.keystore
+*.p12
+.env
+.env.*
+# OS
+.DS_Store
+Thumbs.db

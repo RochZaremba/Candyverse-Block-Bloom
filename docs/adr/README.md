@@ -1,0 +1,25 @@
+# ADR — Architecture Decision Records
+
+Każdy zaakceptowany ADR jest **historycznym zapisem uzasadnienia**. Nie nadpisuj go bez śladu; jeśli decyzja się zmienia, dodaj nowy ADR ze statusem `Accepted` i polem `Supersedes ADR-XXXX`, a poprzedni oznacz `Superseded`.
+
+Format:
+
+```text
+# ADR-XXXX: Title
+Status: Proposed | Accepted | Superseded
+Date:
+Context:
+Decision:
+Consequences:
+Alternatives rejected:
+```
+
+Istniejące ADR-y:
+
+- [0001 Flutter 2D](0001-flutter-2d.md)
+- [0002 Pure Dart game engine](0002-pure-engine.md)
+- [0003 Local save](0003-local-save.md)
+- [0004 No ads & Families](0004-no-ads-families.md)
+- [0005 Scope and rendering](0005-scope-visuals.md)
+- [0006 Git/PR process](0006-git-pr-process.md)
+- [0007 Run economy](0007-run-economy.md)
