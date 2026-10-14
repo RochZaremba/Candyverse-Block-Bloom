@@ -1,3 +1,4 @@
+import 'package:candyverse/save/application/app_session.dart';
 import 'package:candyverse/app/app.dart';
 import 'package:candyverse/core/feedback/feedback_service.dart';
 import 'package:candyverse/core/theme/app_theme.dart';
@@ -173,7 +174,9 @@ void main() {
     tester.platformDispatcher.accessibilityFeaturesTestValue =
         FakeAccessibilityFeatures(disableAnimations: true);
     addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
-    await tester.pumpWidget(CandyverseApp(theme: theme));
+    await tester.pumpWidget(
+      CandyverseApp(theme: theme, session: AppSession.memory()),
+    );
     await tester.ensureVisible(find.text('Dźwięk i ruch'));
     await tester.tap(find.text('Dźwięk i ruch'));
     await tester.pumpAndSettle();

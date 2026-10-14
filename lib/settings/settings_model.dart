@@ -1,10 +1,25 @@
 import 'package:flutter/material.dart';
 
-/// Session preferences; T-008 persists these with the single application save.
+import '../save/domain/app_save.dart';
+
+/// Observable preferences restored and persisted by the application session.
 class SettingsModel extends ChangeNotifier {
-  bool _sound = true;
-  bool _haptics = true;
-  bool _reduceMotion = false;
+  SettingsModel({SavedSettings initial = const SavedSettings()})
+    : _sound = initial.sound,
+      _haptics = initial.haptics,
+      _reduceMotion = initial.reduceMotion,
+      language = initial.language;
+  final String language;
+  bool persisted = false;
+  SavedSettings get snapshot => SavedSettings(
+    sound: sound,
+    haptics: haptics,
+    reduceMotion: reduceMotion,
+    language: language,
+  );
+  bool _sound;
+  bool _haptics;
+  bool _reduceMotion;
   bool get sound => _sound;
   bool get haptics => _haptics;
   bool get reduceMotion => _reduceMotion;

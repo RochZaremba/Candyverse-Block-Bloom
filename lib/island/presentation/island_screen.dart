@@ -11,12 +11,14 @@ class IslandScreen extends StatelessWidget {
     required this.island,
     this.wallet,
     this.onPurchase,
+    this.price,
     super.key,
   });
   final AppTheme theme;
   final IslandState island;
   final int? wallet;
   final ValueChanged<BuildingKind>? onPurchase;
+  final int? Function(BuildingKind)? price;
   @override
   Widget build(BuildContext context) => Scaffold(
     body: CandyBackdrop(
@@ -112,7 +114,11 @@ class IslandScreen extends StatelessWidget {
                 Navigator.pop(context);
                 onPurchase!(kind);
               },
-              child: const Text('Rozbuduj'),
+              child: Text(
+                price == null
+                    ? 'Rozbuduj'
+                    : 'Rozbuduj • ${price!(kind)} Candy Coins',
+              ),
             ),
         ],
       ),

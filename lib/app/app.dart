@@ -4,16 +4,18 @@ import '../core/theme/app_theme.dart';
 import '../core/feedback/feedback_service.dart';
 import '../settings/settings_model.dart';
 import '../home/home_screen.dart';
+import '../save/application/app_session.dart';
 
 class CandyverseApp extends StatefulWidget {
-  const CandyverseApp({required this.theme, super.key});
+  const CandyverseApp({required this.theme, required this.session, super.key});
   final AppTheme theme;
+  final AppSession session;
   @override
   State<CandyverseApp> createState() => _CandyverseAppState();
 }
 
 class _CandyverseAppState extends State<CandyverseApp> {
-  final settings = SettingsModel();
+  SettingsModel get settings => widget.session.settings;
   late final feedback = FeedbackService(settings);
   @override
   void initState() {
@@ -24,7 +26,7 @@ class _CandyverseAppState extends State<CandyverseApp> {
   @override
   void dispose() {
     feedback.dispose();
-    settings.dispose();
+    widget.session.dispose();
     super.dispose();
   }
 
@@ -37,7 +39,11 @@ class _CandyverseAppState extends State<CandyverseApp> {
         title: 'Candyverse: Block & Bloom',
         debugShowCheckedModeBanner: false,
         theme: widget.theme.material,
-        home: HomeScreen(theme: widget.theme),
+        home: ListenableBuilder(
+          listenable: widget.session,
+          builder: (context, _) =>
+              HomeScreen(theme: widget.theme, session: widget.session),
+        ),
       ),
     ),
   );

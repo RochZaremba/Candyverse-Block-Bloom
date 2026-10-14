@@ -1,3 +1,5 @@
+import 'package:candyverse/save/application/app_session.dart';
+
 import 'dart:io';
 
 import 'package:candyverse/app/app.dart';
@@ -28,7 +30,9 @@ void main() {
   });
   testWidgets('Home starts using the checked-in candy palette', (tester) async {
     expect(theme.color('ink'), const Color(0xFF372858));
-    await tester.pumpWidget(CandyverseApp(theme: theme));
+    await tester.pumpWidget(
+      CandyverseApp(theme: theme, session: AppSession.memory()),
+    );
     expect(find.text('Candyverse'), findsOneWidget);
     expect(find.text('BLOCK & BLOOM'), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -43,7 +47,9 @@ void main() {
         addTearDown(tester.view.resetDevicePixelRatio);
         tester.platformDispatcher.textScaleFactorTestValue = scale;
         addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-        await tester.pumpWidget(CandyverseApp(theme: theme));
+        await tester.pumpWidget(
+          CandyverseApp(theme: theme, session: AppSession.memory()),
+        );
         expect(tester.takeException(), isNull);
         expect(find.text('Candyverse'), findsOneWidget);
       });
@@ -58,7 +64,9 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    await tester.pumpWidget(CandyverseApp(theme: theme));
+    await tester.pumpWidget(
+      CandyverseApp(theme: theme, session: AppSession.memory()),
+    );
     await tester.pumpAndSettle();
     await expectLater(
       find.byType(Scaffold),

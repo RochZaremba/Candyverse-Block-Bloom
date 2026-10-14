@@ -251,6 +251,7 @@ Map<String, Object?> _encodeGame(GameState g) => {
   'tray': [
     for (final p in g.tray) p == null ? null : {'id': p.id, 'skin': p.skin},
   ],
+  'pendingCoins': g.pendingCoins,
   'score': g.score,
   'streak': g.streak,
   'lines': g.totalClearedLines,
@@ -297,6 +298,15 @@ GameState _decodeGame(Map<String, dynamic> d) {
       (u) => Upgrade.values.byName(u as String),
     ),
   );
+  final engine = GameEngine.seeded(seed: 0);
+  if (_int(d, 'pendingCoins') != g.pendingCoins ||
+      (g.phase == RunPhase.playing &&
+          (g.pendingUpgradeChoices != 0 || engine.isGameOver(g))) ||
+      (g.phase == RunPhase.needsEraserDecision &&
+          (g.eraserUses == 0 || !engine.isGameOver(g))) ||
+      (g.phase == RunPhase.gameOver && !engine.isGameOver(g))) {
+    throw const FormatException('Invalid run phase or pending reward.');
+  }
   if (g.streak > g.totalClearedLines ||
       g.pendingUpgradeChoices > g.totalClearedLines ~/ 5 ||
       g.upgradeChoices.any(

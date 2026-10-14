@@ -31,6 +31,8 @@ class LineClear {
 }
 
 class PlacementResult {
+  factory PlacementResult.rejected(GameState state) =>
+      PlacementResult._(state: state, accepted: false);
   PlacementResult._({
     required this.state,
     required this.accepted,

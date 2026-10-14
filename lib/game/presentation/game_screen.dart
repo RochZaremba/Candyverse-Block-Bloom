@@ -46,6 +46,7 @@ class _GameScreenState extends State<GameScreen> {
   bool confirmingErase = false;
   bool get playing =>
       controller.state.phase == RunPhase.playing &&
+      !controller.blocked &&
       !erasing &&
       !confirmingErase;
   AppTheme get theme => widget.theme;
@@ -190,6 +191,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Future<void> _leave() async {
+    if (controller.blocked) return;
     if (controller.isGameOver) {
       Navigator.of(context).pop();
       return;
@@ -198,7 +200,11 @@ class _GameScreenState extends State<GameScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Wrócić do menu?'),
-        content: const Text('To podejście zostanie zakończone.'),
+        content: Text(
+          controller.persistent
+              ? 'Podejście pozostanie zapisane. Wznowisz je z menu.'
+              : 'To podejście zostanie zakończone.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -396,6 +402,38 @@ class _GameScreenState extends State<GameScreen> {
                       FeedbackScope.maybeOf(context)?.play(CandyCue.upgrade);
                     }
                   },
+                ),
+              ),
+            ),
+          if (controller.blocked)
+            Positioned.fill(
+              child: BlockSemantics(
+                child: ColoredBox(
+                  color: theme.color('creamWhite').withValues(alpha: .95),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (controller.saving) ...[
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 16),
+                            const Text('Zapisuję…'),
+                          ] else ...[
+                            const Text(
+                              'Nie udało się zapisać postępu. Ponów zapis przed kolejnym ruchem.',
+                              textAlign: TextAlign.center,
+                            ),
+                            FilledButton(
+                              onPressed: controller.retrySave,
+                              child: const Text('Ponów zapis'),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
