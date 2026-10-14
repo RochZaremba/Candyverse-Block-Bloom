@@ -104,6 +104,12 @@ Zaakceptowany ruch tworzy `CandyFxEvent` i odpala cue place/clear. `FxLayer` jes
 
 UI blokuje placement od fazy upgrade, po tokenowym lineClear pokazuje prawdziwe karty z opisami i emblematami; user/OS reduced-motion pokazuje je od razu. Eraser wymaga zajętego pola i potwierdzenia, nie przyznaje punktów/monet i nie resetuje combo. Karty/eraser korzystają z feedbacku T-005; saldo nadal nie rośnie przed T-008. `pendingCoins` liczone jednokrotnie dla całego runu z Lucky Jelly.
 
+## Zaimplementowany kontrakt T-007
+
+`IslandState` to niezmienna mapa dokładnie trzech poziomów0..3. `IslandScene` maluje oryginalny dioramowy świat, cztery odmienne postacie i poziomy budynków; Home pokazuje fragment z dwoma mieszkańcami. Idle i reakcje mają osobne tickery, zatrzymywane przy OS/user reduced-motion, tle i wyłączeniu TickerMode. Sceneria i postacie używają oddzielnych RepaintBoundary; dotyk/semantyka co najmniej48dp.
+
+`IslandScreen` obsługuje realne informacje o obiektach i reakcje mieszkańców. Portfel/purchase callback są opcjonalnym wejściem dla T-008; bez adaptera nie wyświetlamy atrap zakupu. Poziomy0–3 są faktycznie różnymi renderami, sprawdzonymi goldenami. Grafika code-native i licencje opisane w assets/ASSET_LICENSES.md.
+
 ## Android / platform
 
 - Portrait, Android API target >= 36 wg stanu na 2026-10-14; `minSdk 24` jako preferencja, potwierdź dostępność zależności.

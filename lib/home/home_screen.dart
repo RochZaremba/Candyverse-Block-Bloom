@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
@@ -7,12 +5,17 @@ import '../game/presentation/game_screen.dart';
 import '../settings/settings_sheet.dart';
 import '../core/feedback/feedback_service.dart';
 import 'candy_backdrop.dart';
+import '../island/domain/island_state.dart';
+import '../island/presentation/island_scene.dart';
+import '../island/presentation/island_screen.dart';
 
 /// Candy Home leading directly into a real engine-backed run.
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({required this.theme, super.key});
+  const HomeScreen({required this.theme, this.island, super.key});
 
   final AppTheme theme;
+  final IslandState? island;
+  IslandState get currentIsland => island ?? IslandState();
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -27,12 +30,12 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Semantics(
-                    label: 'Kolorowy cukierkowy kwiat',
-                    image: true,
-                    child: SizedBox.square(
-                      dimension: 180,
-                      child: CustomPaint(painter: _CandyBloomPainter(theme)),
+                  SizedBox(
+                    width: 230,
+                    child: IslandScene(
+                      theme: theme,
+                      island: currentIsland,
+                      characterCount: 2,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -86,6 +89,16 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   TextButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) =>
+                            IslandScreen(theme: theme, island: currentIsland),
+                      ),
+                    ),
+                    icon: const Icon(Icons.landscape_rounded),
+                    label: const Text('Odwiedź wyspę'),
+                  ),
+                  TextButton.icon(
                     onPressed: () =>
                         showFeedbackSettings(context, theme: theme),
                     icon: const Icon(Icons.tune_rounded),
@@ -113,76 +126,4 @@ class HomeScreen extends StatelessWidget {
       ),
     ),
   );
-}
-
-/// Original glossy candy bloom, the visual signature of the Home screen.
-class _CandyBloomPainter extends CustomPainter {
-  _CandyBloomPainter(this.theme);
-
-  final AppTheme theme;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = size.center(Offset.zero);
-    final colors = ['candyPink', 'electricPurple', 'turquoise', 'candyLime'];
-    for (var i = 0; i < 8; i++) {
-      final angle = i * math.pi / 4;
-      final petal = center + Offset(math.cos(angle), math.sin(angle)) * 48;
-      final rect = Rect.fromCenter(center: petal, width: 56, height: 56);
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          rect.shift(const Offset(0, 5)),
-          const Radius.circular(18),
-        ),
-        Paint()..color = theme.color('ink').withValues(alpha: 0.12),
-      );
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(rect, const Radius.circular(18)),
-        Paint()
-          ..shader = LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [theme.color('creamWhite'), theme.color(colors[i % 4])],
-          ).createShader(rect),
-      );
-      canvas.drawOval(
-        Rect.fromCenter(
-          center: petal + const Offset(-8, -12),
-          width: 20,
-          height: 8,
-        ),
-        Paint()..color = theme.color('creamWhite').withValues(alpha: 0.65),
-      );
-    }
-    canvas.drawCircle(center, 27, Paint()..color = theme.color('lemonYellow'));
-    canvas.drawCircle(
-      center + const Offset(-9, -3),
-      3,
-      Paint()..color = theme.color('ink'),
-    );
-    canvas.drawCircle(
-      center + const Offset(9, -3),
-      3,
-      Paint()..color = theme.color('ink'),
-    );
-    canvas.drawArc(
-      Rect.fromCenter(
-        center: center + const Offset(0, 4),
-        width: 14,
-        height: 10,
-      ),
-      0,
-      math.pi,
-      false,
-      Paint()
-        ..color = theme.color('ink')
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.5
-        ..strokeCap = StrokeCap.round,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_CandyBloomPainter oldDelegate) =>
-      oldDelegate.theme != theme;
 }

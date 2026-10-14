@@ -9,6 +9,7 @@ class AppTheme {
     this.palette,
     this.panelRadius,
     this.tileRadius,
+    this.cardRadius,
     this.tilePlaceMs,
     this.lineClearMs,
     this.maxParticles,
@@ -17,6 +18,7 @@ class AppTheme {
   final Map<String, Color> palette;
   final double panelRadius;
   final double tileRadius;
+  final double cardRadius;
   final int tilePlaceMs;
   final int lineClearMs;
   final int maxParticles;
@@ -35,6 +37,7 @@ class AppTheme {
       palette,
       (json['radiusDp']['panel'] as num).toDouble(),
       (json['radiusDp']['tile'] as num).toDouble(),
+      (json['radiusDp']['card'] as num).toDouble(),
       json['motionMs']['tilePlace'] as int,
       json['motionMs']['lineClear'] as int,
       json['particles']['maxConcurrent'] as int,
