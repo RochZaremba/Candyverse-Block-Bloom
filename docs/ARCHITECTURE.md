@@ -127,3 +127,7 @@ UI blokuje placement od fazy upgrade, po tokenowym lineClear pokazuje prawdziwe 
 ## Wartość złożoności
 
 Brak backendu, chatów, gamifikacji godzinowej, zdalnego configu, telemetry SDK, IAP i AdMob w V1. Codex nie powinien wprowadzać warstw na przyszłość. Rozszerzenie monetization jest osobnym ADR i releasem V1.1+.
+
+## Zaimplementowany kontrakt T-009
+
+Pełne Settings i centralne PL/EN używają SettingsModel, AppSessionScope i AppStrings; MaterialApp otrzymuje wybrany locale i delegaty Flutter SDK. Reset/niepewne potwierdzenia i rewizje ustawień opisuje ADR-0013. Wszystkie sześć ekranów ma działającą nawigację; wynik otwiera produkcyjną wyspę z portfelem i zakupami.

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+import '../save/application/app_session_scope.dart';
 
 import '../core/theme/app_theme.dart';
 import '../core/feedback/feedback_service.dart';
@@ -33,16 +36,25 @@ class _CandyverseAppState extends State<CandyverseApp> {
   @override
   Widget build(BuildContext context) => SettingsScope(
     settings: settings,
-    child: FeedbackScope(
-      service: feedback,
-      child: MaterialApp(
-        title: 'Candyverse: Block & Bloom',
-        debugShowCheckedModeBanner: false,
-        theme: widget.theme.material,
-        home: ListenableBuilder(
-          listenable: widget.session,
-          builder: (context, _) =>
-              HomeScreen(theme: widget.theme, session: widget.session),
+    child: AppSessionScope(
+      session: widget.session,
+      child: FeedbackScope(
+        service: feedback,
+        child: ListenableBuilder(
+          listenable: settings,
+          builder: (context, _) => MaterialApp(
+            locale: Locale(settings.language),
+            supportedLocales: const [Locale('pl'), Locale('en')],
+            localizationsDelegates: GlobalMaterialLocalizations.delegates,
+            title: 'Candyverse: Block & Bloom',
+            debugShowCheckedModeBanner: false,
+            theme: widget.theme.material,
+            home: ListenableBuilder(
+              listenable: widget.session,
+              builder: (context, _) =>
+                  HomeScreen(theme: widget.theme, session: widget.session),
+            ),
+          ),
         ),
       ),
     ),

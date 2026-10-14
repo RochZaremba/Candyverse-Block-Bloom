@@ -1,3 +1,5 @@
+import '../../core/localization/app_strings.dart';
+
 import 'dart:async';
 
 import 'dart:math' as math;
@@ -9,6 +11,9 @@ import '../../upgrades/domain/upgrade.dart';
 import '../../upgrades/presentation/upgrade_choices.dart';
 import '../../core/feedback/feedback_service.dart';
 import '../../settings/settings_sheet.dart';
+import '../../settings/settings_screen.dart';
+import '../../save/application/app_session_scope.dart';
+import '../../island/presentation/persistent_island_screen.dart';
 import '../../settings/settings_model.dart';
 import 'fx_layer.dart';
 import '../application/game_controller.dart';
@@ -106,18 +111,19 @@ class _GameScreenState extends State<GameScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Wymazać to pole?'),
-        content: Text(
+        title: appText(context, 'Wymazać to pole?'),
+        content: appText(
+          context,
           'Wiersz ${cell.row + 1}, kolumna ${cell.col + 1}. Zużyjesz jedno użycie Rainbow Eraser. Bez punktów i monet.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Anuluj'),
+            child: appText(context, 'Anuluj'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Wymaż pole'),
+            child: appText(context, 'Wymaż pole'),
           ),
         ],
       ),
@@ -199,8 +205,9 @@ class _GameScreenState extends State<GameScreen> {
     final leave = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Wrócić do menu?'),
-        content: Text(
+        title: appText(context, 'Wrócić do menu?'),
+        content: appText(
+          context,
           controller.persistent
               ? 'Podejście pozostanie zapisane. Wznowisz je z menu.'
               : 'To podejście zostanie zakończone.',
@@ -208,11 +215,11 @@ class _GameScreenState extends State<GameScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Graj dalej'),
+            child: appText(context, 'Graj dalej'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Wróć do menu'),
+            child: appText(context, 'Wróć do menu'),
           ),
         ],
       ),
@@ -257,11 +264,13 @@ class _GameScreenState extends State<GameScreen> {
                       children: [
                         IconButton(
                           onPressed: _leave,
-                          tooltip: 'Wróć do menu',
+                          tooltip: AppStrings.of(context)
+                              .translate('Wróć do menu'),
                           icon: const Icon(Icons.arrow_back_rounded),
                         ),
                         Expanded(
-                          child: Text(
+                          child: appText(
+                            context,
                             'Cukierkowa układanka',
                             textAlign: TextAlign.center,
                             style: TextStyle(
@@ -271,9 +280,23 @@ class _GameScreenState extends State<GameScreen> {
                           ),
                         ),
                         IconButton(
-                          tooltip: 'Dźwięk i ruch',
-                          onPressed: () =>
-                              showFeedbackSettings(context, theme: theme),
+                          tooltip: AppStrings.of(context)
+                              .translate('Dźwięk i ruch'),
+                          onPressed: () {
+                            final session = AppSessionScope.maybeOf(context);
+                            if (session == null) {
+                              showFeedbackSettings(context, theme: theme);
+                              return;
+                            }
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => SettingsScreen(
+                                  theme: theme,
+                                  session: session,
+                                ),
+                              ),
+                            );
+                          },
                           icon: const Icon(Icons.tune_rounded),
                         ),
                       ],
@@ -294,7 +317,8 @@ class _GameScreenState extends State<GameScreen> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Text(
+                    appText(
+                      context,
                       'Następne ulepszenie: ${controller.state.totalClearedLines}/${controller.state.nextUpgradeMilestone} linii',
                       textAlign: TextAlign.center,
                     ),
@@ -311,20 +335,23 @@ class _GameScreenState extends State<GameScreen> {
                                 pointer = null;
                               }),
                         icon: const Icon(Icons.auto_fix_high_rounded),
-                        label: Text(
+                        label: appText(
+                          context,
                           erasing
                               ? 'Anuluj wybór pola'
                               : 'Rainbow Eraser (${controller.state.eraserUses})',
                         ),
                       ),
                     if (erasing)
-                      const Text(
+                      appText(
+                        context,
                         'Dotknij zajętego pola, aby je wymazać.',
                         textAlign: TextAlign.center,
                       ),
                     if (controller.state.phase ==
                         RunPhase.needsEraserDecision) ...[
-                      const Text(
+                      appText(
+                        context,
                         'Klocki nie pasują. Możesz spróbować wymazać jedno pole.',
                         textAlign: TextAlign.center,
                       ),
@@ -332,7 +359,7 @@ class _GameScreenState extends State<GameScreen> {
                         onPressed: confirmingErase
                             ? null
                             : controller.declineEraser,
-                        child: const Text('Zakończ podejście'),
+                        child: appText(context, 'Zakończ podejście'),
                       ),
                     ],
                     const SizedBox(height: 18),
@@ -376,7 +403,8 @@ class _GameScreenState extends State<GameScreen> {
                     const SizedBox(height: 12),
                     Semantics(
                       liveRegion: true,
-                      child: Text(
+                      child: appText(
+                        context,
                         feedback,
                         textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 14),
@@ -419,15 +447,16 @@ class _GameScreenState extends State<GameScreen> {
                           if (controller.saving) ...[
                             const CircularProgressIndicator(),
                             const SizedBox(height: 16),
-                            const Text('Zapisuję…'),
+                            appText(context, 'Zapisuję…'),
                           ] else ...[
-                            const Text(
+                            appText(
+                              context,
                               'Nie udało się zapisać postępu. Ponów zapis przed kolejnym ruchem.',
                               textAlign: TextAlign.center,
                             ),
                             FilledButton(
                               onPressed: controller.retrySave,
-                              child: const Text('Ponów zapis'),
+                              child: appText(context, 'Ponów zapis'),
                             ),
                           ],
                         ],
@@ -454,12 +483,14 @@ class _GameScreenState extends State<GameScreen> {
     ),
     child: Column(
       children: [
-        Text(
+        appText(
+          context,
           label,
           textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
         ),
-        Text(
+        appText(
+          context,
           value,
           style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900),
         ),
@@ -489,8 +520,9 @@ class _GameScreenState extends State<GameScreen> {
         final skin = controller.state.board.at(cell);
         final ghost = cells.contains(cell);
         return Semantics(
-          label:
-              'Wiersz ${cell.row + 1}, kolumna ${cell.col + 1}, ${skin == null ? 'puste' : 'zajęte'}',
+          label: AppStrings.of(context).translate(
+            'Wiersz ${cell.row + 1}, kolumna ${cell.col + 1}, ${skin == null ? 'puste' : 'zajęte'}',
+          ),
           button: true,
           child: GestureDetector(
             key: ValueKey('cell-${cell.row}-${cell.col}'),
@@ -537,9 +569,11 @@ class _GameScreenState extends State<GameScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Semantics(
-        label: piece == null
-            ? 'Klocek ${slot + 1} zużyty'
-            : 'Klocek ${slot + 1}, ${_shapeLabel(piece)}. Wybierz, następnie pole planszy.',
+        label: AppStrings.of(context).translate(
+          piece == null
+              ? 'Klocek ${slot + 1} zużyty'
+              : 'Klocek ${slot + 1}, ${_shapeLabel(piece)}. Wybierz, następnie pole planszy.',
+        ),
         button: piece != null,
         selected: selected == slot,
         child: Listener(
@@ -663,13 +697,15 @@ class _GameScreenState extends State<GameScreen> {
         children: [
           Icon(Icons.auto_awesome_rounded, size: 64, color: theme.color('ink')),
           const SizedBox(height: 20),
-          const Text(
+          appText(
+            context,
             'Piękna układanka!',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 8),
-          const Text(
+          appText(
+            context,
             'Żaden z pozostałych klocków nie pasuje.',
             textAlign: TextAlign.center,
           ),
@@ -688,11 +724,24 @@ class _GameScreenState extends State<GameScreen> {
               });
               controller.restart();
             },
-            child: const Text('Zagraj ponownie'),
+            child: appText(context, 'Zagraj ponownie'),
           ),
+          if (AppSessionScope.maybeOf(context) != null)
+            TextButton.icon(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => PersistentIslandScreen(
+                    theme: theme,
+                    session: AppSessionScope.maybeOf(context)!,
+                  ),
+                ),
+              ),
+              icon: const Icon(Icons.landscape_rounded),
+              label: appText(context, 'Odwiedź wyspę'),
+            ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Wróć do menu'),
+            child: appText(context, 'Wróć do menu'),
           ),
         ],
       ),

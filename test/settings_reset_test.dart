@@ -92,6 +92,7 @@ void main() {
     storage.values[SaveRepository.quarantineKey] = '{bad';
     storage.gate = Completer<void>();
     session.settings.setLanguage('en');
+    await settle(); // Let the accepted write reach its storage gate.
     final resetting = session.resetData();
     await settle();
     expect(session.busy, isTrue);

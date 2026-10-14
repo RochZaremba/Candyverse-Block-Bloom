@@ -118,14 +118,19 @@ class SettingsScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Text(
-                      t(
-                        'Zapis nie powiódł się. Możesz spróbować ponownie.',
-                        'Saving failed. You can try again.',
-                      ),
+                      session.resetNeedsRetry
+                          ? t(
+                              'Nie można potwierdzić usunięcia danych. Ponów reset przed kontynuowaniem.',
+                              'Could not confirm data deletion. Retry reset before continuing.',
+                            )
+                          : t(
+                              'Zapis nie powiódł się. Możesz spróbować ponownie.',
+                              'Saving failed. You can try again.',
+                            ),
                       semanticsLabel: t('Błąd zapisu', 'Save error'),
                     ),
                   ),
-                if (session.error != null)
+                if (session.error != null && !session.resetNeedsRetry)
                   TextButton(
                     onPressed: session.busy ? null : session.retrySettingsSave,
                     child: Text(
