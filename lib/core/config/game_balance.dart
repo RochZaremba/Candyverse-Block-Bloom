@@ -33,6 +33,19 @@ class GameBalance {
   final int crowdedLargeWeightDivisor;
   final Map<String, int> pieceWeights;
 
+  GameBalance snapshot() {
+    validate();
+    return GameBalance(
+      placementPerCell: placementPerCell,
+      lineClear: lineClear,
+      multiClearBonus: multiClearBonus,
+      crowdedBoardThreshold: crowdedBoardThreshold,
+      largePieceCells: largePieceCells,
+      crowdedLargeWeightDivisor: crowdedLargeWeightDivisor,
+      pieceWeights: Map.unmodifiable(pieceWeights),
+    );
+  }
+
   void validate() {
     if (placementPerCell < 0 ||
         lineClear < 0 ||
@@ -42,7 +55,8 @@ class GameBalance {
         largePieceCells < 1 ||
         crowdedLargeWeightDivisor < 1 ||
         pieceWeights.isEmpty ||
-        pieceWeights.values.any((weight) => weight < 1)) {
+        pieceWeights.values.any((weight) => weight < 1) ||
+        pieceWeights.values.fold(0, (a, b) => a + b) > 2147483646) {
       throw ArgumentError('Invalid game balance.');
     }
   }
