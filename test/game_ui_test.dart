@@ -103,6 +103,11 @@ void main() {
   testWidgets(
     'Home Play opens actual game and back confirmation preserves it',
     (tester) async {
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          FakeAccessibilityFeatures(disableAnimations: true);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
       await tester.pumpWidget(CandyverseApp(theme: theme));
       await tester.tap(find.text('GRAJ'));
       await tester.pumpAndSettle();
