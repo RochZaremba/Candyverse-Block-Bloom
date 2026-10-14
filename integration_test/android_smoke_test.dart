@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -66,8 +64,9 @@ void main() {
     Future<void> until(bool Function() condition) async {
       final wait = Stopwatch()..start();
       while (!condition()) {
-        if (wait.elapsed > const Duration(minutes: 5))
+        if (wait.elapsed > const Duration(minutes: 5)) {
           fail('Timed out waiting for native UI/persistence');
+        }
         await tester.pump(const Duration(milliseconds: 100));
       }
       expect(tester.takeException(), isNull);
@@ -76,6 +75,7 @@ void main() {
     Future<void> tap(Finder finder) async {
       await until(() => finder.evaluate().isNotEmpty);
       await tester.ensureVisible(finder.first);
+      await tester.pump();
       await tester.tap(finder.first);
       await tester.pump(const Duration(milliseconds: 400));
     }
@@ -109,8 +109,8 @@ void main() {
       }),
       tray: [dot, dot, dot],
       rngState: 2,
-      totalClearedLines: 4,
-      score: 1000,
+      totalClearedLines: 9,
+      score: 1500,
       eraserAcquired: 1,
       eraserUses: 1,
     );
@@ -151,7 +151,7 @@ void main() {
     expect(controller.state, same(before));
     await tap(find.byKey(const ValueKey('cell-0-7')));
     await checkpoint();
-    expect(controller.state.totalClearedLines, 5);
+    expect(controller.state.totalClearedLines, 10);
     expect(controller.state.board.occupiedCount, 0);
     await capture('upgrade-en');
     await tap(find.byKey(const ValueKey('upgrade-sugarRush')));
@@ -184,14 +184,16 @@ void main() {
     // Explicit test-only no-move fixture exercises the actual UI award/retry.
     final terminal = GameState(
       board: Board.fromRows([
-        for (var r = 0; r < 8; r++) List.filled(8, 'candyPink'),
+        for (var r = 0; r < 8; r++)
+          [for (var c = 0; c < 8; c++) (r + c).isEven ? 'candyPink' : null],
       ]),
-      tray: [dot, dot, dot],
+      tray: List.filled(3, pieceCatalog.singleWhere((p) => p.id == 'square_3')),
       rngState: 2,
-      totalClearedLines: 60,
-      score: 5000,
-      luckyJellyLevel: 1,
-      eraserAcquired: 1,
+      totalClearedLines: 50,
+      score: 10000,
+      sugarRushLevel: 2,
+      luckyJellyLevel: 2,
+      eraserAcquired: 2,
       eraserUses: 1,
       phase: RunPhase.needsEraserDecision,
     );
@@ -257,7 +259,7 @@ void main() {
         );
       }
       await tap(find.byTooltip('Back to menu'));
-      await tap(find.text('RESUME'));
+      await tap(find.text(session!.save.activeRun == null ? 'PLAY' : 'RESUME'));
       for (
         var i = 0;
         i < 20 && active.elapsed < Duration(minutes: minutes);

@@ -5,8 +5,7 @@ przejścia smoke, podpisanego AAB, 20 minut stabilnej gry ani 60 FPS.
 
 ## Automatyczny smoke na Androidzie
 
-Po integracji T-009 dodaj dev dependency `integration_test` z Flutter SDK
-(`flutter pub add --dev integration_test --sdk=flutter`) i uruchom na jawnie
+Dev dependency `integration_test` pochodzi z Flutter SDK. Uruchom na jawnie
 wybranym emulatorze / urządzeniu QA:
 
 ```sh
@@ -23,7 +22,7 @@ logcat. Fixture i seed występują wyłącznie w `integration_test/`, nie w `lib
 
 Scenariusz używa rzeczywistych widgetów, zapisów natywnych i aktualnych reguł:
 Home PL → Settings EN/mute/haptyka/reduced motion → Game; nielegalny drag i tap;
-clear 4→5 linii i Sugar Rush; Eraser cancel/confirm; odczyt identycznego
+clear 9→10 linii i Sugar Rush; Eraser cancel/confirm; odczyt identycznego
 snapshotu po ponownym zbudowaniu aplikacji; Game Over i nagroda jednokrotna;
 Replay z nowym ID; rzeczywiste zakupy wszystkich trzech obiektów do poziomu3
 z weryfikacją ceny/salda i ponownym odczytem; cztery reakcje postaci;
