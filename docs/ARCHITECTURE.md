@@ -112,7 +112,7 @@ UI blokuje placement od fazy upgrade, po tokenowym lineClear pokazuje prawdziwe 
 
 ## Zaimplementowany kontrakt T-008
 
-`save/domain/AppSaveV1` przechowuje jeden profil: ID podejścia, rekord, saldo, wyspę, ustawienia, aktywny run i ostatni rezultat. Maski tray odtwarzamy przez niezmienny katalog V1; zapis zawiera ID oraz skin, board, seed i RNG, kolejkę i konkretne karty, oba liczniki gumki, fazę i kontrolowane pendingCoins. Decoder waliduje wersję, zakresy, katalog i spójność nagrody/fazy.
+`save/domain/AppSaveV1` przechowuje jeden profil: ID podejścia, rekord, saldo, wyspę, ustawienia, aktywny run i ostatni rezultat. Zapis tray zawiera ID, skin i pełne współrzędne maski, walidowane względem niezmiennego katalogu V1; ponadto board, seed i RNG, kolejkę i konkretne karty, oba liczniki gumki, fazę i kontrolowane pendingCoins. Decoder waliduje wersję, zakresy, katalog i spójność nagrody/fazy.
 
 `AppSession` serializuje zapisy, publikuje zakupy dopiero po powodzeniu i dostarcza długowieczny kontroler runu. `GameController` pozostaje prezentacją silnika; produkcyjny callback checkpoint blokuje kolejne wejście do końca zapisu. Wynik jest odsłaniany po finalizacji; retry alokuje nowy ID przed rozpoczęciem gry. Wariant bez callbacku służy izolowanym testom UI. Home pokazuje saldo/rekord i WZNÓW dla zapisanej gry. Ustawienia są utrwalane w tym samym profilu. `SaveBootstrap` rozróżnia błąd odczytu i uszkodzony/nowszy JSON, pokazując retry i jawne potwierdzenie odzyskiwania (ADR-0011).
 

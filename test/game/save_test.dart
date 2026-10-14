@@ -98,6 +98,10 @@ void main() {
       (d) => d['activeRun']['game']['rng'] = 0,
       (d) => d['activeRun']['game']['board'] = [],
       (d) => d['activeRun']['game']['tray'][0]['id'] = 'unknown',
+      (d) => d['activeRun']['game']['tray'][0]['cells'] = [
+        [7, 7],
+      ],
+      (d) => d['activeRun']['game']['tray'][0].remove('cells'),
       (d) => d['activeRun']['game']['eraserUses'] = 1,
       (d) => d['activeRun']['game']['choices'] = ['sugarRush'],
       (d) => d['settings']['sound'] = 'true',

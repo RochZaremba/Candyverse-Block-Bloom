@@ -249,7 +249,16 @@ Map<String, Object?> _encodeGame(GameState g) => {
       [for (var c = 0; c < 8; c++) g.board.at((row: r, col: c))],
   ],
   'tray': [
-    for (final p in g.tray) p == null ? null : {'id': p.id, 'skin': p.skin},
+    for (final p in g.tray)
+      p == null
+          ? null
+          : {
+              'id': p.id,
+              'skin': p.skin,
+              'cells': [
+                for (final cell in p.cells) [cell.row, cell.col],
+              ],
+            },
   ],
   'pendingCoins': g.pendingCoins,
   'score': g.score,
@@ -277,7 +286,19 @@ GameState _decodeGame(Map<String, dynamic> d) {
     if (value == null) return null;
     final p = _map(value);
     final mask = pieceCatalog.singleWhere((entry) => entry.id == p['id']);
-    return Piece(id: mask.id, cells: mask.cells, skin: _skin(p['skin'])!);
+    final cells = (p['cells'] as List).map((value) {
+      final pair = value as List;
+      if (pair.length != 2 || pair[0] is! int || pair[1] is! int) {
+        throw const FormatException('Invalid mask coordinate.');
+      }
+      return (row: pair[0] as int, col: pair[1] as int);
+    }).toList();
+    if (cells.length != mask.cells.length ||
+        cells.toSet().length != cells.length ||
+        mask.cells.toSet().difference(cells.toSet()).isNotEmpty) {
+      throw const FormatException('Mask does not match its catalog ID.');
+    }
+    return Piece(id: mask.id, cells: cells, skin: _skin(p['skin'])!);
   }).toList();
   final g = GameState(
     board: Board.fromRows(
