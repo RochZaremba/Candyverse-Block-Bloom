@@ -1,0 +1,272 @@
+import 'dart:io';
+
+import 'package:candyverse/app/app.dart';
+import 'package:candyverse/core/theme/app_theme.dart';
+import 'package:candyverse/game/application/game_controller.dart';
+import 'package:candyverse/game/domain/board.dart';
+import 'package:candyverse/game/domain/game_engine.dart';
+import 'package:candyverse/game/domain/game_state.dart';
+import 'package:candyverse/game/domain/piece.dart';
+import 'package:candyverse/game/presentation/candy_tile.dart';
+import 'package:candyverse/game/presentation/game_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  late AppTheme theme;
+  setUpAll(() async {
+    final fonts = FontLoader('Roboto');
+    for (final weight in ['Regular', 'Bold', 'Black']) {
+      fonts.addFont(
+        Future.value(
+          ByteData.sublistView(
+            File('test/fonts/Roboto-$weight.ttf').readAsBytesSync(),
+          ),
+        ),
+      );
+    }
+    await fonts.load();
+    theme = await AppTheme.load();
+  });
+
+  GameController singles({Board? board}) {
+    final engine = GameEngine(
+      traySource: (_) => [for (var i = 0; i < 3; i++) pieceCatalog.first],
+    );
+    return GameController(
+      engine: engine,
+      initialState: board == null
+          ? null
+          : GameState(
+              board: board,
+              tray: [for (var i = 0; i < 3; i++) pieceCatalog.first],
+            ),
+    );
+  }
+
+  Future<void> show(
+    WidgetTester tester,
+    GameController controller, {
+    double width = 412,
+    double scale = 1,
+    bool reduced = false,
+  }) async {
+    tester.view.physicalSize = Size(width, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    tester.platformDispatcher.textScaleFactorTestValue = scale;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    tester.platformDispatcher.accessibilityFeaturesTestValue =
+        FakeAccessibilityFeatures(disableAnimations: reduced);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: theme.material,
+        home: GameScreen(theme: theme, controller: controller),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> drag(
+    WidgetTester tester,
+    int slot,
+    int row,
+    int col, {
+    bool drop = true,
+  }) async {
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byKey(ValueKey('tray-$slot'))),
+    );
+    await gesture.moveBy(const Offset(0, -20));
+    await gesture.moveTo(
+      tester.getCenter(find.byKey(ValueKey('cell-$row-$col'))) +
+          const Offset(0, 64),
+    );
+    await tester.pump();
+    if (drop) {
+      await gesture.up();
+      await tester.pump();
+    } else {
+      await gesture.cancel();
+      await tester.pump();
+    }
+  }
+
+  testWidgets(
+    'Home Play opens actual game and back confirmation preserves it',
+    (tester) async {
+      await tester.pumpWidget(CandyverseApp(theme: theme));
+      await tester.tap(find.text('GRAJ'));
+      await tester.pumpAndSettle();
+      expect(find.byType(GameScreen), findsOneWidget);
+      await tester.tap(find.byTooltip('Wróć do menu'));
+      await tester.pumpAndSettle();
+      expect(find.text('Wrócić do menu?'), findsOneWidget);
+      await tester.tap(find.text('Graj dalej'));
+      await tester.pumpAndSettle();
+      expect(find.byType(GameScreen), findsOneWidget);
+      await tester.tap(find.byTooltip('Wróć do menu'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Wróć do menu').last);
+      await tester.pumpAndSettle();
+      expect(find.text('GRAJ'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'drag maps lifted first cell correctly and consumes only selected slot',
+    (tester) async {
+      final controller = singles();
+      addTearDown(controller.dispose);
+      await show(tester, controller);
+      await drag(tester, 1, 3, 4);
+      expect(controller.state.board.at((row: 3, col: 4)), 'candyPink');
+      expect(controller.state.board.occupiedCount, 1);
+      expect(controller.state.tray[1], isNull);
+      expect(controller.state.tray[0], isNotNull);
+      expect(controller.state.score, 10);
+    },
+  );
+
+  testWidgets(
+    'ghost reflects collision and canceled/illegal drags preserve snapshot',
+    (tester) async {
+      final controller = singles(
+        board: Board.empty().withCells({(row: 2, col: 2): 'turquoise'}),
+      );
+      addTearDown(controller.dispose);
+      final before = controller.state;
+      await show(tester, controller);
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byKey(const ValueKey('tray-0'))),
+      );
+      await gesture.moveBy(const Offset(0, -20));
+      await gesture.moveTo(
+        tester.getCenter(find.byKey(const ValueKey('cell-2-2'))) +
+            const Offset(0, 64),
+      );
+      await tester.pump();
+      final tiles = tester.widgetList<CandyTile>(find.byType(CandyTile));
+      expect(tiles.any((tile) => tile.ghost && tile.invalid), isTrue);
+      await gesture.up();
+      await tester.pump();
+      expect(controller.state, same(before));
+      expect(
+        find.text('Tu klocek się nie mieści. Wybierz inne pole.'),
+        findsOneWidget,
+      );
+      await drag(tester, 0, 1, 1, drop: false);
+      expect(controller.state, same(before));
+      expect(
+        tester
+            .widgetList<CandyTile>(find.byType(CandyTile))
+            .any((t) => t.ghost),
+        isFalse,
+      );
+    },
+  );
+
+  testWidgets(
+    'tap selection places at boundaries and refills after all three pieces',
+    (tester) async {
+      final controller = singles();
+      addTearDown(controller.dispose);
+      await show(tester, controller, width: 320);
+      for (var slot = 0; slot < 3; slot++) {
+        await tester.tap(find.byKey(ValueKey('tray-$slot')));
+        await tester.tap(find.byKey(ValueKey('cell-7-${7 - slot}')));
+        await tester.pump();
+        if (slot < 2) expect(controller.state.tray[slot], isNull);
+      }
+      expect(controller.state.tray.every((piece) => piece != null), isTrue);
+      expect(controller.state.board.occupiedCount, 3);
+      expect(controller.state.score, 30);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('unfitting large shape at edge leaves board and tray unchanged', (
+    tester,
+  ) async {
+    final engine = GameEngine(
+      traySource: (_) => [
+        pieceCatalog[7],
+        pieceCatalog.first,
+        pieceCatalog.first,
+      ],
+    );
+    final controller = GameController(engine: engine);
+    addTearDown(controller.dispose);
+    final before = controller.state;
+    await show(tester, controller);
+    await drag(tester, 0, 7, 7);
+    expect(controller.state, same(before));
+  });
+
+  testWidgets(
+    'game over shows engine score then retry creates playable empty board',
+    (tester) async {
+      final engine = GameEngine(
+        traySource: (_) => [
+          pieceCatalog.first,
+          pieceCatalog[7],
+          pieceCatalog.last,
+        ],
+      );
+      final board = Board.fromRows([
+        for (var row = 0; row < 8; row++)
+          [
+            for (var col = 0; col < 8; col++)
+              (row + col).isOdd ? 'turquoise' : null,
+          ],
+      ]);
+      final controller = GameController(
+        engine: engine,
+        initialState: GameState(board: board, tray: engine.pickTray(board)),
+      );
+      addTearDown(controller.dispose);
+      await show(tester, controller);
+      await tester.tap(find.byKey(const ValueKey('tray-0')));
+      await tester.tap(find.byKey(const ValueKey('cell-0-0')));
+      await tester.pump();
+      expect(controller.isGameOver, isTrue);
+      expect(find.text('Piękna układanka!'), findsOneWidget);
+      expect(find.text('10'), findsOneWidget);
+      await tester.tap(find.text('Zagraj ponownie'));
+      await tester.pump();
+      expect(controller.state.board.occupiedCount, 0);
+      expect(controller.state.score, 0);
+      expect(controller.isGameOver, isFalse);
+    },
+  );
+
+  for (final width in [320.0, 412.0]) {
+    for (final scale in [1.0, 2.0]) {
+      testWidgets('Game fits ${width}dp and text $scale with reduced motion', (
+        tester,
+      ) async {
+        final controller = GameController(engine: GameEngine.seeded(seed: 42));
+        addTearDown(controller.dispose);
+        await show(
+          tester,
+          controller,
+          width: width,
+          scale: scale,
+          reduced: true,
+        );
+        expect(tester.takeException(), isNull);
+        expect(find.byKey(const ValueKey('tray-0')), findsOneWidget);
+        if (scale == 1) {
+          await expectLater(
+            find.byType(Scaffold),
+            matchesGoldenFile('goldens/game_${width.toInt()}.png'),
+          );
+        }
+      });
+    }
+  }
+}
