@@ -53,6 +53,10 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _refresh() {
+    if (controller.state.phase != RunPhase.playing &&
+        controller.state.phase != RunPhase.needsEraserDecision) {
+      erasing = false;
+    }
     if (controller.state.phase == RunPhase.upgrade &&
         !upgradeReady &&
         upgradeTimer == null) {
@@ -252,6 +256,7 @@ class _GameScreenState extends State<GameScreen> {
                       textAlign: TextAlign.center,
                     ),
                     if (controller.state.eraserUses > 0 &&
+                        controller.state.board.occupiedCount > 0 &&
                         controller.state.phase != RunPhase.upgrade)
                       FilledButton.icon(
                         onPressed: confirmingErase

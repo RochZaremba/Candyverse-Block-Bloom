@@ -232,4 +232,27 @@ void main() {
     expect(controller.state.pendingCoins, 0);
     expect(find.text('Zakończ podejście'), findsNothing);
   });
+  testWidgets('declining while choosing erase target cannot lock a fresh run', (
+    tester,
+  ) async {
+    final controller = create(
+      board: Board.fromRows(
+        List.generate(8, (_) => List.filled(8, 'candyPink')),
+      ),
+      erasers: 1,
+    );
+    await show(tester, controller);
+    await tester.tap(find.text('Rainbow Eraser (1)'));
+    await tester.pump();
+    await tester.tap(find.text('Zakończ podejście'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Zagraj ponownie'));
+    await tester.pumpAndSettle();
+    expect(controller.state.eraserAcquired, 0);
+    await tester.tap(find.byKey(const ValueKey('tray-0')));
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('cell-0-0')));
+    await tester.pump();
+    expect(controller.state.board.occupiedCount, 1);
+  });
 }
