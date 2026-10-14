@@ -3,6 +3,10 @@ import 'cell.dart';
 import 'game_action.dart';
 import 'game_state.dart';
 import 'piece.dart';
+import 'random_source.dart';
+import 'scoring.dart';
+import 'tray_generator.dart';
+import '../../core/config/game_balance.dart';
 
 /// T-003 supplies seeded, weighted and fair generation through this boundary.
 /// It receives the board AFTER clearing. No generator runs for rejected moves.
@@ -32,6 +36,7 @@ class PlacementResult {
     this.clear,
     Iterable<Cell> placedCells = const [],
     this.refilled = false,
+    this.scoreDelta = 0,
   }) : placedCells = Set.unmodifiable(placedCells);
 
   final GameState state;
@@ -39,21 +44,51 @@ class PlacementResult {
   final LineClear? clear;
   final Set<Cell> placedCells;
   final bool refilled;
+  final int scoreDelta;
 }
 
-/// Pure Dart rules. Scoring/RNG (T-003) and eraser decisions (T-006) follow later.
+/// Pure Dart placement, scoring and snapshot-driven random generation.
 class GameEngine {
-  GameEngine({required this.traySource});
+  GameEngine({
+    required TraySource this.traySource,
+    GameBalance balance = const GameBalance(),
+  }) : seed = null,
+       balance = balance.snapshot() {
+    balance.validate();
+  }
 
-  final TraySource traySource;
+  GameEngine.seeded({
+    required int this.seed,
+    GameBalance balance = const GameBalance(),
+  }) : traySource = null,
+       balance = balance.snapshot() {
+    balance.validate();
+  }
+
+  final TraySource? traySource;
+  final int? seed;
+  final GameBalance balance;
 
   GameState start() {
     final board = Board.empty();
-    return GameState(board: board, tray: pickTray(board));
+    final random = seed == null ? null : SeededRandom(seed!);
+    return GameState(
+      board: board,
+      tray: _pickTray(board, random),
+      rngState: random?.state,
+    );
   }
 
-  List<Piece> pickTray(Board board) {
-    final pieces = List<Piece>.unmodifiable(traySource(board));
+  /// For direct previews. State transitions instead restore their own snapshot.
+  List<Piece> pickTray(Board board) =>
+      _pickTray(board, seed == null ? null : SeededRandom(seed!));
+
+  List<Piece> _pickTray(Board board, RandomSource? random) {
+    final pieces = List<Piece>.unmodifiable(
+      random == null
+          ? traySource!(board)
+          : TrayGenerator(random: random, balance: balance).pickTray(board),
+    );
     if (pieces.length != GameState.traySize) {
       throw StateError('Tray generation must return exactly 3 pieces.');
     }
@@ -122,15 +157,34 @@ class GameEngine {
     );
     final tray = state.tray.toList()..[action.slot] = null;
     final refilled = tray.every((piece) => piece == null);
+    final moveScore = calculateScore(
+      placedCells: placed.length,
+      clearedLines: clear.lineCount,
+      previousStreak: state.streak,
+      sugarRushLevel: state.sugarRushLevel,
+      balance: balance,
+    );
+    final random = seed == null
+        ? null
+        : SeededRandom.fromState(
+            state.rngState ??
+                (throw StateError('Seeded runs require an RNG snapshot.')),
+          );
+    final nextTray = refilled ? _pickTray(clear.board, random) : tray;
     return PlacementResult._(
-      state: GameState(
+      state: state.copyWith(
         board: clear.board,
-        tray: refilled ? pickTray(clear.board) : tray,
+        tray: nextTray,
+        score: state.score + moveScore.points,
+        streak: moveScore.streak,
+        totalClearedLines: state.totalClearedLines + clear.lineCount,
+        rngState: random?.state,
       ),
       accepted: true,
       clear: clear,
       placedCells: placed,
       refilled: refilled,
+      scoreDelta: moveScore.points,
     );
   }
 }
