@@ -2,6 +2,12 @@ import 'package:candyverse/app/app.dart';
 import 'package:candyverse/core/feedback/feedback_service.dart';
 import 'package:candyverse/core/theme/app_theme.dart';
 import 'package:candyverse/game/presentation/fx_layer.dart';
+import 'package:candyverse/game/presentation/game_screen.dart';
+import 'package:candyverse/game/application/game_controller.dart';
+import 'package:candyverse/game/domain/board.dart';
+import 'package:candyverse/game/domain/game_engine.dart';
+import 'package:candyverse/game/domain/game_state.dart';
+import 'package:candyverse/game/domain/piece.dart';
 import 'package:candyverse/settings/settings_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -62,6 +68,84 @@ void main() {
       settings.dispose();
     },
   );
+  testWidgets(
+    'real moves emit clear/place FX; invalid and muted moves stay quiet',
+    (tester) async {
+      tester.view.physicalSize = const Size(412, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final settings = SettingsModel();
+      final feedback = FeedbackService(settings, channel: channel);
+      final engine = GameEngine(
+        traySource: (_) => List.filled(3, pieceCatalog.first),
+      );
+      final controller = GameController(
+        engine: engine,
+        initialState: GameState(
+          board: Board.empty().withCells({
+            for (var col = 0; col < 7; col++) (row: 0, col: col): 'turquoise',
+          }),
+          tray: List.filled(3, pieceCatalog.first),
+        ),
+      );
+      addTearDown(() {
+        feedback.dispose();
+        settings.dispose();
+        controller.dispose();
+      });
+      await tester.pumpWidget(
+        SettingsScope(
+          settings: settings,
+          child: FeedbackScope(
+            service: feedback,
+            child: MaterialApp(
+              theme: theme.material,
+              home: GameScreen(theme: theme, controller: controller),
+            ),
+          ),
+        ),
+      );
+      Future<void> place(int slot, int row, int col) async {
+        await tester.tap(find.byKey(ValueKey('tray-$slot')));
+        await tester.pump();
+        await tester.tap(find.byKey(ValueKey('cell-$row-$col')));
+        await tester.pump();
+      }
+
+      await place(0, 0, 7);
+      expect(audio.single.arguments, 'clear');
+      expect(
+        tester.widget<FxLayer>(find.byType(FxLayer)).event!.cleared,
+        hasLength(8),
+      );
+      await place(1, 1, 1); // No animation input delay.
+      expect(audio.last.arguments, 'place');
+      final snapshot = controller.state;
+      await place(2, 1, 1);
+      expect(controller.state, same(snapshot));
+      expect(audio, hasLength(2));
+      await tester.tap(find.byTooltip('Dźwięk i ruch'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(SwitchListTile).at(0));
+      await tester.pump();
+      await tester.tap(find.byType(SwitchListTile).at(1));
+      await tester.pump();
+      expect(settings.sound, isFalse);
+      expect(settings.haptics, isFalse);
+      await tester.tap(find.text('Gotowe'));
+      await tester.pumpAndSettle();
+      audio.clear();
+      haptics.clear();
+      // The rejected move keeps slot 2 selected across the settings sheet.
+      await tester.tap(find.byKey(const ValueKey('cell-2-2')));
+      await tester.pump();
+      expect(controller.state.board.at((row: 2, col: 2)), 'candyPink');
+      expect(audio, isEmpty);
+      expect(haptics, isEmpty);
+    },
+  );
+
   test('background stops playback and never resumes stale effects', () async {
     final settings = SettingsModel();
     final feedback = FeedbackService(settings, channel: channel);
