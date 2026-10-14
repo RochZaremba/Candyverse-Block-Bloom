@@ -14,12 +14,14 @@ import 'package:candyverse/island/domain/island_state.dart';
 
 class ControlledStorage extends MemoryStorage {
   bool fail = false;
+  bool failAfterWrite = false;
   Completer<void>? gate;
   @override
   Future<void> write(String key, String value) async {
     if (gate != null) await gate!.future;
     if (fail) throw StateError('write failed');
     await super.write(key, value);
+    if (failAfterWrite) throw StateError('acknowledgement interrupted');
   }
 }
 
@@ -78,6 +80,48 @@ void main() {
     expect(controller.state.rngState, session.save.activeRun!.game.rngState);
     session.dispose();
   });
+  test(
+    'disk commit before interrupted acknowledgement stays idempotent',
+    () async {
+      final storage = ControlledStorage();
+      final repo = SaveRepository(storage);
+      await repo.save(rescueRun());
+      final session = AppSession(repo, await repo.load());
+      final controller = await session.openRun();
+      storage.failAfterWrite = true;
+      controller.declineEraser();
+      await settle();
+      expect(controller.saveError, isNotNull);
+      expect(session.save.wallet, 0);
+      final restarted = await repo.load();
+      expect(restarted.wallet, 43);
+      expect(restarted.activeRun, isNull);
+      storage.failAfterWrite = false;
+      controller.retrySave();
+      await settle();
+      expect(session.save.wallet, 43);
+      expect((await repo.load()).wallet, 43);
+      session.dispose();
+    },
+  );
+  test(
+    'eraser checkpoint restores exact occupancy and lifetime counters',
+    () async {
+      final repo = SaveRepository(MemoryStorage());
+      final session = AppSession(repo, rescueRun());
+      final controller = await session.openRun();
+      controller.useEraser((row: 0, col: 0));
+      await settle();
+      final game = (await repo.load()).activeRun!.game;
+      expect(game.board.at((row: 0, col: 0)), isNull);
+      expect(game.eraserUses, 0);
+      expect(game.eraserAcquired, 1);
+      expect(game.score, 1300);
+      expect(game.pendingCoins, 43);
+      expect(game.rngState, 2);
+      session.dispose();
+    },
+  );
   test(
     'failed restart retries allocation, not award or previous snapshot',
     () async {
