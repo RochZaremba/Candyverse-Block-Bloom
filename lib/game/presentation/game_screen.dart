@@ -6,7 +6,6 @@ import '../../core/theme/app_theme.dart';
 import '../application/game_controller.dart';
 import '../domain/board.dart';
 import '../domain/cell.dart';
-import '../domain/game_engine.dart';
 import '../domain/piece.dart';
 import 'candy_tile.dart';
 
@@ -24,22 +23,19 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   late final GameController controller;
   final boardKey = GlobalKey();
+  final stackKey = GlobalKey();
   int? selected;
   Cell? preview;
   Offset? pointer;
+  bool dragCanceled = false;
+  int? activeDragSlot;
   String feedback = 'Przeciągnij klocek lub wybierz go i dotknij pola.';
   AppTheme get theme => widget.theme;
 
   @override
   void initState() {
     super.initState();
-    controller =
-        widget.controller ??
-        GameController(
-          engine: GameEngine.seeded(
-            seed: DateTime.now().microsecondsSinceEpoch,
-          ),
-        );
+    controller = widget.controller ?? GameController.fresh();
     controller.addListener(_refresh);
   }
 
@@ -137,6 +133,7 @@ class _GameScreenState extends State<GameScreen> {
     builder: (context, constraints) {
       final width = math.min(constraints.maxWidth - 24, 440.0);
       return Stack(
+        key: stackKey,
         children: [
           SingleChildScrollView(
             child: Center(
@@ -279,7 +276,9 @@ class _GameScreenState extends State<GameScreen> {
           button: true,
           child: GestureDetector(
             key: ValueKey('cell-${cell.row}-${cell.col}'),
-            onTap: selected == null ? null : () => _place(cell),
+            onTap: selected == null || activeDragSlot != null
+                ? null
+                : () => _place(cell),
             child: CandyTile(
               theme: theme,
               skin: ghost ? piece!.skin : skin,
@@ -292,6 +291,25 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  String _shapeLabel(Piece piece) {
+    if (piece.id.startsWith('horizontal_')) {
+      return 'pozioma linia, ${piece.cells.length} pól';
+    }
+    if (piece.id.startsWith('vertical_')) {
+      return 'pionowa linia, ${piece.cells.length} pól';
+    }
+    return switch (piece.id) {
+      'square_2' => 'kwadrat dwa na dwa',
+      'square_3' => 'kwadrat trzy na trzy',
+      'l_down' => 'litera L, dwa pola w dół i jedno w prawo na dole',
+      'l_up' => 'odwrócona litera L, dwa pola w prawo i jedno w dół po prawej',
+      't' => 'litera T, trzy pola w prawo i jedno poniżej środka',
+      's' => 'litera S, dwa pola na górze przesunięte w prawo',
+      'z' => 'litera Z, dwa pola na dole przesunięte w prawo',
+      _ => '${piece.cells.length} pól',
+    };
+  }
+
   Widget _slot(int slot) {
     final piece = controller.state.tray[slot];
     return Padding(
@@ -299,51 +317,77 @@ class _GameScreenState extends State<GameScreen> {
       child: Semantics(
         label: piece == null
             ? 'Klocek ${slot + 1} zużyty'
-            : 'Klocek ${slot + 1}, ${piece.cells.length} pól. Wybierz, następnie pole planszy.',
+            : 'Klocek ${slot + 1}, ${_shapeLabel(piece)}. Wybierz, następnie pole planszy.',
         button: piece != null,
         selected: selected == slot,
-        child: GestureDetector(
-          key: ValueKey('tray-$slot'),
-          onTap: piece == null
-              ? null
-              : () => setState(() {
-                  selected = selected == slot ? null : slot;
-                }),
-          onPanStart: piece == null
-              ? null
-              : (details) {
-                  selected = slot;
-                  _drag(details.globalPosition);
-                },
-          onPanUpdate: piece == null
-              ? null
-              : (details) => _drag(details.globalPosition),
-          onPanEnd: piece == null ? null : (_) => _place(preview),
-          onPanCancel: () => setState(() {
-            pointer = null;
-            preview = null;
-          }),
-          child: Container(
-            height: 108,
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: theme.color('creamWhite').withValues(alpha: .6),
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(
-                width: 2,
-                color: selected == slot
-                    ? theme.color('ink')
-                    : theme.color('creamWhite'),
+        child: Listener(
+          onPointerDown: (_) {
+            if (activeDragSlot == null) dragCanceled = false;
+          },
+          onPointerCancel: (_) {
+            if (activeDragSlot != slot) return;
+            dragCanceled = true;
+            setState(() {
+              pointer = null;
+              preview = null;
+            });
+          },
+          child: GestureDetector(
+            key: ValueKey('tray-$slot'),
+            onTap: piece == null
+                ? null
+                : () => setState(() {
+                    if (activeDragSlot == null)
+                      selected = selected == slot ? null : slot;
+                  }),
+            onPanStart: piece == null
+                ? null
+                : (details) {
+                    if (activeDragSlot != null) return;
+                    activeDragSlot = slot;
+                    selected = slot;
+                    _drag(details.globalPosition);
+                  },
+            onPanUpdate: piece == null
+                ? null
+                : (details) {
+                    if (activeDragSlot == slot) _drag(details.globalPosition);
+                  },
+            onPanEnd: piece == null
+                ? null
+                : (_) {
+                    if (activeDragSlot != slot) return;
+                    activeDragSlot = null;
+                    if (!dragCanceled) _place(preview);
+                  },
+            onPanCancel: () => setState(() {
+              if (activeDragSlot != slot) return;
+              activeDragSlot = null;
+              pointer = null;
+              preview = null;
+            }),
+            child: Container(
+              height: 108,
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: theme.color('creamWhite').withValues(alpha: .6),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(
+                  width: 2,
+                  color: selected == slot
+                      ? theme.color('ink')
+                      : theme.color('creamWhite'),
+                ),
               ),
+              child: piece == null
+                  ? Center(
+                      child: Icon(
+                        Icons.check_rounded,
+                        color: theme.color('ink').withValues(alpha: .4),
+                      ),
+                    )
+                  : Center(child: _piece(piece, 20)),
             ),
-            child: piece == null
-                ? Center(
-                    child: Icon(
-                      Icons.check_rounded,
-                      color: theme.color('ink').withValues(alpha: .4),
-                    ),
-                  )
-                : Center(child: _piece(piece, 20)),
           ),
         ),
       ),
@@ -372,7 +416,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _liftedPiece() {
-    final box = context.findRenderObject() as RenderBox;
+    final box = stackKey.currentContext!.findRenderObject() as RenderBox;
     final local = box.globalToLocal(pointer!);
     final boardBox = boardKey.currentContext!.findRenderObject() as RenderBox;
     final cellSize = boardBox.size.width / 8;

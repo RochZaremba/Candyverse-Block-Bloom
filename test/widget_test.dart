@@ -21,6 +21,9 @@ void main() {
       );
     }
     await fonts.load();
+    await (FontLoader(
+      'MaterialIcons',
+    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
     theme = await AppTheme.load();
   });
   testWidgets('Home starts using the checked-in candy palette', (tester) async {

@@ -7,10 +7,20 @@ import '../domain/game_state.dart';
 
 /// Presents engine snapshots without owning any puzzle rules.
 class GameController extends ChangeNotifier {
-  GameController({required this.engine, GameState? initialState})
-    : _state = initialState ?? engine.start();
+  GameController({required GameEngine engine, GameState? initialState})
+    : _engine = engine,
+      _state = initialState ?? engine.start();
 
-  final GameEngine engine;
+  factory GameController.fresh({int Function()? seedSource}) {
+    final nextSeed = seedSource ?? () => DateTime.now().microsecondsSinceEpoch;
+    GameEngine createEngine() => GameEngine.seeded(seed: nextSeed());
+    return GameController(engine: createEngine())
+      .._engineFactory = createEngine;
+  }
+
+  GameEngine Function()? _engineFactory;
+  GameEngine _engine;
+  GameEngine get engine => _engine;
   GameState _state;
   GameState get state => _state;
   bool get isGameOver => engine.isGameOver(_state);
@@ -28,6 +38,7 @@ class GameController extends ChangeNotifier {
   }
 
   void restart() {
+    _engine = _engineFactory?.call() ?? _engine;
     _state = engine.start();
     notifyListeners();
   }

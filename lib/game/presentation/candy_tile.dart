@@ -19,60 +19,67 @@ class CandyTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = theme.palette[skin] ?? theme.color('candyPink');
-    return Padding(
-      padding: const EdgeInsets.all(2),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(9),
-          color: skin == null
-              ? theme.color('ink').withValues(alpha: .07)
-              : null,
-          gradient: skin == null
-              ? null
-              : LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color.lerp(color, theme.color('creamWhite'), .4)!,
-                    color,
-                  ],
-                ),
-          border: Border.all(
-            color: invalid
-                ? theme.color('danger')
-                : skin == null
-                ? theme.color('ink').withValues(alpha: .06)
-                : theme.color('creamWhite').withValues(alpha: ghost ? .9 : .5),
-            width: invalid ? 2 : 1,
-          ),
-          boxShadow: skin == null || ghost
-              ? null
-              : [
-                  BoxShadow(
-                    color: theme.color('ink').withValues(alpha: .16),
-                    offset: const Offset(0, 2),
-                    blurRadius: 1,
+    return Opacity(
+      opacity: ghost ? .45 : 1,
+      child: Padding(
+        padding: const EdgeInsets.all(2),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(9),
+            color: skin == null
+                ? theme.color('ink').withValues(alpha: .07)
+                : null,
+            gradient: skin == null
+                ? null
+                : LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color.lerp(color, theme.color('creamWhite'), .4)!,
+                      color,
+                    ],
                   ),
-                ],
-        ),
-        child: skin == null
-            ? null
-            : Opacity(
-                opacity: ghost ? .45 : 1,
-                child: Align(
-                  alignment: const Alignment(-.45, -.6),
-                  child: FractionallySizedBox(
-                    widthFactor: .48,
-                    heightFactor: .16,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: theme.color('creamWhite').withValues(alpha: .65),
-                        borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: invalid
+                  ? theme.color('danger')
+                  : skin == null
+                  ? theme.color('ink').withValues(alpha: .06)
+                  : theme
+                        .color('creamWhite')
+                        .withValues(alpha: ghost ? .9 : .5),
+              width: invalid ? 2 : 1,
+            ),
+            boxShadow: skin == null || ghost
+                ? null
+                : [
+                    BoxShadow(
+                      color: theme.color('ink').withValues(alpha: .16),
+                      offset: const Offset(0, 2),
+                      blurRadius: 1,
+                    ),
+                  ],
+          ),
+          child: skin == null
+              ? null
+              : Opacity(
+                  opacity: 1,
+                  child: Align(
+                    alignment: const Alignment(-.45, -.6),
+                    child: FractionallySizedBox(
+                      widthFactor: .48,
+                      heightFactor: .16,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: theme
+                              .color('creamWhite')
+                              .withValues(alpha: .65),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
+        ),
       ),
     );
   }

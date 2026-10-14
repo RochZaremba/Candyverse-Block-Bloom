@@ -67,6 +67,7 @@ class HomeScreen extends StatelessWidget {
                       foregroundColor: theme.color('creamWhite'),
                       minimumSize: const Size(220, 64),
                       textStyle: const TextStyle(
+                        fontFamily: 'Roboto',
                         fontSize: 24,
                         fontWeight: FontWeight.w900,
                       ),

@@ -28,6 +28,9 @@ void main() {
       );
     }
     await fonts.load();
+    await (FontLoader(
+      'MaterialIcons',
+    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
     theme = await AppTheme.load();
   });
 
@@ -50,10 +53,11 @@ void main() {
     WidgetTester tester,
     GameController controller, {
     double width = 412,
+    double height = 800,
     double scale = 1,
     bool reduced = false,
   }) async {
-    tester.view.physicalSize = Size(width, 800);
+    tester.view.physicalSize = Size(width, height);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -178,6 +182,7 @@ void main() {
       await show(tester, controller, width: 320);
       for (var slot = 0; slot < 3; slot++) {
         await tester.tap(find.byKey(ValueKey('tray-$slot')));
+        await tester.pump();
         await tester.tap(find.byKey(ValueKey('cell-7-${7 - slot}')));
         await tester.pump();
         if (slot < 2) expect(controller.state.tray[slot], isNull);
@@ -231,16 +236,152 @@ void main() {
       addTearDown(controller.dispose);
       await show(tester, controller);
       await tester.tap(find.byKey(const ValueKey('tray-0')));
+      await tester.pump();
       await tester.tap(find.byKey(const ValueKey('cell-0-0')));
       await tester.pump();
       expect(controller.isGameOver, isTrue);
       expect(find.text('Piękna układanka!'), findsOneWidget);
       expect(find.text('10'), findsOneWidget);
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile('goldens/game_over_412.png'),
+      );
       await tester.tap(find.text('Zagraj ponownie'));
       await tester.pump();
       expect(controller.state.board.occupiedCount, 0);
       expect(controller.state.score, 0);
       expect(controller.isGameOver, isFalse);
+    },
+  );
+
+  testWidgets(
+    'safe-area drag stays above finger and legal ghost is translucent',
+    (tester) async {
+      final controller = singles();
+      addTearDown(controller.dispose);
+      tester.view.padding = const FakeViewPadding(top: 24);
+      addTearDown(tester.view.resetPadding);
+      await show(tester, controller, width: 320);
+      final destination = find.byKey(const ValueKey('cell-2-3'));
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byKey(const ValueKey('tray-0'))),
+      );
+      await gesture.moveBy(const Offset(0, -20));
+      await gesture.moveTo(tester.getCenter(destination) + const Offset(0, 64));
+      await tester.pump();
+      final lifted = find.byWidgetPredicate(
+        (widget) => widget is Opacity && widget.opacity == .85,
+      );
+      expect(
+        (tester.getTopLeft(lifted) - tester.getTopLeft(destination)).distance,
+        lessThan(.01),
+      );
+      final ghost = find.byWidgetPredicate(
+        (widget) => widget is CandyTile && widget.ghost,
+      );
+      expect(ghost, findsOneWidget);
+      expect(
+        tester
+            .widget<Opacity>(
+              find.descendant(of: ghost, matching: find.byType(Opacity)).first,
+            )
+            .opacity,
+        .45,
+      );
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile('goldens/game_ghost_320.png'),
+      );
+      await gesture.up();
+      await tester.pump();
+      expect(controller.state.board.at((row: 2, col: 3)), 'candyPink');
+    },
+  );
+
+  testWidgets(
+    'real drag line clear updates score and pending coins from engine',
+    (tester) async {
+      final board = Board.empty().withCells({
+        for (var col = 0; col < 7; col++) (row: 0, col: col): 'turquoise',
+      });
+      final controller = singles(board: board);
+      addTearDown(controller.dispose);
+      await show(tester, controller);
+      await drag(tester, 0, 0, 7);
+      expect(controller.state.score, 110);
+      expect(controller.state.totalClearedLines, 1);
+      expect(controller.state.board.occupiedCount, 0);
+      expect(find.text('110'), findsOneWidget);
+      expect(find.text('5'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'retry uses a fresh production seed while injected runs stay controlled',
+    (tester) async {
+      var seed = 100;
+      final controller = GameController.fresh(seedSource: () => seed++);
+      addTearDown(controller.dispose);
+      final before = controller.state.rngState;
+      controller.restart();
+      expect(seed, 102);
+      expect(controller.state.rngState, isNot(before));
+      expect(controller.state.score, 0);
+    },
+  );
+
+  testWidgets(
+    'small 320x640 screen at text2 remains playable through scrolling',
+    (tester) async {
+      final controller = singles();
+      addTearDown(controller.dispose);
+      await show(tester, controller, width: 320, height: 640, scale: 2);
+      final tray = find.byKey(const ValueKey('tray-0'));
+      await tester.ensureVisible(tray);
+      await tester.pumpAndSettle();
+      await tester.tap(tray);
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('cell-7-7')));
+      await tester.pump();
+      expect(controller.state.board.at((row: 7, col: 7)), 'candyPink');
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'a second finger cannot replace or place the active dragged slot',
+    (tester) async {
+      final controller = singles();
+      addTearDown(controller.dispose);
+      await show(tester, controller);
+      final first = await tester.startGesture(
+        tester.getCenter(find.byKey(const ValueKey('tray-0'))),
+        pointer: 1,
+      );
+      await first.moveBy(const Offset(0, -20));
+      await first.moveTo(
+        tester.getCenter(find.byKey(const ValueKey('cell-1-1'))) +
+            const Offset(0, 64),
+      );
+      await tester.pump();
+      final second = await tester.startGesture(
+        tester.getCenter(find.byKey(const ValueKey('tray-1'))),
+        pointer: 2,
+      );
+      await second.moveBy(const Offset(0, -20));
+      await second.moveTo(
+        tester.getCenter(find.byKey(const ValueKey('cell-4-4'))) +
+            const Offset(0, 64),
+      );
+      await tester.pump();
+      await first.up();
+      await tester.pump();
+      await second.up();
+      await tester.pump();
+      expect(controller.state.tray[0], isNull);
+      expect(controller.state.tray[1], isNotNull);
+      expect(controller.state.board.at((row: 1, col: 1)), 'candyPink');
+      expect(controller.state.board.occupiedCount, 1);
     },
   );
 
