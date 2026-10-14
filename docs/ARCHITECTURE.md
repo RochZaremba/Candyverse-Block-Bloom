@@ -86,6 +86,12 @@ W T-002 wprowadzono granicę `TraySource(Board)` dla jawnych trójek. T-003 doda
 
 `RandomSource`/`SeededRandom` i `TrayGenerator` pozostają pure Dart. Każdy produkcyjny ruch odtwarza RNG ze stanu runu; tylko start/refill losują figury i skiny. Snapshot z T-008 musi przechowywać RNG, maski i skiny, bez ponownego losowania przy restore. `pickTray(board)` jest deterministycznym podglądem trójki z początkowego seeda, a nie akcją runu. `TraySource` nie serializuje stanu zewnętrznej funkcji. Balance jest kopiowany do niezmiennego snapshotu na wejściu silnika/generatora. Konkretny algorytm, wagi i kolejność mnożników opisuje ADR-0008.
 
+## Zaimplementowany kontrakt T-004
+
+`GameController` przedstawia snapshoty silnika poprzez `ChangeNotifier`; `fresh()` losuje seed przy starcie/retry (czas służy wyłącznie jako seed). `GameScreen` obsługuje drag figury z pierwszym polem 64 dp nad palcem, ghost legalnego i nielegalnego ruchu oraz alternatywę tap-select/tap-place. Przeciąganie jest wyłączne: drugi palec nie może zmienić figury ani wykonać tap-placement. Anulowanie gestu nie zmienia domeny. Lokalizacja podniesionej figury liczona jest względem Stack pod SafeArea.
+
+Home otwiera realną grę. Wynik i liczba linii pochodzą z domeny; monety są tylko pending (bazowo 5 × linie), bez portfela przed T-008. Game-over zawiera retry i powrót do menu. Wyjście z aktywnego runu na razie wymaga potwierdzenia; trwałe resume/lifecycle snapshot zostanie dodane w T-008. Nie ma atrap ustawień, wyspy i kart upgrade. Testy obejmują drag, błędy, cancel, multi-touch, granice, refill, wynik, back i małe ekrany/tekst 2× oraz goldens na prawdziwych fontach.
+
 ## Android / platform
 
 - Portrait, Android API target >= 36 wg stanu na 2026-10-14; `minSdk 24` jako preferencja, potwierdź dostępność zależności.
