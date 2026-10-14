@@ -70,6 +70,11 @@ class IslandScreen extends StatelessWidget {
               const SizedBox(height: 20),
               for (final kind in BuildingKind.values)
                 Card(
+                  elevation: 3,
+                  shadowColor: theme.color('ink').withValues(alpha: .12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(theme.cardRadius),
+                  ),
                   color: theme.color('creamWhite'),
                   child: ListTile(
                     title: Text(buildingName(kind)),

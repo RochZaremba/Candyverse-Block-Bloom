@@ -13,3 +13,10 @@ https://creativecommons.org/publicdomain/zero/1.0/
 Test-only Roboto fonts retain the Apache 2.0 license in
 `test/fonts/Roboto_LICENSE.txt`. Flutter Material icons are used for standard
 settings controls, not as candy game artwork.
+
+The island diorama and Candy Tree/Jelly House/Rainbow Fountain at levels0–3,
+and Pink Mochi/Blue Jelly/Lemon Blob/Minty Monster in
+`lib/island/presentation/island_scene.dart`, are original code-native artwork
+created for Candyverse. Shapes, idle and tap animation are authored in this
+repository; no third-party character references, textures or emoji are used.
+They follow the repository's license terms.
