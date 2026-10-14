@@ -20,3 +20,17 @@ android/key.properties
 # OS
 .DS_Store
 Thumbs.db
+
+# Generated Flutter/Android files
+android/local.properties
+android/.gradle/
+android/captures/
+*.class
+*.log
+*.pyc
+.widget_preview/
+app.*.symbols
+app.*.map.json
+/android/app/debug
+/android/app/profile
+/android/app/release
