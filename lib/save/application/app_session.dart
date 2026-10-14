@@ -33,16 +33,25 @@ class AppSession extends ChangeNotifier {
   int _generation = 0;
   bool _resetting = false;
   Future<void> _settingsTail = Future.value();
+  int _settingsRevision = 0;
+  int _savedSettingsRevision = 0;
+  bool _settingsQueued = false;
   void _notify() {
     if (!_disposed) notifyListeners();
   }
 
   Future<void> _writeTail = Future.value();
-  Future<void> _commit(AppSaveV1 Function(AppSaveV1) change) {
+  Future<void> _commit(
+    AppSaveV1 Function(AppSaveV1) change, {
+    bool Function()? shouldWrite,
+  }) {
     final operation = _writeTail.then((_) async {
+      if (shouldWrite != null && !shouldWrite()) return;
+      final revision = _settingsRevision;
       final value = change(_save).copyWith(settings: settings.snapshot);
       await repository.save(value);
       _save = value;
+      _savedSettingsRevision = revision;
       error = null;
       _notify();
     });
@@ -66,12 +75,13 @@ class AppSession extends ChangeNotifier {
         _game!.restore(GameEngine.seeded(seed: run.seed), run.game);
       }
       final generation = _generation;
-      return _game ??= GameController(
+      _game ??= GameController(
         engine: GameEngine.seeded(seed: run.seed),
         initialState: run.game,
         onSnapshot: (game) => _checkpoint(game, generation),
         onRestart: () => _restart(generation),
-      );
+      )..addListener(_gameSaveChanged);
+      return _game!;
     } catch (_) {
       error = 'Nie udało się zapisać podejścia. Spróbuj ponownie.';
       rethrow;
@@ -144,9 +154,12 @@ class AppSession extends ChangeNotifier {
       await operation;
       _generation++;
       _save = AppSaveV1();
+      _game?.removeListener(_gameSaveChanged);
       _game?.dispose();
       _game = null;
       settings.restore(_save.settings);
+      _settingsRevision = 0;
+      _savedSettingsRevision = 0;
       error = null;
     } catch (_) {
       error = settings.language == 'en'
@@ -160,16 +173,44 @@ class AppSession extends ChangeNotifier {
     }
   }
 
+  bool get _canWriteSettings =>
+      !_disposed && !_resetting && !(_game?.blocked ?? false);
+
+  void _gameSaveChanged() {
+    if (_canWriteSettings && _settingsRevision != _savedSettingsRevision) {
+      _queueSettingsSave();
+    }
+  }
+
   void _saveSettings() {
-    if (_resetting) return;
-    // Read current progression inside the queued task, never capture an old
-    // wallet while a previous game write is still completing.
+    if (_disposed || _resetting) return;
+    _settingsRevision++;
+    _queueSettingsSave();
+  }
+
+  void _queueSettingsSave() {
+    if (!_canWriteSettings || _settingsQueued) return;
+    _settingsQueued = true;
+    final generation = _generation;
+    bool allowed() => _canWriteSettings && generation == _generation;
+    // Do not await the game here: checkpoint awaits this tail. A blocked
+    // checkpoint keeps the settings dirty until its retry succeeds instead.
     _settingsTail = _settingsTail.then((_) async {
+      var failed = false;
       try {
-        await _commit((s) => s.copyWith(settings: settings.snapshot));
+        if (!allowed()) return;
+        await _commit((s) => s, shouldWrite: allowed);
       } catch (_) {
+        failed = true;
         error = 'Nie udało się zapisać ustawień.';
         _notify();
+      } finally {
+        _settingsQueued = false;
+        if (!failed &&
+            allowed() &&
+            _settingsRevision != _savedSettingsRevision) {
+          _queueSettingsSave();
+        }
       }
     });
   }
@@ -180,12 +221,20 @@ class AppSession extends ChangeNotifier {
     await flushSettings();
   }
 
-  Future<void> flushSettings() => _settingsTail;
+  Future<void> flushSettings() async {
+    while (true) {
+      final tail = _settingsTail;
+      await tail;
+      if (identical(tail, _settingsTail)) return;
+    }
+  }
+
   @override
   void dispose() {
     _disposed = true;
     settings.removeListener(_saveSettings);
     settings.dispose();
+    _game?.removeListener(_gameSaveChanged);
     _game?.dispose();
     super.dispose();
   }
