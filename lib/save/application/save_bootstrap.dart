@@ -1,9 +1,11 @@
 import '../../core/localization/app_strings.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../../app/app.dart';
 import '../../core/theme/app_theme.dart';
+import '../../settings/settings_model.dart';
 import '../data/save_repository.dart';
 import 'app_session.dart';
 
@@ -18,13 +20,27 @@ class SaveBootstrap extends StatefulWidget {
 class _SaveBootstrapState extends State<SaveBootstrap> {
   late final repository =
       widget.repository ?? SaveRepository(PreferencesStorage());
+  final recoverySettings = SettingsModel();
   AppSession? session;
   Object? failure;
   bool loading = false;
   @override
   void initState() {
     super.initState();
+    // Unreadable profiles cannot supply a saved language. Valid profiles use
+    // their own settings inside CandyverseApp instead of this fallback.
+    recoverySettings.setLanguage(
+      WidgetsBinding.instance.platformDispatcher.locale.languageCode == 'en'
+          ? 'en'
+          : 'pl',
+    );
     _load();
+  }
+
+  @override
+  void dispose() {
+    recoverySettings.dispose();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -56,44 +72,50 @@ class _SaveBootstrapState extends State<SaveBootstrap> {
     if (session != null) {
       return CandyverseApp(theme: widget.theme, session: session!);
     }
-    return MaterialApp(
-      theme: widget.theme.material,
-      home: Builder(
-        builder: (context) => Scaffold(
-          body: SafeArea(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (loading)
-                      const CircularProgressIndicator()
-                    else ...[
-                      appText(
-                        context,
-                        'Nie można otworzyć zapisu',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+    return SettingsScope(
+      settings: recoverySettings,
+      child: MaterialApp(
+        locale: Locale(recoverySettings.language),
+        supportedLocales: const [Locale('pl'), Locale('en')],
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        theme: widget.theme.material,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: SafeArea(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (loading)
+                        const CircularProgressIndicator()
+                      else ...[
+                        appText(
+                          context,
+                          'Nie można otworzyć zapisu',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      appText(
-                        context,
-                        'Twój zapis nie został zastąpiony. Możesz ponowić próbę.',
-                      ),
-                      FilledButton(
-                        onPressed: _load,
-                        child: appText(context, 'Spróbuj ponownie'),
-                      ),
-                      if (failure is SaveRecoveryRequired)
-                        TextButton(
-                          onPressed: () => _recoverFrom(context),
-                          child: appText(context, 'Rozpocznij od nowa'),
+                        const SizedBox(height: 16),
+                        appText(
+                          context,
+                          'Twój zapis nie został zastąpiony. Możesz ponowić próbę.',
                         ),
+                        FilledButton(
+                          onPressed: _load,
+                          child: appText(context, 'Spróbuj ponownie'),
+                        ),
+                        if (failure is SaveRecoveryRequired)
+                          TextButton(
+                            onPressed: () => _recoverFrom(context),
+                            child: appText(context, 'Rozpocznij od nowa'),
+                          ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             ),
