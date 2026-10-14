@@ -9,7 +9,7 @@ class TrayGenerator {
     required this.random,
     GameBalance balance = const GameBalance(),
     List<Piece>? catalog,
-  }) : balance = balance,
+  }) : balance = balance.snapshot(),
        catalog = List.unmodifiable(catalog ?? pieceCatalog) {
     balance.validate();
     if (this.catalog.isEmpty ||
@@ -22,6 +22,16 @@ class TrayGenerator {
     }
   }
 
+  static const skinIds = [
+    'candyPink',
+    'electricPurple',
+    'turquoise',
+    'lemonYellow',
+    'mangoOrange',
+    'candyLime',
+    'blueberry',
+  ];
+
   final RandomSource random;
   final GameBalance balance;
   final List<Piece> catalog;
@@ -31,8 +41,9 @@ class TrayGenerator {
       for (var col = 0; col < Board.size; col++) {
         if (piece
             .at((row: row, col: col))
-            .every((cell) => Board.contains(cell) && board.at(cell) == null))
+            .every((cell) => Board.contains(cell) && board.at(cell) == null)) {
           return true;
+        }
       }
     }
     return false;
@@ -66,6 +77,14 @@ class TrayGenerator {
         tray[slot] = _pick(board, legal);
       }
     }
-    return List.unmodifiable(tray);
+    // Skins are cosmetic but consume seeded draws and persist with the tray.
+    return List.unmodifiable([
+      for (final piece in tray)
+        Piece(
+          id: piece.id,
+          cells: piece.cells,
+          skin: skinIds[random.nextInt(skinIds.length)],
+        ),
+    ]);
   }
 }

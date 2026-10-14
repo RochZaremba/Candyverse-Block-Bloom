@@ -50,26 +50,28 @@ class PlacementResult {
 /// Pure Dart placement, scoring and snapshot-driven random generation.
 class GameEngine {
   GameEngine({
-    required TraySource traySource,
-    this.balance = const GameBalance(),
-  }) : _traySource = traySource,
-       _seed = null {
+    required TraySource this.traySource,
+    GameBalance balance = const GameBalance(),
+  }) : seed = null,
+       balance = balance.snapshot() {
     balance.validate();
   }
 
-  GameEngine.seeded({required int seed, this.balance = const GameBalance()})
-    : _traySource = null,
-      _seed = seed {
+  GameEngine.seeded({
+    required int this.seed,
+    GameBalance balance = const GameBalance(),
+  }) : traySource = null,
+       balance = balance.snapshot() {
     balance.validate();
   }
 
-  final TraySource? _traySource;
-  final int? _seed;
+  final TraySource? traySource;
+  final int? seed;
   final GameBalance balance;
 
   GameState start() {
     final board = Board.empty();
-    final random = _seed == null ? null : SeededRandom(_seed!);
+    final random = seed == null ? null : SeededRandom(seed!);
     return GameState(
       board: board,
       tray: _pickTray(board, random),
@@ -79,12 +81,12 @@ class GameEngine {
 
   /// For direct previews. State transitions instead restore their own snapshot.
   List<Piece> pickTray(Board board) =>
-      _pickTray(board, _seed == null ? null : SeededRandom(_seed!));
+      _pickTray(board, seed == null ? null : SeededRandom(seed!));
 
   List<Piece> _pickTray(Board board, RandomSource? random) {
     final pieces = List<Piece>.unmodifiable(
       random == null
-          ? _traySource!(board)
+          ? traySource!(board)
           : TrayGenerator(random: random, balance: balance).pickTray(board),
     );
     if (pieces.length != GameState.traySize) {
@@ -162,7 +164,7 @@ class GameEngine {
       sugarRushLevel: state.sugarRushLevel,
       balance: balance,
     );
-    final random = _seed == null
+    final random = seed == null
         ? null
         : SeededRandom.fromState(
             state.rngState ??
