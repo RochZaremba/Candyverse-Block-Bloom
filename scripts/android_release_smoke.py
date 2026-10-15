@@ -54,6 +54,8 @@ def main():
                 capture_output=True, timeout=20,
             )
             (args.output/'errors.log').write_bytes(result.stdout+result.stderr)
+            state = subprocess.run(['adb', '-s', args.device, 'shell', 'dumpsys', 'activity', 'activities'], capture_output=True, timeout=20)
+            (args.output/'activity-state.txt').write_bytes(state.stdout+state.stderr)
         except (OSError, subprocess.TimeoutExpired) as error:
             (args.output/'diagnostics-error.txt').write_text(str(error))
 
@@ -110,7 +112,9 @@ def main():
         (args.output/f'{name}.png').write_bytes(data)
 
     def launch():
-        adb('shell', 'am', 'start', '-W', '-n', APP+'/.MainActivity')
+        result = adb('shell', 'am', 'start', '-W', '-n', APP+'/.MainActivity')
+        with (args.output/'launch-results.txt').open('a') as log:
+            log.write(result+'\n')
 
     (args.output/'display.txt').write_text(adb('shell', 'wm', 'size')+'\n'+adb('shell', 'wm', 'density')+'\n')
     page_size = read_page_size(adb)
