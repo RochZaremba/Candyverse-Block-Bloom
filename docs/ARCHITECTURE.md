@@ -1,5 +1,12 @@
 # Architektura aplikacji
 
+Aktualny kontrakt rozszerzenia1.1.0+2 określają
+[ADR-0016](adr/0016-kingdom-progression-and-art.md) i
+[KINGDOM_EXPANSION](KINGDOM_EXPANSION.md). Sekcje „Zaimplementowany kontrakt
+T-002–T-009” opisują historyczne etapy V1; ich limity3 poziomów, dawne postacie,
+schema1 i przycisk WZNÓW zastępuje poniższy kontrakt Candy Kingdom.
+Wyniki wykonanych kontroli są wyłącznie w [STATUS](STATUS.md).
+
 ## Decyzje
 
 Flutter stable + Dart; w V1 **bez Flame** (ADR-0001) — CustomPainter/Flutter animacje wystarczą do statycznej siatki 8×8. Jeśli profiler lub złożoność wykażą, że Flame upraszcza projekt, najpierw ADR.
@@ -38,13 +45,16 @@ Używaj katalogów tylko wtedy, gdy mają kod, nie twórz pustych hierarchii dla
 `AppSaveV1` ma co najmniej:
 
 ```text
-schemaVersion: 1
+schemaVersion: 2
+incomeTimestampMs: int?  // utrwalony high-watermark, null przed pierwszym rozliczeniem
+incomeRemainder: int     // 0..599999, zachowana część ułamkowa dochodu
+stars: int               // trwałe gwiazdki prestiżu
 nextRunId: int
 lastAwardedRunId: int?     // monotoniczna identyfikacja rozliczonego runu
 wallet: int
 bestScore: int
-island: {buildingLevels: map, ...}
-settings: {language, sound, haptics, reduceMotion}
+island: {candyTree: 0..30, jellyHouse: 0..30, rainbowFountain: 0..30}
+settings: {language: en|pl, sound, haptics, reduceMotion}
 activeRun: null | {
    runId, board, tray, rngState, score, streak, totalClearedLines,
    chosenUpgradeLevels, eraserUses, pendingCoins, pendingUpgradeChoices,
@@ -53,6 +63,46 @@ activeRun: null | {
 ```
 
 Weryfikuj wczytywane dane (zakresy 0..8, non-negative balances, enumy, wersja schematu). Nie rób niewidocznej utraty progresji po błędnym parsowaniu: najlepiej zachowaj backup i pokaż obsługiwalny fallback.
+
+Nazwa klasy `AppSaveV1` oraz klucz `candyverse.save.v1` pozostają dla zgodności
+API i istniejących instalacji; zapisywany JSON ma już schema2. Decoder przyjmuje
+schema1 i schema2, odrzuca nowszy lub niepoprawny zapis. Migracja zachowuje
+portfel, poziomy0..3, rekord, ID nagród, kompletny run/RNG oraz wybór PL/EN;
+początkowe `stars=0`, `incomeRemainder=0`, `incomeTimestampMs=null` zapobiegają
+naliczaniu dochodu sprzed aktualizacji. Nowy lub zresetowany profil używa EN.
+
+## Candy Kingdom — obecna implementacja
+
+- `IslandState` ma3 obiekty w zakresie0..30 oraz trwałe gwiazdki.
+  `AppSaveV1.price` zachowuje ceny1..3, a kolejne rosną kwadratowo według
+  kontraktu. Prestiż jest możliwy tylko po3×30: zeruje poziomy, dodaje gwiazdkę,
+  zachowuje portfel, rekord, ustawienia, identyfikatory i aktywny run.
+- `AppSaveV1.accrueIncome(nowMs)` jest czystą funkcją. Stawka w dziesiątych
+  monety/minutę to `ceil(totalLevels/3) * (10 + stars)`; pusta wyspa zarabia0.
+  Znacznik czasu, portfel i reszta zapisywane są razem. Cofnięcie zegara nie daje
+  monet ani nie cofa high-watermark. Pośrednie mnożenie używa `BigInt`;
+  niewyrażalne saldo lub stawka są jawnie odrzucane zamiast zawijania/liczenia
+  przybliżonego. Brak dziennego limitu i sieciowego zegara.
+- `SaveBootstrap` rozlicza dochód po odczycie; `AppSession` ma wstrzykiwany zegar,
+  minutowy timer w aktywnej aplikacji i rozliczenie po wznowieniu. Zakup i prestiż
+  rozliczają najpierw stary interwał starą stawką. Timer/lifecycle nie zmieniają
+  zasad planszy, RNG, punktacji ani nagrody runu.
+- `_writeTail` serializuje wspólny profil. Ekonomiczna operacja zatrzymuje dokładny
+  snapshot do potwierdzenia zapisu; retry po utracie odpowiedzi powtarza ten sam
+  cel. Pozostałe mutacje czekają na rozwiązanie niepewnego zapisu. Kontroler gry
+  może ponowić niepotwierdzony dochód z nakładki błędu checkpointu. Po sukcesie
+  blokada ekonomii znika wewnątrz kolejki zapisu, przed następnym checkpointem.
+  Rewizje ustawień zapobiegają nadpisaniu najnowszych przełączników.
+- `warmKingdomAssets()` dekoduje lokalne `brand-sheet`, `mascots`, `buildings`
+  i `worlds` przed `runApp`; trasy używają wspólnych kluczy cache. Atlasy mają
+  jawne współrzędne sprite'ów,6 etapów budynków,4 zwierzaki oraz3 krajobrazy
+  wybierane przez `stars % 3`. Provenance i prompty są w
+  [assets/kingdom](../assets/kingdom/README.md); runtime nie używa AI ani sieci.
+- Home ma Play (wznawia zapisany run), Island i gear Settings. `CandyDialog`
+  oraz `showCandyMessage` zapewniają wspólną ramkę z maskotką. Przejścia mają
+  nieprzezroczyste tło; idle, reakcje i ograniczone cząstki respektują ustawienie
+  reduced-motion, OS, TickerMode i lifecycle. Fanfara korzysta z istniejącego
+  lokalnego SoundPool i niezależnych przełączników dźwięku/haptyki.
 
 ## Storage / transaction semantics
 
