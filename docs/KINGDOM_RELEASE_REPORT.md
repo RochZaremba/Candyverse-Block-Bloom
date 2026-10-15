@@ -45,8 +45,12 @@ próba drugiego dotyku nie zmienia stanu. Animacje lokalne pozostają.
 ## CI nowego źródła — oczekuje zakończenia
 
 - Flutter38734971516.
-- Signed Android compatibility38734971548: APK API24, API36, rzeczywiste
-  API35/16KB; universal APK z finalnego AAB na API36.
+- Signed Android compatibility38734971548: API36/APK, API35/16KB/APK
+  i API36/universal PASS w pierwszej próbie. API24 wymaga ponowienia: UI
+  zasłoniło systemowe okno „Messenger has stopped”, a Candyverse Home był
+  wyrenderowany pod nim. [Zachowany zrzut awarii infrastruktury](qa/kingdom-code3-api24-attempt1-failure.png).
+  XML/logi są lokalnie w qa-code3-signed-attempt1/api24. Nie zaliczono tej próby;
+  powtarzany jest wyłącznie nieudany job na świeżym emulatorze, bez zmian APK.
 - Android smoke38734971558:20min aktywnej gry, Android DataStore, dochód,
   poziom30, prestiż i wszystkie sześć ekranów; renderer CPU nie dowodzi GPU FPS.
 
