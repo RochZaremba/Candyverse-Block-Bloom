@@ -14,8 +14,8 @@ Android's development key. Release tasks require `CANDYVERSE_KEY_PROPERTIES`.
 Generate a new upload key once, only after reviewing this setup:
 
 ```sh
-python3 scripts/create_upload_key.py --output-dir "$HOME/.local/share/Renvo/Candyverse/signing"
-export CANDYVERSE_KEY_PROPERTIES="$HOME/.local/share/Renvo/Candyverse/signing/key.properties"
+python3 scripts/create_upload_key.py --output-dir "$HOME/.candyverse-signing/v1"
+export CANDYVERSE_KEY_PROPERTIES="$HOME/.candyverse-signing/v1/key.properties"
 ```
 
 The generator refuses directories inside Git worktrees and existing output
@@ -81,8 +81,9 @@ python3 scripts/generate_brand_icon.py
 
 [Source mark](../assets/brand/candyverse_mark.svg),
 [512px store icon](../assets/brand/store_icon_512.png).
-A real feature graphic and screenshots remain separate release deliverables;
-the icon does not imply they have been completed.
+Original PL/EN feature graphics are in `assets/store/`; generate them with
+`scripts/generate_store_graphics.py`. Actual screenshots remain a separate
+release deliverable.
 
 ## Local save and backup
 
