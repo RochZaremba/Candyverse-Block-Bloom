@@ -5,6 +5,7 @@ Uses accessibility nodes and real Android input, not an instrumented entrypoint.
 Never clears app data. Run on a fresh disposable emulator, not a player's phone.
 """
 import argparse
+import atexit
 import json
 from pathlib import Path
 import re
@@ -44,16 +45,36 @@ def main():
                                 check=True, capture_output=True, timeout=90)
         return result.stdout if binary else result.stdout.decode().strip()
 
+    @atexit.register
+    def diagnostics():
+        try:
+            result = subprocess.run(
+                ['adb', '-s', args.device, 'logcat', '-d', '-t', '2000',
+                 'AndroidRuntime:E', 'libc:F', 'flutter:E', '*:S'],
+                capture_output=True, timeout=20,
+            )
+            (args.output/'errors.log').write_bytes(result.stdout+result.stderr)
+        except (OSError, subprocess.TimeoutExpired) as error:
+            (args.output/'diagnostics-error.txt').write_text(str(error))
+
     def nodes():
         adb('shell', 'uiautomator', 'dump', '/sdcard/candyverse-release-ui.xml')
         xml = adb('shell', 'cat', '/sdcard/candyverse-release-ui.xml')
+        (args.output/'latest-ui.xml').write_text(xml)
         return list(ET.fromstring(xml[xml.index('<?xml'):]).iter('node'))
 
     def locate(pattern, seconds=90):
         deadline = time.monotonic()+seconds
+        last_error = None
         while time.monotonic() < deadline:
+            try:
+                current_nodes = nodes()
+            except (subprocess.CalledProcessError, ValueError, ET.ParseError) as error:
+                last_error = error
+                time.sleep(1)
+                continue
             matches = []
-            for node in nodes():
+            for node in current_nodes:
                 label = node.get('text', '')+'\n'+node.get('content-desc', '')
                 bounds = [int(v) for v in re.findall(r'\d+', node.get('bounds', ''))]
                 if (re.search(pattern, label, re.MULTILINE) and len(bounds) == 4
@@ -62,7 +83,12 @@ def main():
             if matches:
                 return min(matches, key=lambda b: (b[2]-b[0])*(b[3]-b[1]))
             time.sleep(1)
-        raise RuntimeError(f'Accessibility node not found: {pattern}')
+        try:
+            data = adb('exec-out', 'screencap', '-p', binary=True)
+            (args.output/'failure-screen.png').write_bytes(data)
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+            pass
+        raise RuntimeError(f'Accessibility node not found: {pattern}; last dump error: {last_error}')
 
     def tap(pattern):
         left, top, right, bottom = locate(pattern)
