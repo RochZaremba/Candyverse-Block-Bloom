@@ -250,6 +250,21 @@ class _GameScreenState extends State<GameScreen> {
   Widget _game() => LayoutBuilder(
     builder: (context, constraints) {
       final width = math.min(constraints.maxWidth - 24, 440.0);
+      final compact =
+          constraints.maxHeight < 760 &&
+          MediaQuery.textScalerOf(context).scale(16) <= 20;
+      final hasEraser =
+          controller.state.eraserUses > 0 &&
+          controller.state.board.occupiedCount > 0;
+      final boardWidth = compact
+          ? math.min(
+              width,
+              math.max(
+                256.0,
+                constraints.maxHeight - 310 - (hasEraser ? 48 : 0),
+              ),
+            )
+          : width;
       return Stack(
         key: stackKey,
         children: [
@@ -305,13 +320,18 @@ class _GameScreenState extends State<GameScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: _metric('WYNIK', '${controller.state.score}'),
+                          child: _metric(
+                            'WYNIK',
+                            '${controller.state.score}',
+                            compact: compact,
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: _metric(
                             'MONETY W GRZE',
                             '${controller.state.pendingCoins}',
+                            compact: compact,
                           ),
                         ),
                       ],
@@ -362,42 +382,51 @@ class _GameScreenState extends State<GameScreen> {
                         child: appText(context, 'Zakończ podejście'),
                       ),
                     ],
-                    const SizedBox(height: 18),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: theme.color('creamWhite'),
-                        borderRadius: BorderRadius.circular(theme.panelRadius),
-                        border: Border.all(
-                          color: theme.color('creamWhite'),
-                          width: 3,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: theme.color('ink').withValues(alpha: .18),
-                            blurRadius: 18,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            _board(),
-                            Positioned.fill(
-                              child: FxLayer(theme: theme, event: fxEvent),
+                    SizedBox(height: compact ? 8 : 18),
+                    Center(
+                      child: SizedBox(
+                        width: boardWidth,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: theme.color('creamWhite'),
+                            borderRadius: BorderRadius.circular(
+                              theme.panelRadius,
                             ),
-                          ],
+                            border: Border.all(
+                              color: theme.color('creamWhite'),
+                              width: 3,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: theme
+                                    .color('ink')
+                                    .withValues(alpha: .18),
+                                blurRadius: 18,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: AspectRatio(
+                            aspectRatio: 1,
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                _board(),
+                                Positioned.fill(
+                                  child: FxLayer(theme: theme, event: fxEvent),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: compact ? 8 : 20),
                     Row(
                       children: [
                         for (var slot = 0; slot < 3; slot++)
-                          Expanded(child: _slot(slot)),
+                          Expanded(child: _slot(slot, compact: compact)),
                       ],
                     ),
                     const SizedBox(height: 12),
@@ -410,7 +439,7 @@ class _GameScreenState extends State<GameScreen> {
                         style: const TextStyle(fontSize: 14),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: compact ? 8 : 24),
                   ],
                 ),
               ),
@@ -475,28 +504,32 @@ class _GameScreenState extends State<GameScreen> {
     },
   );
 
-  Widget _metric(String label, String value) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-    decoration: BoxDecoration(
-      color: theme.color('creamWhite').withValues(alpha: .9),
-      borderRadius: BorderRadius.circular(22),
-    ),
-    child: Column(
-      children: [
-        appText(
-          context,
-          label,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+  Widget _metric(String label, String value, {bool compact = false}) =>
+      Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: compact ? 6 : 12,
         ),
-        appText(
-          context,
-          value,
-          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900),
+        decoration: BoxDecoration(
+          color: theme.color('creamWhite').withValues(alpha: .9),
+          borderRadius: BorderRadius.circular(22),
         ),
-      ],
-    ),
-  );
+        child: Column(
+          children: [
+            appText(
+              context,
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+            ),
+            appText(
+              context,
+              value,
+              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900),
+            ),
+          ],
+        ),
+      );
 
   Widget _board() {
     final piece = selected == null ? null : controller.state.tray[selected!];
@@ -564,7 +597,7 @@ class _GameScreenState extends State<GameScreen> {
     };
   }
 
-  Widget _slot(int slot) {
+  Widget _slot(int slot, {bool compact = false}) {
     final piece = controller.state.tray[slot];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -624,7 +657,7 @@ class _GameScreenState extends State<GameScreen> {
               preview = null;
             }),
             child: Container(
-              height: 108,
+              height: compact ? 88 : 108,
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: theme.color('creamWhite').withValues(alpha: .6),
