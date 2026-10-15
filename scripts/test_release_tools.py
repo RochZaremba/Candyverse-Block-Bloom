@@ -1,11 +1,13 @@
 """Meaningful edge cases for the release artifact/key safety tools."""
 import struct
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
 
 from audit_android_artifact import validate_elf, packaged_xml
 from create_upload_key import outside_repository, properties_escape
+from android_release_smoke import read_page_size
 
 
 def native_library(segments):
@@ -20,6 +22,19 @@ def native_library(segments):
 
 
 class ReleaseToolsTests(unittest.TestCase):
+    def test_android7_page_size_falls_back_to_own_process_mapping(self):
+        def old_android(*args):
+            if args[1] == 'getconf':
+                raise subprocess.CalledProcessError(127, args)
+            return 'KernelPageSize:        4 kB\nMMUPageSize:           4 kB\n'
+        self.assertEqual(read_page_size(old_android), 4096)
+
+    def test_16kb_runtime_page_size_is_not_inferred_from_image_name(self):
+        self.assertEqual(read_page_size(lambda *args: '16384'), 16384)
+        with self.assertRaises(RuntimeError):
+            read_page_size(lambda *args: '8192')
+
+
     def test_resolves_shrunk_and_development_xml_from_resource_table(self):
         for path in ('res/Qq.xml', 'res/xml/backup_rules.xml'):
             resources = f'    resource 0x7f100000 xml/backup_rules\n      () (file) {path} type=XML\n'
