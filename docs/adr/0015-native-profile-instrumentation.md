@@ -22,3 +22,7 @@ QA obejmuje profil AOT, natywne preferencje i te same widgety bez zależności o
 Zaliczenie samego uruchomienia albo obniżenie długości smoke ukrywałoby brak dowodu stabilności. Debugowe metryki nie zastępują profile. Zmiana produkcyjnego renderera dla naprawienia runnera wymagałaby osobnych dowodów i nie jest częścią tej decyzji.
 
 Źródła: [Flutter integration tests](https://docs.flutter.dev/testing/integration-tests), natywny FlutterTestRunner i przykład androidTest w zainstalowanym SDK3.47.2.
+
+## Update2026-10-15
+
+Run38708821882 utracił cały emulator także przy natywnym JUnit, po Settings→Game; kernel nie potwierdził OOM ani kolejnego segfault w tej próbie. CPU renderer jest teraz jawną opcją testowej ActivityTestRule, przekazywaną wyłącznie przez argument instrumentacji. Używa oficjalnych stałych FlutterShellArgs z SDK (`enable-software-rendering=true`, `enable-impeller=false`). CI wybiera tę opcję; raport oznacza softwareRendering=true. Profil AOT i20min pozostają wymagane, metryk CPU nie przedstawiamy jako GPU/FPS telefonu. Produkcyjny APK i jego oddzielny smoke zachowują domyślny renderer.

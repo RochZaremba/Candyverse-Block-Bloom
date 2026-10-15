@@ -10,6 +10,10 @@ qa_output=${CANDYVERSE_QA_OUTPUT:-"$repo_root/build/qa-smoke"}
 qa_mode=${CANDYVERSE_QA_MODE:-profile}
 qa_runner=${CANDYVERSE_QA_RUNNER:-instrumentation}
 qa_software=${CANDYVERSE_SOFTWARE_RENDERING:-0}
+if [[ "$qa_software" != 0 && "$qa_software" != 1 ]]; then
+  printf 'CANDYVERSE_SOFTWARE_RENDERING must be 0 or 1.\n' >&2
+  exit 2
+fi
 qa_renderer_args=()
 qa_software_define=false
 if [[ "$qa_software" == 1 ]]; then
@@ -54,8 +58,8 @@ flutter drive --"$qa_mode" "${qa_renderer_args[@]}" -d "$qa_device" \
   --dart-define="CANDYVERSE_SOFTWARE_RENDERING=$qa_software_define" \
   2>&1 | tee "$qa_output/flutter-drive.log"
 elif [[ "$qa_runner" == instrumentation ]]; then
-  if [[ "$qa_mode" != profile || "$qa_software" != 0 ]]; then
-    printf 'Native instrumentation requires profile mode with the default renderer.\n' >&2
+  if [[ "$qa_mode" != profile ]]; then
+    printf 'Native instrumentation requires profile mode.\n' >&2
     exit 2
   fi
   qa_connected=$(adb devices | awk 'NR>1 && $2=="device" {print $1}')
@@ -74,10 +78,11 @@ elif [[ "$qa_runner" == instrumentation ]]; then
   flutter build apk --profile --target-platform "$qa_platform" --target integration_test/android_smoke_test.dart \
     --dart-define="CANDYVERSE_SMOKE_MINUTES=$qa_minutes" \
     --dart-define="CANDYVERSE_QA_RUN_TOKEN=$qa_run_token" \
+    --dart-define="CANDYVERSE_SOFTWARE_RENDERING=$qa_software_define" \
     > "$qa_output/profile-build.log" 2>&1
-  qa_defines=$(python3 - "$qa_minutes" "$qa_run_token" <<'PY_DEFINES'
+  qa_defines=$(python3 - "$qa_minutes" "$qa_run_token" "$qa_software_define" <<'PY_DEFINES'
 import base64,sys
-print(','.join(base64.b64encode(value.encode()).decode() for value in ('CANDYVERSE_SMOKE_MINUTES='+sys.argv[1], 'CANDYVERSE_QA_RUN_TOKEN='+sys.argv[2])))
+print(','.join(base64.b64encode(value.encode()).decode() for value in ('CANDYVERSE_SMOKE_MINUTES='+sys.argv[1], 'CANDYVERSE_QA_RUN_TOKEN='+sys.argv[2], 'CANDYVERSE_SOFTWARE_RENDERING='+sys.argv[3])))
 PY_DEFINES
   )
   qa_native_started=$SECONDS
@@ -89,6 +94,7 @@ PY_DEFINES
       -Ptarget="$repo_root/integration_test/android_smoke_test.dart" \
       -Pdart-defines="$qa_defines" \
       -Pandroid.testInstrumentationRunnerArguments.timeout_msec=1800000 \
+      -Pandroid.testInstrumentationRunnerArguments.candyverseSoftwareRendering="$qa_software_define" \
       --console=plain
   ) 2>&1 | tee "$qa_output/instrumentation.log"
   qa_native_elapsed=$((SECONDS - qa_native_started))

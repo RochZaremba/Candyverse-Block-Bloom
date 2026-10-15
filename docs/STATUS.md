@@ -15,7 +15,7 @@
 | T-007 Island | DONE | PR#7, merge `24ba7c3` |
 | T-008 Save/economy | DONE | PR#8, merge `b4cb8b4`, CI38646672217 SUCCESS |
 | T-009 Settings/i18n | DONE | [PR#9](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/9), merge `d50e612`, head `a98dbe4`, CI38651090829 SUCCESS;155 Flutter/62 Dart |
-| T-010 QA/performance | IN_PROGRESS | [PR#10](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/10), head `f191325`;157 Flutter/62 Dart lokalnie PASS; native20min PENDING |
+| T-010 QA/performance | IN_PROGRESS | [PR#10](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/10), head `8e70d6d`;157 Flutter/62 Dart lokalnie PASS; native20min PENDING |
 | T-011 Play Store prep | IN_PROGRESS | [PR#11](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/11), branch `chore/playstore-release`; podpisane APK/AAB i polityka gotowe, finalne CI/screenshoty w toku |
 
 ## Testy i poprawki
@@ -40,3 +40,5 @@
 - Nie publikowano w Google Play. GitHub prerelease nadal szkicem. Nie oznaczamy nieprzetestowanych funkcji jako ukończonych.
 - Worktree: root `main` stabilne na `d50e612`; `.../candyverse-workers/t010` branch `test/qa-hardening`; `.../t011` branch `chore/playstore-release`. Workerzy zakończyli przekazane moduły, root integruje.
 - **Jedno następne zadanie:** odczytać finalny native20min smoke PR#10 (raport czasu/aktywności/JUnit) i naprawić ewentualny błąd przed scaleniem.
+
+- **Najnowszy runner `8e70d6d`:** native run38708821882 utracił emulator przy Settings→Game; nie potwierdzono jednej przyczyny awarii. CI wybiera teraz CPU rendering wyłącznie w testowej ActivityTestRule i RAM2048, zachowując AOT profile i20 minut. Programowy backend jest jawnie raportowany, nie dowodzi GPU/FPS telefonu. Lokalny testAPK skompilowany JDK21, bash/docs PASS. Nowy wynik nadal PENDING.
