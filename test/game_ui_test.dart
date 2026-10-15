@@ -220,6 +220,31 @@ void main() {
   );
 
   testWidgets(
+    'invalid drag and explicit reselection still allow a line clear',
+    (tester) async {
+      final controller = singles(
+        board: Board.empty().withCells({
+          for (var col = 0; col < 7; col++) (row: 0, col: col): 'candyPink',
+        }),
+      );
+      addTearDown(controller.dispose);
+      await show(tester, controller, reduced: true);
+      final before = controller.state;
+      await drag(tester, 0, 0, 0);
+      expect(controller.state, same(before));
+      for (final key in ['tray-1', 'tray-0', 'cell-0-0']) {
+        await tester.tap(find.byKey(ValueKey(key)));
+        await tester.pump();
+      }
+      expect(controller.state, same(before));
+      await tester.tap(find.byKey(const ValueKey('cell-0-7')));
+      await tester.pumpAndSettle();
+      expect(controller.state.totalClearedLines, 1);
+      expect(controller.state.board.occupiedCount, 0);
+    },
+  );
+
+  testWidgets(
     'ghost reflects collision and canceled/illegal drags preserve snapshot',
     (tester) async {
       final controller = singles(

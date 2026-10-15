@@ -15,13 +15,13 @@
 | T-007 Island | DONE | PR#7, merge `24ba7c3` |
 | T-008 Save/economy | DONE | PR#8, merge `b4cb8b4`, CI38646672217 SUCCESS |
 | T-009 Settings/i18n | DONE | [PR#9](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/9), merge `d50e612`, head `a98dbe4`, CI38651090829 SUCCESS;155 Flutter/62 Dart |
-| T-010 QA/performance | IN_PROGRESS | [PR#10](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/10), head `07402e7`;158 Flutter/62 Dart lokalnie PASS; native20min PENDING |
+| T-010 QA/performance | IN_PROGRESS | [PR#10](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/10), head `e1c5922`;159 Flutter/62 Dart lokalnie PASS; native20min PENDING |
 | T-011 Play Store prep | IN_PROGRESS | [PR#11](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/11), branch `chore/playstore-release`; podpisane APK/AAB i polityka gotowe, finalne CI/screenshoty w toku |
 
 ## Testy i poprawki
 
 - T-010: natywny AOT profile/JUnit runner zamiast zrywającego się FlutterDriver, ADR-0015. Rzeczywisty DataStore pod testowym prefiksem, sześć ekranów, upgrade/eraser, jednokrotna nagroda, wszystkie zakupy, reset i20 minut UI gry/wyspy. UUID, Stopwatch i hostowy pomiar wymagane w raporcie; nie zaliczamy builda jako aktywnej gry. Poprzednie nieudane próby nie są wynikiem pozytywnym.
-- JDK21 `assembleProfile assembleProfileAndroidTest` PASS na obu branchach.158/158 Flutter,62/62 Dart, format/analyze/docs i15/15 Python release tools PASS lokalnie. Finalne CI trzeba odczytać.
+- JDK21 `assembleProfile assembleProfileAndroidTest` PASS na obu branchach.159/159 Flutter,62/62 Dart, format/analyze/docs i15/15 Python release tools PASS lokalnie. Finalne CI trzeba odczytać.
 - Przegląd prawdziwego PNG wykrył ucinanie dolnej części tray na krótkim ekranie. `f191325` dopasowuje planszę/panele; testy393×650 i320×592 potwierdzają widoczność trzech figur i placement, nowy golden `game_phone_compact.png`. Tekst200% zachowuje scroll.
 - Poprzedni podpisany APK przeszedł API24/36/35-16KB w CI[38703558729](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38703558729). Powtórzenie na nowym buildzie pozostaje wymagane. Kolejny wcześniejszy run38708234422: API24/36 PASS,16KB brak świeżej hierarchii UI przy starcie — diagnostyka w toku, bez zaliczania tej próby.
 - Emulator nie potwierdza60FPS średniego telefonu, odsłuchu ani wibracji. Te kontrole nadal NOT RUN na urządzeniu fizycznym. Szczegóły: [QA_REPORT](QA_REPORT.md).
@@ -43,7 +43,9 @@
 
 - **Najnowszy runner `8e70d6d`:** native run38708821882 utracił emulator przy Settings→Game; nie potwierdzono jednej przyczyny awarii. CI wybiera teraz CPU rendering wyłącznie w testowej ActivityTestRule i RAM2048, zachowując AOT profile i20 minut. Programowy backend jest jawnie raportowany, nie dowodzi GPU/FPS telefonu. Lokalny testAPK skompilowany JDK21, bash/docs PASS. Nowy wynik nadal PENDING.
 
-- **`c8b42e7`:** FittedBox usuwa ucięcie najwyższych/najszerszych figur w tray. Test wszystkich14 masek ×3 sloty ×2 rozmiary PASS;158 Flutter, analyze/format PASS. Finalne paczki zostają przebudowane, nowe sumy i smoke do zapisania przed releasem.
+- **`c8b42e7`:** FittedBox usuwa ucięcie najwyższych/najszerszych figur w tray. Test wszystkich14 masek ×3 sloty ×2 rozmiary PASS;159 Flutter, analyze/format PASS. Finalne paczki zostają przebudowane, nowe sumy i smoke do zapisania przed releasem.
 
 - **`07402e7`:** naprawiono null Intent w testowej ActivityTestRule oraz maskowanie błędu launch przez FlutterTestRunner; nieuruchomione oczekiwanie nie jest czasem aktywnej gry. Explicit Intent/fail-fast, profile testAPK compile JDK21 PASS8s. Nowy native20min PENDING.
 - **Finalne APK/AAB po FittedBox:** audit/bundletool/certyfikat PASS;15 Python release tools. Smoke porównuje pełną64-polową maskę, obsługując figuręS z pustym origin. Cztery joby: APK API24/36/16KB oraz universal APK z AAB naAPI36, wszystkie wyniki nowego hasha do odczytu.
+
+- **`e1c5922`:** native test zgłosił rzeczywisty błąd swojej sekwencji wyboru figury po illegal drag. Poprawiono reselection i dodano regresję;159/159 Flutter/analyze PASS. Brak zaliczonego20min, nowy run do odczytu.

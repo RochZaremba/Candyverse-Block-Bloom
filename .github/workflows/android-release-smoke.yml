@@ -29,6 +29,7 @@ jobs:
             page-size: 4096
             ram: 2048
             gpu: swiftshader
+            features: -feature -Vulkan
             kind: apk
             candidate: candyverse-1.0.0-1.apk
             sha256: 8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975
@@ -36,7 +37,8 @@ jobs:
             target: google_apis
             page-size: 4096
             ram: 2048
-            gpu: swiftshader
+            gpu: lavapipe
+            features: ''
             kind: apk
             candidate: candyverse-1.0.0-1.apk
             sha256: 8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975
@@ -44,7 +46,8 @@ jobs:
             target: google_apis_ps16k
             page-size: 16384
             ram: 4096
-            gpu: swiftshader
+            gpu: lavapipe
+            features: ''
             kind: apk
             candidate: candyverse-1.0.0-1.apk
             sha256: 8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975
@@ -52,7 +55,8 @@ jobs:
             target: google_apis
             page-size: 4096
             ram: 2048
-            gpu: swiftshader
+            gpu: lavapipe
+            features: ''
             kind: aab
             candidate: candyverse-1.0.0-from-aab.apk
             sha256: cc9523e95b6af5135776d43730c6df0068c1ea255569a840107f0342a1582771
@@ -83,7 +87,7 @@ jobs:
           arch: x86_64
           profile: pixel_2
           ram-size: ${{ matrix.ram }}
-          emulator-options: -no-window -gpu ${{ matrix.gpu }} -feature -Vulkan -noaudio -no-boot-anim -no-snapshot
+          emulator-options: -no-window -gpu ${{ matrix.gpu }} ${{ matrix.features }} -noaudio -no-boot-anim -no-snapshot
           disable-animations: true
           script: |
             adb shell wm size 1080x1920
