@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "applicationId": "com.renvo.candyverse",
+  "apkSha256": "8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975",
+  "api": "24",
+  "pageSize": 4096,
+  "deviceMemTotalKiB": 2050056,
+  "entrypoint": "production",
+  "nativeInput": true,
+  "renderer": "default",
+  "defaultRendererValidated": true,
+  "backgroundResume": true,
+  "forceStopRestore": true,
+  "fullBoardRestored": true,
+  "occupiedCells": 1,
+  "representativeHardware": false,
+  "ciRun": "https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38721355212",
+  "sourceCommit": "685f935b300160943f5bc79d87fb8d4c54cf1a76"
+}

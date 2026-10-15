@@ -1,57 +1,64 @@
-# STATUS — aktualizuj na końcu każdej sesji
+# STATUS — rzeczywisty stan i przekazanie prac
 
-**Data aktualizacji:** 2026-10-15
-**Stan:** T-001–T-009 scalone; PR #9 CI SUCCESS (`38651090829`), merge `d50e612`. T-010 harness i T-011 konfiguracja przygotowywane równolegle, niezaliczone bez integracji/testów.
-**Potwierdzone commity:** merge T-008 `b4cb8b4`, head `5d081ff`; T-009 `c34eced`, `bef81e1`, `3263632`, `085e97a`, `60316b5`, `a2a1f26`, `2eba311`, `ccbd433`.
-**PR:** #1–#8 MERGED; [#8](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/8), finalne CI `38646672217` SUCCESS. [#9](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/9) MERGED, head `a98dbe4`, merge `d50e612`, CI `38651090829` SUCCESS.
-**Repo/remote:** `RochZaremba/Candyverse-Block-Bloom`, fetch HTTPS/push SSH. Root integruje; workerzy mają rozdzielone moduły/worktree.
+**Aktualizacja:**2026-10-15. **Google Play: nieopublikowane.**
+Main: `41800a6`, merge [PR#10](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/10).
+T-001–T-010 scalone; T-011 sprawdzone technicznie, finalna integracja w toku.
+Repo `RochZaremba/Candyverse-Block-Bloom`; fetch HTTPS, push SSH.
 
-## Task tracker
+## Zadania
 
-| Task | Status | PR / commit / uwagi |
+| Zadanie | Status | Potwierdzenie |
 | --- | --- | --- |
-| T-001 Bootstrap | DONE | `a35c0e4`, PR #1; format/analyze/test/docs/APK lokalnie i CI OK; smoke Android niewykonany |
-| T-002 Engine | DONE | `d65c100`; 21 testów domeny w Dart, 27 testów łącznie; PR #2; lokalny debug APK OK |
-| T-003 Scoring/RNG | DONE | `c74f03b`, `f27948e`; 39/39 Dart, 45/45 Flutter; PR #3; lokalny debug APK OK |
-| T-004 Touch UI | DONE | `725561e`, `0af536b`, `6bfeacf`; 60 testów Flutter, 39 Dart, golden; PR #4; lokalny APK OK |
-| T-005 Visual/VFX/SFX | DONE | `96cf704`, `c00a742`, `e2ddf36`, `1d657bc`, `2148fcc`; 66 Flutter/39 Dart, native APK OK; PR #5 |
-| T-006 Upgrades | DONE | `c3cd0e2`, `7e4cf6c`, `eec3e6c`, `91ed2a7`, `3b6712b`; 90 Flutter/54 Dart/native APK OK; PR #6 |
-| T-007 Island | DONE | `b1945e7`, `f632c57`, `daad0e1`;101 Flutter/56 Dart/native APK OK; PR #7, merge `24ba7c3` |
-| T-008 Save/economy | DONE | `78c5565`, `6469890`, `ba3e6fd`, `99511f8`;125 Flutter/62 Dart/format/analyze/docs/APK OK; PR #8; CI kodu `2b9b74c` SUCCESS |
-| T-009 Settings/i18n | DONE | PR #9 merge `d50e612`;155 Flutter/62 Dart/analyze/APK/CI OK |
-| T-010 QA/performance | IN_PROGRESS | osobny harness Android; rzeczywisty smoke jeszcze niewykonany |
-| T-011 Play Store prep | IN_PROGRESS | konfiguracja/ikony/audyt osobno; brak konta Play Console i klucza |
+| T-001 Bootstrap | DONE | PR#1, `a35c0e4` |
+| T-002 Engine | DONE | PR#2, `d65c100` |
+| T-003 Scoring/RNG | DONE | PR#3, `c74f03b`, `f27948e` |
+| T-004 Touch UI | DONE | PR#4, `725561e`, `0af536b`, `6bfeacf` |
+| T-005 Visual/VFX/SFX | DONE | PR#5, `2148fcc` |
+| T-006 Upgrades | DONE | PR#6, `3b6712b` |
+| T-007 Island | DONE | PR#7, merge `24ba7c3` |
+| T-008 Save/economy | DONE | PR#8, merge `b4cb8b4` |
+| T-009 Settings/i18n | DONE | PR#9, merge `d50e612`, CI38651090829 SUCCESS |
+| T-010 QA/performance | DONE | PR#10, head `000259d`, merge `41800a6`; CI i telefon20min PASS |
+| T-011 Store/release | IN_PROGRESS | PR#11 draft, head `685f935`; końcowa integracja i publikacja GitHub |
 
-Dopuszczalne statusy: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE` (po kryteriach akceptacji, nie po napisaniu kodu bez testów).
+## Potwierdzone testy
 
-## Aktualna sesja / handoff
+-160/160 Flutter na T-010 i zintegrowanym T-011;62/62 Dart silnika. Format/analyze/docs PASS.16/16 Python narzędzi release. CI Flutter T-01038718430226 oraz T-01138721355323 SUCCESS.
+- **Telefon2412DPC0AG, Android16/API36, arm64,4KB:** profile Impeller/Vulkan,1202s aktywnej gry,699 ruchów,744 reakcje,38 cykli.7338 próbek FrameTiming; build p95=10,893ms, raster p95=8,550ms. Gradle SUCCESS, JUnit1/0 failures/0 errors. [Raport](qa/phone-api36-profile.json).
+- **CI emulator API35/CPU:** native DataStore,1202s,686 ruchów,740 reakcji,37 cykli,7232 FrameTiming samples. [CI38718430099 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38718430099), [raport](qa/ci-api35-profile-cpu.json). CPU nie potwierdza wydajności GPU.
+- **Właściciel:** dźwięk, odczuwalna haptyka i oba niezależne przełączniki potwierdzone na produkcyjnym APK wygenerowanym z finalnego AAB. Zainstalowano bez czyszczenia danych. Testowa aplikacja T-010 miała osobny ID i preferencje; nie wykonywano clear/uninstall aplikacji produkcyjnej.
+- **Finalny podpisany APK/AAB:** SDK24/36, certyfikat release, brak INTERNET/nieoczekiwanych permissions, wykluczenia backupu, sześć ELF64+ZIP16KB PASS. Bundletool validate/config/universal i jarsigner PASS.
+- **Zgodność produkcyjna:** wszystkie cztery joby [CI38721355212](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38721355212) SUCCESS na685f935: API24/API36 APK, rzeczywiste API35/16KB APK, API36 APK z finalnego AAB. Input Androida, PNG, tło/powrót, force-stop i pełna identyczna64-polowa plansza po wznowieniu. [Raport wydania](RELEASE_REPORT.md), [QA](QA_REPORT.md), dowody JSON w `docs/qa/`.
+- Poprawiono Game na krótkich ekranach i skalowanie preview wszystkich14 masek. Testy granic figur,320×592/393×650, goldeny i tekst200%. Reguły gry bez zmian.
 
-- **T-009:** sześć ekranów z prawdziwą nawigacją, pełne Settings, PL/EN zapisane w profilu i aktualizowane na otwartych ekranach, przywracane po restarcie. Reset wymaga potwierdzenia, usuwa profil i lokalną kwarantannę, przywraca ustawienia; przerywa callbacki poprzedniej generacji sesji. Przejście z wyniku na wyspę oraz prawdziwe zakupy. Centralne tłumaczenia także dynamicznych komunikatów i semantyki, SDK flutter_localizations.
-- **Naprawione błędy zapisu:** ustawienia nie nadpisują nagrody, jeśli zapis runu utrwalił się, lecz odpowiedź z magazynu zgłosiła błąd. Po retry zachowują najnowszą rewizję. Reset po utracie potwierdzenia sprawdza odczyt; niepewny stan wymaga ponowienia resetu, blokuje inne mutacje i nie udaje sukcesu (ADR-0013).
-- **Weryfikacja T-009:** pełny końcowy `flutter test`155/155; `dart test test/game`62/62; `flutter analyze` bez problemów; debug APK zbudowany33.5s. Goldeny PL Settings oraz EN Home/Upgrade; flow EN Settings→Home→Game/Island, wynik→wyspa/replay;320/412dp tekst2×; reset/cancel/failure/ack/retry. Recovery EN korzysta z języka urządzenia, gdy profil jest nieczytelny; poprawny profil zachowuje zapisany PL/EN. Cztery dodatkowe testy recovery6/6 i analyze OK. Logi `/home/roch/.cache/candyverse/t009-*.log`. Native smoke zmian T-009 jeszcze nie wykonany, należy do T-010.
-- **T-008:** exact resume pełnych masek/skina/RNG/kolejek/faz, idempotentna nagroda, serializowany zapis, ceny GDD.125 Flutter/62 Dart i native debug APK OK. Częściowy native smoke na API36: run1, placement Z0,0, score40 i4 pola; JSON byte-identical po force-stop/start. Wcześniejszy emulator bez KVM zgłasza fully drawn dopiero po3m12s; brak reprezentatywnego FPS/odsłuchu/haptyki.
-- **Workerzy:** `t009_settings` przygotowuje T-011 w `/home/roch/programing/Renvo/candyverse-workers/t011`, `release_audit` T-010 w `.../t010`, root T-009 w `.../t009`. Przygotowane T-011 commity `0dd901c`, `733ceb9`, `cbe60bd`, `ad1cdb0` nie są jeszcze zintegrowanym wydaniem. T-010 harness `d18991c` wymaga poprawionych fixture i uruchomienia.
-- **Release właściciel:** `com.renvo.candyverse`, Renvo, rochzaremba@gmail.com. Właściciel potwierdził brak konta Play Console i klucza. Publiczny URL polityki jeszcze nieutworzony. Można przygotować klucz poza repo, podpisane APK/AAB i materiały; nie można oznaczyć publikacji Google Play jako wykonanej bez konta/dostępu i obowiązkowych etapów właściciela.
-- **Niedokończone:** rzeczywisty20min smoke/profile T-010, finalny podpisany build/audyt, hosting polityki i materiały T-011, publikacja sklepu.
-- **Następne jedno zadanie:** uruchomić poprawiony harness T-010 na Androidzie i zapisać realne wyniki.
+## Wydanie i materiały
 
-- **T-010 próba pierwsza:** natywny profile build/start wykonany, test przerwany przy pierwszym screenshot przez Android PixelCopy result3 (brak bufora). Nie jest wynikiem pozytywnym. Dodano ograniczone retry wyłącznie tego błędu; pozostałe błędy propagują się. Ponowny emulator po restarcie hosta uruchamiany bez KVM.
-- **Klucz:** wygenerowany prywatnie poza wszystkimi worktree, `/var/tmp/roch-candyverse-signing-v1/` (katalog0700, pliki0600). Hasła niewypisywane i poza Git. Wymaga trwałego, bezpiecznego backupu właściciela; `/var/tmp` może podlegać czyszczeniu. Podpisany finalny build jeszcze niewykonany.
+Identyfikator `com.renvo.candyverse`; Renvo, rochzaremba@gmail.com. Wersja1.0.0+1.
+Produkcja zbudowana z `8b642bb`; później zmieniono tylko testy/docs/CI.
+Pliki w `/home/roch/.cache/candyverse/artifacts/` oraz **szkicu** GitHub `v1.0.0-rc.1`:
 
-- **Aktualizacja właściciela:** identyfikator konta Play Console `8799678699020536617`. Nie potwierdzono jeszcze dostępu narzędziowego, rodzaju konta ani gotowości produkcyjnej. Klucz ma teraz trwałą prywatną kopię `/home/roch/.candyverse-signing/v1/`, poza Git; wymagany backup poza tym komputerem.
-- **CI T-010:** pierwszy KVM run `38694449126` zakończony FAILURE po utracie całego emulatora, przed ukończeniem scenariusza. Dodano ograniczenie pamięci/workerów Gradle i diagnostykę kernela; wynik kolejnej próby do sprawdzenia.
+- APK SHA256 `8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975`.
+- AAB SHA256 `a07af0a46f36cfcd3cbde96a582b7ad8541140aa4045f91be203bdefe428efd3`.
+- APK z AAB SHA256 `cc9523e95b6af5135776d43730c6df0068c1ea255569a840107f0342a1582771`.
 
-- **T-010 runner natywny:** ADR-0015, AndroidJUnitRunner/FlutterTestRunner w wariancie profile, wyłącznie testowe zależności. Lokalnie JDK21 `assembleProfile assembleProfileAndroidTest` SUCCESS47s; format/analyze/docs/bash syntax PASS. UUID raportu, Stopwatch i hostowy czas zapobiegają zaliczeniu starego lub skróconego wyniku.20min nowego runnera jeszcze NOT RUN; PR#10 pozostaje otwarty.
-- **Konto właściciela:** Play Console8799678699020536617 osobiste, weryfikacja w toku.
+Listing PL/EN, oryginalne feature graphics i launcher/store icon gotowe.
+Dwa nieedytowane PNG1080×1920 w `assets/store/screenshots/` z provenance/hashami.
+[Polityka PL/EN](https://rochzaremba.github.io/Candyverse-Block-Bloom/) HTTP200,
+byte-identyczna ze źródłem; cała treść również offline w Settings.
+Hosting branch `docs/privacy-site`, commit `efe5f2a`.
 
-- **Poprawka QA układu:** kompaktowy Game dla krótkich ekranów, wszystkie figury widoczne bez scrolla przy zwykłym tekście.157/157 Flutter,62/62 Dart, analyze i golden PASS. Nowa referencja `game_phone_compact.png`; finalny APK/AAB trzeba przebudować i ponownie sprawdzić. Native20min nowego runnera nadal PENDING.
+## Ograniczenia i blokery zewnętrzne
 
-- **CI38708821882:** native instrumentation uruchomiło Home/Settings, lecz emulator zniknął przy przejściu do Game. Brak zaliczenia20min. Dodano jawny CPU renderer wyłącznie do testowej ActivityTestRule; profile AOT, czas i raport pozostają wymagane. Produkcyjny renderer bez zmian. Kolejny krok: odczytać nową próbę.
+- Play Console8799678699020536617: konto osobiste, weryfikacja w toku. Nie potwierdzono dostępu narzędziowego ani utworzenia aplikacji w Console. Nie przesłano AAB/deklaracji i nie zaakceptowano zobowiązań prawnych za wydawcę.
+- Po weryfikacji: wpis aplikacji, formularze/IARC właściciela, test internal/closed, wymagane12 testerów opt-in/14 kolejnych dni i wniosek o dostęp produkcyjny. APK GitHub nie zalicza testu Play. [Instrukcja](RELEASE_GOOGLE_PLAY.md).
+- Prywatny klucz `/home/roch/.candyverse-signing/v1/`, poza Git, katalog0700/pliki0600; backup poza komputerem wymagany od właściciela. Nie regenerować. Zachować certyfikat przy Play App Signing (ADR-0014).
+-60FPS jest celem; p95 części klatki nie dowodzi stałej liczby FPS. Telefon nie został wybrany jako reprezentatywny benchmark średniej klasy. Brak długiej ręcznej oceny tempa ekonomii bez fixture; fixture nie są kodem produkcyjnym.
+- Emulator GPU bywał niestabilny, z utratą całego urządzenia; jedna próba LOW_MEMORY, inne bez ustalonej przyczyny. Nieudane próby zachowano, nie zaliczają QA. Finalna macierz jest zielona; produkcyjny renderer nie został zmieniony. Szczegóły w RELEASE_REPORT.
 
-- **Pełne podglądy figur:** skalowanie preview w tray zapobiega ucinaniu vertical4/horizontal4 w małych panelach. Test wszystkich14 masek ×3 sloty ×2 rozmiary,158/158 Flutter, analyze/format PASS. Finalny APK/AAB do przebudowy; następne zadanie pozostaje pełnym native QA aktualnego head.
+## Kontynuacja
 
-- **Naprawa samego runnera CPU:** wykryto null Intent w AndroidX1.2.0 i przechwytywanie RuntimeException przez SDKFlutterTestRunner. Dodano jawny Intent i fail-fast AssertionError przy błędzie launch. Poprzednie oczekujące joby nie rozpoczęły aktywnej gry, nie zaliczają20min. Następne zadanie: pełny native smoke poprawionego runnera.
+Root `main` stabilny. T-010 worktree `.../candyverse-workers/t010`, branch `test/qa-hardening`, PR#10 MERGED.
+T-011 worktree `/home/roch/programing/Renvo/candyverse-workers/t011`, branch `chore/playstore-release`, [PR#11](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/11).
+Logi telefonu lokalnie `/home/roch/.cache/candyverse/qa-phone-final/`; nie publikować identyfikatora USB i logów pozostałych aplikacji.
 
-- **Scenariusz native:** po naprawie Intent runner rzeczywiście uruchomił grę, zgłosił błąd9→10 linii w samym teście (tap odznaczał figurę zachowaną po illegal drag). Poprawiono jawny reselection;159/159 Flutter/analyze PASS, regresja odtwarza tę sekwencję. Następny krok: uruchomić pełny native20min aktualnego head.
-
-- **Kontrola harnessu przed Androidem:** współdzielony scenariusz hostowy przechodzi wszystkie fixture +jeden cykl19 ruchów/20 reakcji/Replay/reset.160/160 Flutter i analyze/format/bash PASS. Naprawiono findery przy przejściach i scroll resetu. Hostowe6s/MemoryStorage nie zaliczają native20min; storageKind zabezpiecza raport. Następny krok: finalny native smoke poprawionego scenariusza.
+**Jedno następne zadanie:** scalić main/T-010 do T-011, zakończyć kontrole PR#11 i opublikować sprawdzony prerelease GitHub; Play pozostaje zablokowany weryfikacją i wymaganym testem konta osobistego.

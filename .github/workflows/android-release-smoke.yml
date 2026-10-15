@@ -1,0 +1,115 @@
+name: Signed Android compatibility
+on:
+  pull_request:
+    paths:
+      - 'android/**'
+      - 'lib/settings/**'
+      - 'assets/privacy/**'
+      - 'public_pages/**'
+      - 'scripts/android_release_smoke.py'
+      - '.github/workflows/android-release-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  production-entrypoint:
+    # GitHub requires push access to read private draft release candidates.
+    # Only the download step receives GH_TOKEN; signing material stays local.
+    permissions:
+      contents: write
+    name: production-entrypoint (API${{ matrix.api }}, pages${{ matrix.page-size }}, ${{ matrix.kind }}, ${{ matrix.renderer }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - api: 24
+            target: google_apis
+            page-size: 4096
+            ram: 2048
+            gpu: swiftshader
+            features: -feature -Vulkan
+            renderer: default
+            kind: apk
+            candidate: candyverse-1.0.0-1.apk
+            sha256: 8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975
+          - api: 36
+            target: google_apis
+            page-size: 4096
+            ram: 2048
+            gpu: swiftshader
+            features: -feature -Vulkan
+            renderer: default
+            kind: apk
+            candidate: candyverse-1.0.0-1.apk
+            sha256: 8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975
+          - api: 35
+            target: google_apis_ps16k
+            page-size: 16384
+            ram: 4096
+            gpu: swiftshader
+            features: -feature -Vulkan,GLDirectMem
+            renderer: default
+            kind: apk
+            candidate: candyverse-1.0.0-1.apk
+            sha256: 8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975
+          - api: 36
+            target: google_apis
+            page-size: 4096
+            ram: 2048
+            gpu: swiftshader
+            features: -feature -Vulkan
+            renderer: default
+            kind: aab
+            candidate: candyverse-1.0.0-from-aab.apk
+            sha256: cc9523e95b6af5135776d43730c6df0068c1ea255569a840107f0342a1582771
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Download signed candidate without signing credentials
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p build/release-qa
+          gh release download v1.0.0-rc.1 --repo "$GITHUB_REPOSITORY" --pattern "${{ matrix.candidate }}" --dir build/release-qa
+          echo '${{ matrix.sha256 }}  build/release-qa/${{ matrix.candidate }}' | sha256sum --check
+      - name: Enable KVM on disposable runner
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        timeout-minutes: 12
+        with:
+          emulator-build: 15917651
+          api-level: ${{ matrix.api }}
+          target: ${{ matrix.target }}
+          arch: x86_64
+          profile: pixel_2
+          ram-size: ${{ matrix.ram }}
+          emulator-options: -no-window -gpu ${{ matrix.gpu }} ${{ matrix.features }} -noaudio -no-boot-anim -no-snapshot
+          disable-animations: true
+          script: |
+            adb shell wm size 1080x1920
+            adb shell wm density 440
+            adb shell input keyevent WAKEUP
+            adb shell input keyevent 82
+            sleep 5
+            python3 scripts/android_release_smoke.py build/release-qa/${{ matrix.candidate }} --output build/release-qa/results --expected-page-size ${{ matrix.page-size }} --renderer ${{ matrix.renderer }}
+      - name: Record runner diagnostics
+        if: always()
+        run: |
+          mkdir -p build/release-qa/results
+          free -m > build/release-qa/results/runner-memory.txt
+          sudo dmesg --color=never | tail -n 200 > build/release-qa/results/runner-kernel.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: signed-api${{ matrix.api }}-pages${{ matrix.page-size }}-${{ matrix.kind }}-${{ matrix.renderer }}
+          path: build/release-qa/results/
+          if-no-files-found: warn
+          retention-days: 14

@@ -11,7 +11,7 @@
 | Zadania + zależności | [Roadmap](ROADMAP.md) |
 | Obecny rzeczywisty stan i handoff | [Status](STATUS.md) |
 | Testy i DoD | [Test Plan](TEST_PLAN.md) |
-| Publikacja Google Play | [Release](RELEASE_GOOGLE_PLAY.md) |
+| Publikacja Google Play | [Release](RELEASE_GOOGLE_PLAY.md) i [raport kandydata](RELEASE_REPORT.md) |
 | Prywatność i rodziny | [Privacy & Safety](PRIVACY_AND_SAFETY.md) |
 | Pomysły na później | [Post V1](POST_V1.md) |
 | Historia decyzji | [ADR](adr/README.md) |
@@ -22,4 +22,4 @@
 
 ## Status dokumentacji
 
-Pakiet v0.1 = specyfikacja i plan. `docs/STATUS.md` startuje z zadaniami `TODO`; nie udaje zakończonej implementacji. Data przeglądu wymogów sklepu: 2026-10-14. Przed releasem zweryfikuj polityki ponownie.
+Pierwotna specyfikacja v0.1 pozostaje źródłem zakresu V1. Stan implementacji i wyniki testów prowadzi [STATUS](STATUS.md); raporty [QA](QA_REPORT.md) i [wydania](RELEASE_REPORT.md) zawierają potwierdzone dowody oraz ograniczenia. Przed submission sprawdź ponownie wymagania sklepu.

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../core/localization/app_strings.dart';
 import '../core/theme/app_theme.dart';
@@ -107,8 +108,8 @@ class SettingsScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     child: Text(
                       t(
-                        'Postęp i ustawienia są zapisane lokalnie. Odinstalowanie może usunąć zapis. Wydawca nie prowadzi zapisu w chmurze. Kopia systemu Android lub przenoszenie urządzenia mogą zachować dane zgodnie z ustawieniami systemu.',
-                        'Progress and preferences are saved locally. Uninstalling may remove your save. The publisher has no cloud save. Android system backup or device transfer may preserve data according to system settings.',
+                        'Postęp i ustawienia są zapisane lokalnie. Odinstalowanie może usunąć zapis. Wydawca nie prowadzi zapisu w chmurze. Aplikacja wyłącza standardowy backup i transfer danych Androida. Uprzywilejowane narzędzia systemowe mogą działać inaczej.',
+                        'Progress and preferences are saved locally. Uninstalling may remove your save. The publisher has no cloud save. The app disables standard Android backup and data transfer. Privileged system tools may behave differently.',
                       ),
                     ),
                   ),
@@ -168,18 +169,31 @@ class SettingsScreen extends StatelessWidget {
     ),
   );
 
-  void _privacy(BuildContext context) {
+  Future<void> _privacy(BuildContext context) async {
     final strings = AppStrings.of(context);
-    showDialog<void>(
+    final policy = await rootBundle.loadString(
+      strings.text(
+        'assets/privacy/policy_pl.txt',
+        'assets/privacy/policy_en.txt',
+      ),
+    );
+    if (!context.mounted) return;
+    await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(strings.text('Prywatność', 'Privacy')),
         content: SingleChildScrollView(
-          child: Text(
-            strings.text(
-              'Candyverse działa offline. Nie ma kont, reklam, płatnych zakupów ani analityki. Zapis rozgrywki, monety, wyspa i ustawienia są przechowywane na tym urządzeniu. Nie wysyłamy tych danych do wydawcy. Możesz usunąć je w ustawieniach. System Android może tworzyć kopie lub przenosić dane zgodnie z ustawieniami systemu.\n\nWydawca: Renvo\nKontakt: rochzaremba@gmail.com',
-              'Candyverse works offline. There are no accounts, ads, paid purchases or analytics. Your game, coins, island and preferences are stored on this device. We do not send this data to the publisher. You can delete it in settings. Android may back up or transfer data according to system settings.\n\nPublisher: Renvo\nContact: rochzaremba@gmail.com',
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(policy),
+              const SizedBox(height: 16),
+              Text(strings.text('Publiczna polityka:', 'Public policy:')),
+              const SelectableText(
+                'https://rochzaremba.github.io/Candyverse-Block-Bloom/',
+              ),
+            ],
           ),
         ),
         actions: [

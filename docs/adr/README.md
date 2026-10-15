@@ -32,6 +32,8 @@ Istniejące ADR-y:
 
 - [0011 Save write gate and recovery](0011-save-write-gate-and-recovery.md)
 
+- [0012 Android backup exclusion](0012-android-backup-exclusion.md)
 - [0013 Settings, localization and reset](0013-settings-localization-and-reset.md)
 
+- [0014 Signing certificate continuity](0014-signing-certificate-continuity.md)
 - [0015 Native profile instrumentation](0015-native-profile-instrumentation.md)

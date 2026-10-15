@@ -1,0 +1,49 @@
+Privacy Policy
+
+Updated: 15 October 2026. Covers version 1 of the Android game.
+
+Publisher
+
+Renvo
+
+App
+
+Candyverse: Block & Bloom
+
+Application ID
+
+com.renvo.candyverse
+
+Contact
+
+rochzaremba@gmail.com
+
+The game works offline
+
+You do not need an account or an internet connection to play. The game has no ads, paid in-app purchases, analytics, advertising tracking, chat or player-to-player communication. Candy Coins are virtual currency earned only through gameplay.
+
+What we save and why
+
+Your device stores the current board and pieces, random generator state, score, cleared lines, chosen upgrades, coins, best score and island building levels. It also stores your language, sound, haptics and animation preferences. This lets you resume a game and keep your progress.
+
+If a save is damaged or has an unsupported version, a copy may be kept locally for recovery. We do not send it to the publisher. The game does not collect names, addresses, email addresses, location, contacts or advertising identifiers. It does not transmit game progress or usage data to our servers or advertising and analytics providers.
+
+Storage, backups and deletion
+
+Local data remains until it is deleted, replaced during gameplay or the app is uninstalled. In settings, choose “Delete local data” and confirm to delete progress, coins, best score, the current game, preferences and any local damaged-save copy. This cannot be undone. The publisher does not provide a cloud backup.
+
+The app disables standard Android backup and excludes its data from cloud backup and device-to-device transfer. Manufacturer, system or privileged tools may behave differently. Uninstalling may remove progress; resetting the game does not guarantee deletion of every copy created outside the app.
+
+Younger players
+
+The game is also intended for younger audiences. We do not ask children for personal information and do not provide ads, profiling, paid random rewards or social communication. A parent or guardian can contact us with privacy questions.
+
+Email contact and this page
+
+If you email us, we receive your address and message to answer your question. Do not include children's information, sensitive information or a private game save. Messages are handled through Gmail; you can request deletion of correspondence unless a legal obligation requires us to retain it.
+
+This page has no analytics scripts, forms or cookies added by us. Opening it in a browser requires internet access; the hosting provider and browser may process ordinary connection data, such as an IP address and technical information. This is not a transmission of game progress.
+
+Changes and questions
+
+If the game's behavior or providers change, we will update this policy and the date above. For privacy questions, contact Renvo at rochzaremba@gmail.com.
