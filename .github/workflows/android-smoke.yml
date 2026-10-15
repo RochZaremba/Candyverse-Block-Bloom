@@ -36,7 +36,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         env:
           CANDYVERSE_SMOKE_MINUTES: '20'
-          CANDYVERSE_SOFTWARE_RENDERING: '1'
+          CANDYVERSE_SOFTWARE_RENDERING: '0'
           CANDYVERSE_QA_OUTPUT: build/qa-smoke
         with:
           api-level: 35

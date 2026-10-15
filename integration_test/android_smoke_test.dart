@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show debugPrintSynchronously;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -382,12 +384,16 @@ void main() {
       'buildOver16667': builds.where((v) => v > 16667).length,
       'rasterOver16667': rasters.where((v) => v > 16667).length,
       'fixtureProgression': true,
+      'runToken': const String.fromEnvironment('CANDYVERSE_QA_RUN_TOKEN'),
       'captureMethod': captureUi ? 'flutter-repaint-boundary' : 'disabled',
       'representativeHardware': false,
       'softwareRendering': const bool.fromEnvironment(
         'CANDYVERSE_SOFTWARE_RENDERING',
       ),
     };
+    debugPrintSynchronously(
+      'CANDYVERSE_QA_REPORT:${jsonEncode(binding.reportData!['metrics'])}',
+    );
     await tester.pumpWidget(const SizedBox());
     await repo.reset();
   }, timeout: const Timeout(Duration(hours: 1)));

@@ -43,7 +43,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    // Profile instrumentation is opt-in and never changes the release variant.
+    if (providers.gradleProperty("candyverseInstrumentation").orNull == "true") {
+        testBuildType = "profile"
+    }
+
     defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         applicationId = "com.renvo.candyverse"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
@@ -89,4 +95,9 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    androidTestImplementation("androidx.test:runner:1.2.0")
+    androidTestImplementation("androidx.test:rules:1.2.0")
 }
