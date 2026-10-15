@@ -128,6 +128,9 @@ jest otwarty; draft `v1.1.0-rc.1` zawiera wszystkie trzy pliki o powyższych has
 Macierz CI pobiera te nowe pliki, nie historyczne rc.1.
 Dokumenty architektury/QA23c2b12 i nowy banner sklepu e28c31d zintegrowano;
 nie zmieniają zamrożonego źródła binariów6e0780f.
+ADR-0017 opisuje osobny pakiet QA i blokadę alternatywnego Flutter drive na
+fizycznym urządzeniu. Sprawdzono odrzucenie tego trybu na telefonie (exit2,
+przed instalacją), `bash -n` PASS; domyślna instrumentacja pozostaje bez zmian.
 
 Niedokończone: rzeczywisty smoke nowej wersji na telefonie,
 cztery przypadki zgodności nowego podpisanego kandydata, CI i merge integracji.
