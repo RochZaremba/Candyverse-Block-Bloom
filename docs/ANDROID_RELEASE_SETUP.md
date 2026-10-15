@@ -115,3 +115,20 @@ Public privacy URL, store account, ownership/legal declarations and applicable
 closed/internal testing are required before publishing. Follow the full
 [Google Play release checklist](RELEASE_GOOGLE_PLAY.md); this setup does not submit
 or publish the app.
+
+## Rebuild the signed universal APK
+
+After validating the AAB, the local-only helper reads Java Properties and supplies
+passwords through private temporary files, never shell arguments or output.
+Both credential files must remain outside every Git worktree; an existing output
+is refused. JDK21 and bundletool1.18.3 were used for the1.1.0 candidate.
+
+```sh
+java scripts/BuildCandyverseApks.java /path/to/bundletool.jar \
+  "$HOME/.candyverse-signing/v1/key.properties" \
+  /path/to/candyverse-1.1.0-2.aab /path/to/new-candyverse.apks
+```
+
+Extract `universal.apk` from that public APK-set ZIP, then run
+`audit_android_artifact.py` and `apksigner verify --print-certs` on it.
+This packaging step is independent of Play Console submission.
