@@ -40,3 +40,6 @@ Dopuszczalne statusy: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE` (po kryteriach ak
 
 - **Aktualizacja właściciela:** identyfikator konta Play Console `8799678699020536617`. Nie potwierdzono jeszcze dostępu narzędziowego, rodzaju konta ani gotowości produkcyjnej. Klucz ma teraz trwałą prywatną kopię `/home/roch/.candyverse-signing/v1/`, poza Git; wymagany backup poza tym komputerem.
 - **CI T-010:** pierwszy KVM run `38694449126` zakończony FAILURE po utracie całego emulatora, przed ukończeniem scenariusza. Dodano ograniczenie pamięci/workerów Gradle i diagnostykę kernela; wynik kolejnej próby do sprawdzenia.
+
+- **T-010 runner natywny:** ADR-0015, AndroidJUnitRunner/FlutterTestRunner w wariancie profile, wyłącznie testowe zależności. Lokalnie JDK21 `assembleProfile assembleProfileAndroidTest` SUCCESS47s; format/analyze/docs/bash syntax PASS. UUID raportu, Stopwatch i hostowy czas zapobiegają zaliczeniu starego lub skróconego wyniku.20min nowego runnera jeszcze NOT RUN; PR#10 pozostaje otwarty.
+- **Konto właściciela:** Play Console8799678699020536617 osobiste, weryfikacja w toku.
