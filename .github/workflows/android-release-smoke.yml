@@ -29,7 +29,7 @@ jobs:
           - api: 36
             target: google_apis
             page-size: 4096
-          - api: 36
+          - api: 35
             target: google_apis_ps16k
             page-size: 16384
     steps:
@@ -55,11 +55,13 @@ jobs:
           api-level: ${{ matrix.api }}
           target: ${{ matrix.target }}
           arch: x86_64
+          profile: pixel_2
           ram-size: 1536
-          emulator-options: -no-window -gpu swiftshader -feature -Vulkan -noaudio -no-boot-anim -no-snapshot
+          emulator-options: -no-window -gpu swiftshader -feature -Vulkan,GLDirectMem -noaudio -no-boot-anim -no-snapshot
           disable-animations: true
           script: |
             adb shell wm size 1080x1920
+            adb shell wm density 440
             python3 scripts/android_release_smoke.py build/release-qa/candyverse-1.0.0-1.apk --output build/release-qa/results --expected-page-size ${{ matrix.page-size }}
       - uses: actions/upload-artifact@v4
         if: always()

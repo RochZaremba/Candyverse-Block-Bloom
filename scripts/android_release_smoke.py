@@ -58,7 +58,10 @@ def main():
             (args.output/'diagnostics-error.txt').write_text(str(error))
 
     def nodes():
-        adb('shell', 'uiautomator', 'dump', '/sdcard/candyverse-release-ui.xml')
+        adb('shell', 'rm', '-f', '/sdcard/candyverse-release-ui.xml')
+        dumped = adb('shell', 'uiautomator', 'dump', '/sdcard/candyverse-release-ui.xml')
+        if 'dumped to' not in dumped.lower():
+            raise ValueError('UIAutomator did not produce a fresh hierarchy.')
         xml = adb('shell', 'cat', '/sdcard/candyverse-release-ui.xml')
         (args.output/'latest-ui.xml').write_text(xml)
         return list(ET.fromstring(xml[xml.index('<?xml'):]).iter('node'))
@@ -90,9 +93,12 @@ def main():
             pass
         raise RuntimeError(f'Accessibility node not found: {pattern}; last dump error: {last_error}')
 
-    def tap(pattern):
+    def tap(pattern, vertical=.5):
         left, top, right, bottom = locate(pattern)
-        adb('shell', 'input', 'tap', str((left+right)//2), str((top+bottom)//2))
+        x, y = (left+right)//2, top+int((bottom-top)*vertical)
+        with (args.output/'tap-trace.jsonl').open('a') as trace:
+            trace.write(json.dumps({'pattern': pattern, 'bounds': [left,top,right,bottom], 'tap': [x,y]})+'\n')
+        adb('shell', 'input', 'tap', str(x), str(y))
         time.sleep(1)
 
     def capture(name):
@@ -106,6 +112,7 @@ def main():
     def launch():
         adb('shell', 'am', 'start', '-W', '-n', APP+'/.MainActivity')
 
+    (args.output/'display.txt').write_text(adb('shell', 'wm', 'size')+'\n'+adb('shell', 'wm', 'density')+'\n')
     page_size = read_page_size(adb)
     if args.expected_page_size is not None and page_size != args.expected_page_size:
         raise RuntimeError(f'Expected page size {args.expected_page_size}, got {page_size}')
@@ -118,7 +125,9 @@ def main():
         locate(r'^Prywatność$', seconds=8)
     except RuntimeError:
         adb('shell', 'input', 'swipe', '540', '1550', '540', '650', '400')
-    tap(r'^Prywatność$')
+    # Android7 merges the actionable tile and non-actionable footer semantics.
+    # Tap the visible title region rather than the combined panel's midpoint.
+    tap(r'^Prywatność$', vertical=.2)
     locate(r'rochzaremba@gmail\.com')
     capture('release-privacy-pl')
     adb('shell', 'input', 'keyevent', '4')
