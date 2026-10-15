@@ -84,3 +84,10 @@ Nie konwertujemy SurfaceView na ImageView: komentarz Flutter SDK ostrzega,
 że taka konwersja zmienia renderowanie całego pomiaru. PNG są wysyłane przez
 reportData i zapisuje je driver również przy niepowodzeniu testu. Systemowe
 reduced-motion jest raportowane oddzielnie; CI pozostawia animacje włączone.
+
+Domyślny harness nie wykonuje GPU readback podczas testu stabilności; emulowany
+RenderThread ulegał awarii również przy drugim RepaintBoundary capture. Loguje
+kamienie milowe, a natywne screenshoty pochodzą ze smoke podpisanego APK.
+Opcjonalne `--dart-define=CANDYVERSE_CAPTURE_FLUTTER_UI=true` zachowuje capture
+Flutter UI do urządzeń, które go wspierają. Raport wskazuje metodę capture.
+Czas dwell zapisujemy przed końcowym resetem, aby reset nie zwiększał pomiaru.

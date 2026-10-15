@@ -56,6 +56,7 @@ void main() {
     await repo.reset();
     final theme = await AppTheme.load();
     AppSession? session;
+    const captureUi = bool.fromEnvironment('CANDYVERSE_CAPTURE_FLUTTER_UI');
     final captureBoundary = GlobalKey();
     Future<void> mount(AppSaveV1 save) async {
       await tester.pumpWidget(const SizedBox());
@@ -90,7 +91,8 @@ void main() {
     }
 
     Future<void> capture(String name) async {
-      debugPrint('QA Flutter UI capture: $name');
+      debugPrint('QA milestone: $name');
+      if (!captureUi) return;
       await tester.pump(const Duration(milliseconds: 300));
       // Keep the production SurfaceView intact. Native PixelCopy conversion
       // changes rendering for the entire performance run and crashes this
@@ -345,6 +347,7 @@ void main() {
       await tap(find.text('Visit island'));
       cycles++;
     }
+    final activeDwellSeconds = active.elapsed.inSeconds;
     await tap(find.byTooltip('Back to menu'));
     await tap(find.text('Settings'));
     await tap(find.byKey(const Key('reset-data')));
@@ -366,7 +369,7 @@ void main() {
     binding.reportData ??= <String, dynamic>{};
     binding.reportData!['metrics'] = {
       'elapsedSeconds': elapsed.elapsed.inSeconds,
-      'activeDwellSeconds': active.elapsed.inSeconds,
+      'activeDwellSeconds': activeDwellSeconds,
       'requestedActiveMinutes': minutes,
       'dwellMoves': moves,
       'dwellReactions': reactions,
@@ -378,7 +381,7 @@ void main() {
       'buildOver16667': builds.where((v) => v > 16667).length,
       'rasterOver16667': rasters.where((v) => v > 16667).length,
       'fixtureProgression': true,
-      'captureMethod': 'flutter-repaint-boundary',
+      'captureMethod': captureUi ? 'flutter-repaint-boundary' : 'disabled',
       'representativeHardware': false,
     };
     await tester.pumpWidget(const SizedBox());
