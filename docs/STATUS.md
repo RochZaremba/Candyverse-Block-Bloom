@@ -74,3 +74,41 @@ Logi telefonu lokalnie `/home/roch/.cache/candyverse/qa-phone-final/`; nie publi
 ## Nowa sesja — Candy Kingdom2026-10-15
 
 Właściciel jawnie rozszerzył V1; plan wszystkich zmian zapisany w KINGDOM_EXPANSION, PRD/GDD/Visual i ADR-0016. Baseline flutter test160/160 PASS; main349684e czysty przed pracą. Branch feat/candy-kingdom-expansion. T-012 IN_PROGRESS; T-013–T-018 TODO. Nowe assety i funkcje nie są jeszcze ukończone. Następne zadanie: implementacja schema2 i30 poziomów z testami migracji.
+
+### Integracja Candy Kingdom — aktualny stan
+
+Plan T-012 scalony: [PR#13](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/13),
+head4add259, merge85c7a91; CI38727224494 SUCCESS. Historyczne wyniki V1 powyżej
+nie stanowią potwierdzenia nowego wydania1.1.0+2.
+
+Branch `feat/kingdom-integration`, ostatni commit implementacji `6e0780f`.
+Zintegrowano T-013–T-017:30 poziomów, schema2/migrację, dokładny pasywny dochód,
+prestiż/gwiazdki i3 krajobrazy, renderowane zwierzaki/budynki, menu2 przyciski,
+gear, EN dla nowych profili, candy komunikaty i opaque przejścia. Wspólny zapis
+serializuje dochód razem z ruchami gry; testy obejmują utratę potwierdzenia i retry.
+Asssety/provenance/prompty: `assets/kingdom/`. Fanfara prestiżu i nowy launcher
+w `29d96db`; izolacja aplikacji QA i rozszerzony smoke w `ac02b16`.
+
+Potwierdzone lokalnie: `flutter test --concurrency=2`193/193 PASS,
+`dart test test/game`71/71 PASS, `flutter analyze` PASS, format65 plików bez zmian,
+`python3 scripts/check_docs.py`48 dokumentów PASS,
+`python3 scripts/test_release_tools.py`19/19 PASS. Goldeny obejmują nowy Home,
+wyspy poziomu0/1/5/6/15/30 i różne światy; testy małych ekranów/200% tekstu
+i reduced-motion przechodzą. Hostowy scenariusz nowych zakupów, dochodu
+i anulowania/potwierdzenia prestiżu PASS, ale nie zastępuje Android DataStore.
+
+T-018 IN_PROGRESS: fizyczny test20min uruchomiony na podłączonym telefonie,
+osobny applicationId `com.renvo.candyverse.qa` / „Candyverse QA”, bez kasowania
+zwykłej aplikacji. Wynik jeszcze nieznany. Logi lokalne:
+`/home/roch/.cache/candyverse/qa-kingdom-phone/`. Podpisane buildy1.1.0+2
+powstają w osobnym worktree `.../candyverse-workers/kingdom-release`,
+ze źródła6e0780f i dotychczasowego zewnętrznego klucza.
+Nowy PR integracyjny i kandydat wydania jeszcze nieutworzone.
+
+Niedokończone: rzeczywisty smoke nowej wersji na telefonie, audyt APK/AAB,
+cztery przypadki zgodności nowego podpisanego kandydata, CI i merge integracji.
+Nie oznaczać tego rozszerzenia jako opublikowanego ani w pełni przetestowanego.
+Blokery Play Console i backupu klucza pozostają aktualne.
+
+**Jedno następne zadanie:** zakończyć i udokumentować fizyczny smoke T-018,
+następnie przygotować nowego kandydata1.1.0+2 do macierzy zgodności.
