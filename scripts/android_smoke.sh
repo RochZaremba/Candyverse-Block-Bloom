@@ -112,6 +112,8 @@ for line in (out/'final-flutter.log').read_text(errors='replace').splitlines():
 if not records:
     raise SystemExit('Native instrumentation completed without QA metrics.')
 report=records[-1]
+if report.get('storageKind') != 'native-data-store':
+    raise SystemExit('Host memory validation cannot count as native persistence QA.')
 minutes=int(sys.argv[2])
 host_elapsed=int(sys.argv[3])
 if report['requestedActiveMinutes'] != minutes or report['activeDwellSeconds'] < 60*minutes or host_elapsed < 60*minutes:

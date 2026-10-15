@@ -5,7 +5,7 @@ Nie oznaczamy testu stabilności jako zakończonego przed odczytem raportu.
 
 ## Wyniki potwierdzone
 
-- `flutter test`:159/159, w tym goldeny, PL/EN,320/412dp, tekst200%, reset i odzyskiwanie zapisu.
+- `flutter test`:160/160, w tym goldeny, PL/EN,320/412dp, tekst200%, reset i odzyskiwanie zapisu.
 - `dart test test/game`:62/62; `flutter analyze`, format i kontrola dokumentacji PASS.
 - JDK21 `assembleProfile assembleProfileAndroidTest`: PASS na branchach T-010 i T-011; testAPK zawiera natywny FlutterTestRunner.
 - Poprawiono układ Game na krótkich telefonach: plansza dopasowuje rozmiar, panele są bardziej zwarte, wszystkie trzy figury mieszczą się bez scrolla przy zwykłym tekście. Testy393×650 i320×592 sprawdzają pełne granice figur oraz wykonują placement. Zwiększony tekst zachowuje przewijanie. Referencja: `test/goldens/game_phone_compact.png`.
@@ -46,4 +46,6 @@ Dodatkowy przegląd PNG wykrył ucięcie4-polowej pionowej figury wewnątrz komp
 
 Naprawa startu native CPU: `ActivityTestRule.getActivityIntent()` w AndroidX1.2.0 zwraca null (potwierdzone bytecode); dodany wariant dopisywał extras do null. FlutterTestRunner przechwytuje RuntimeException i czeka na Dart results, więc job pozostawał w oczekiwaniu bez rozgrywki. Obecnie tworzymy jawny Intent i propagujemy błąd launch jako AssertionError, aby nie trafił do tego catch. Oczekiwanie nie jest pomiarem aktywnej gry; finalny20min nadal wymaga nowego raportu.
 
-Native run38714825323 dotarł do Game i poprawnie zgłosił nieudaną asercję scenariusza, bez utraty emulatora: nielegalny drag zachowuje zaznaczenie, więc ponowny tap tego samego slotu je wyłączał. Harness jawnie wybiera inny slot i wraca do0 przed próbą tap placement. Dodano widget regression invalid drag→reselection→invalid tap→line clear;159/159 Flutter i analyze PASS.20min nadal niezaliczone przed finalnym wynikiem.
+Native run38714825323 dotarł do Game i poprawnie zgłosił nieudaną asercję scenariusza, bez utraty emulatora: nielegalny drag zachowuje zaznaczenie, więc ponowny tap tego samego slotu je wyłączał. Harness jawnie wybiera inny slot i wraca do0 przed próbą tap placement. Dodano widget regression invalid drag→reselection→invalid tap→line clear;160/160 Flutter i analyze PASS.20min nadal niezaliczone przed finalnym wynikiem.
+
+Scenariusz wyodrębniono do `runSmokeScenario`. Test hosta korzysta z MemoryStorage i jawnego storageKind=memory-host-validation; sprawdza cały ciąg fixture oraz jeden cykl19 legalnych ruchów/20 reakcji/Replay i reset. Ujawnił i naprawił oczekiwanie na GameScreen, przewinięcie resetu w leniwej liście oraz klikanie dopiero po zakończeniu przejścia/hit-testable.160/160 Flutter, analyze/format/bash PASS. Hostowe6s nie zaliczają20min ani DataStore; wrapper odrzuca raporty bez storageKind=native-data-store. Natywny entrypoint nadal używa prawdziwych preferencji i domyślnych20 minut z CI.

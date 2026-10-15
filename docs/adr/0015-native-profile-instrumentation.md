@@ -26,3 +26,5 @@ Zaliczenie samego uruchomienia albo obniżenie długości smoke ukrywałoby brak
 ## Update2026-10-15
 
 Run38708821882 utracił cały emulator także przy natywnym JUnit, po Settings→Game; kernel nie potwierdził OOM ani kolejnego segfault w tej próbie. CPU renderer jest teraz jawną opcją testowej ActivityTestRule, przekazywaną wyłącznie przez argument instrumentacji. Używa oficjalnych stałych FlutterShellArgs z SDK (`enable-software-rendering=true`, `enable-impeller=false`). CI wybiera tę opcję; raport oznacza softwareRendering=true. Profil AOT i20min pozostają wymagane, metryk CPU nie przedstawiamy jako GPU/FPS telefonu. Produkcyjny APK i jego oddzielny smoke zachowują domyślny renderer.
+
+Kontrola samego scenariusza jest współdzielona z hostowym widget testem: MemoryStorage, jeden cykl, jawna etykieta storageKind. Służy wykrywaniu błędów finderów i przejść bez przebudowy Androida. Nie jest testem trwałości ani20min; wrapper natywny odrzuca tę etykietę. Android pozostaje jedynym źródłem dowodu DataStore i realnego czasu.

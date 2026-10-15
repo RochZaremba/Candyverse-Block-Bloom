@@ -49,3 +49,5 @@
 - **Finalne APK/AAB po FittedBox:** audit/bundletool/certyfikat PASS;15 Python release tools. Smoke porównuje pełną64-polową maskę, obsługując figuręS z pustym origin. Cztery joby: APK API24/36/16KB oraz universal APK z AAB naAPI36, wszystkie wyniki nowego hasha do odczytu.
 
 - **`e1c5922`:** native test zgłosił rzeczywisty błąd swojej sekwencji wyboru figury po illegal drag. Poprawiono reselection i dodano regresję;159/159 Flutter/analyze PASS. Brak zaliczonego20min, nowy run do odczytu.
+
+- **Harness sprawdzony przed urządzeniem:** scalono `000259d`;160/160 Flutter, wspólny scenariusz hostowy obejmuje jeden pełny cykl. Host/MemoryStorage nie zalicza Android QA. Telefon właściciela2412DPC0AG/Android16/API36/arm64/4KB połączony; uruchamiany20min profile z domyślnym GPU w odrębnym com.example.candyverse. Produkcyjne com.renvo.candyverse i dane pozostają zachowane. Wynik PENDING.
