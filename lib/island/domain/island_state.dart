@@ -8,12 +8,17 @@ class IslandState {
     : levels = Map.unmodifiable(
         levels ?? {for (final kind in BuildingKind.values) kind: 0},
       ) {
-    if (stars < 0 ||
+    // Rates are persisted/displayed as native signed integers. Validate the
+    // largest reachable rate so later growth can never wrap an accepted save.
+    final largestRate =
+        BigInt.from(maxLevel) * (BigInt.from(stars) + BigInt.from(10));
+    if (largestRate > BigInt.parse('9223372036854775807') ||
+        stars < 0 ||
         this.levels.length != BuildingKind.values.length ||
         BuildingKind.values.any((kind) => !this.levels.containsKey(kind)) ||
         this.levels.values.any((level) => level < 0 || level > maxLevel)) {
       throw ArgumentError(
-        'Island requires all three building levels in 0..30 and non-negative stars.',
+        'Island requires all three building levels in 0..30 and representable non-negative income rates.',
       );
     }
   }

@@ -128,7 +128,9 @@ class AppSaveV1 {
     }
     final game = run.game;
     return copyWith(
-      wallet: wallet + game.pendingCoins,
+      wallet: _checkedBalance(
+        BigInt.from(wallet) + BigInt.from(game.pendingCoins),
+      ),
       bestScore: game.score > bestScore ? game.score : bestScore,
       lastAwardedRunId: id,
       clearRun: true,
@@ -148,11 +150,16 @@ class AppSaveV1 {
     final previous = incomeTimestampMs;
     if (previous == null) return copyWith(incomeTimestampMs: nowMs);
     if (nowMs <= previous) return this;
+    // Multiplication can overflow even when the final quotient fits in the
+    // snapshot's native integer representation. Keep intermediates exact.
     final amount =
-        incomeRemainder + (nowMs - previous) * island.incomeTenthsPerMinute;
+        BigInt.from(incomeRemainder) +
+        BigInt.from(nowMs - previous) *
+            BigInt.from(island.incomeTenthsPerMinute);
+    final denominator = BigInt.from(incomeDenominator);
     return copyWith(
-      wallet: wallet + amount ~/ incomeDenominator,
-      incomeRemainder: amount % incomeDenominator,
+      wallet: _checkedBalance(BigInt.from(wallet) + amount ~/ denominator),
+      incomeRemainder: (amount % denominator).toInt(),
       incomeTimestampMs: nowMs,
     );
   }
@@ -400,4 +407,13 @@ bool _bool(Map<String, dynamic> d, String key) {
   final value = d[key];
   if (value is! bool) throw FormatException('Invalid $key.');
   return value;
+}
+
+/// Reject an unrepresentable balance explicitly; never clamp or wrap currency.
+int _checkedBalance(BigInt value) {
+  final result = value.toInt();
+  if (result < 0 || BigInt.from(result) != value) {
+    throw StateError('Balance exceeds the save format integer representation.');
+  }
+  return result;
 }

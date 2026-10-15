@@ -142,4 +142,30 @@ void main() {
       expect(() => AppSaveV1.decode(jsonEncode(value)), throwsFormatException);
     }
   });
+  test(
+    'large elapsed intervals use exact intermediates rather than wrapping',
+    () {
+      final save = AppSaveV1(island: levels(30)).accrueIncome(0);
+      final next = save.accrueIncome(9000000000000000000);
+      expect(next.wallet, 4500000000000000);
+      expect(next.incomeRemainder, 0);
+      expect(AppSaveV1.decode(next.encode()).wallet, 4500000000000000);
+    },
+  );
+
+  test('unrepresentable totals and future income rates fail explicitly', () {
+    const largestInteger = 0x7fffffffffffffff;
+    final save = AppSaveV1(
+      wallet: largestInteger,
+      island: levels(1),
+    ).accrueIncome(0);
+    expect(() => save.accrueIncome(60000), throwsStateError);
+    expect(save.wallet, largestInteger);
+    final validStars = largestInteger ~/ IslandState.maxLevel - 10;
+    expect(IslandState(stars: validStars).stars, validStars);
+    expect(() => IslandState(stars: validStars + 1), throwsArgumentError);
+    final invalid = jsonDecode(AppSaveV1().encode()) as Map<String, dynamic>;
+    invalid['stars'] = largestInteger;
+    expect(() => AppSaveV1.decode(jsonEncode(invalid)), throwsFormatException);
+  });
 }
