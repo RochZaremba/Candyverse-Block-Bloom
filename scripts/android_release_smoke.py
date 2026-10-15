@@ -36,12 +36,15 @@ def main():
     def locate(pattern, seconds=90):
         deadline = time.monotonic()+seconds
         while time.monotonic() < deadline:
+            matches = []
             for node in nodes():
                 label = node.get('text', '')+'\n'+node.get('content-desc', '')
                 bounds = [int(v) for v in re.findall(r'\d+', node.get('bounds', ''))]
                 if (re.search(pattern, label, re.MULTILINE) and len(bounds) == 4
                         and bounds[2] > bounds[0] and bounds[3] > bounds[1]):
-                    return bounds
+                    matches.append(bounds)
+            if matches:
+                return min(matches, key=lambda b: (b[2]-b[0])*(b[3]-b[1]))
             time.sleep(1)
         raise RuntimeError(f'Accessibility node not found: {pattern}')
 

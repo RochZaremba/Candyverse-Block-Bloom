@@ -13,6 +13,10 @@ permissions:
   contents: read
 jobs:
   production-entrypoint:
+    # GitHub requires push access to read private draft release candidates.
+    # Only the download step receives GH_TOKEN; signing material stays local.
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
