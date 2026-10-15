@@ -72,7 +72,7 @@ CI finalnego headf060300:
   [API36/APK](qa/kingdom-signed-api36-pages4096-apk-default.json),
   [API35/16KB/APK](qa/kingdom-signed-api35-pages16384-apk-default.json),
   [API36/z AAB](qa/kingdom-signed-api36-pages4096-aab-default.json).
-- Android smoke38731841069 —20min aktywnej interakcji i natywny zapis na CPU.
+- Android smoke38731841069 — CANCELLED po zastąpieniu źródła; niezaliczony.
 
 Nie oznaczać kandydata jako zweryfikowanego na podstawie dawnych wyników1.0.0.
 
