@@ -44,7 +44,7 @@ jobs:
         run: |
           mkdir -p build/release-qa
           gh release download v1.0.0-rc.1 --repo "$GITHUB_REPOSITORY" --pattern candyverse-1.0.0-1.apk --dir build/release-qa
-          echo 'e3dacccae6d9fb6f7bf4a96b94db40962d2a320984f254a278e90c1b94df127f  build/release-qa/candyverse-1.0.0-1.apk' | sha256sum --check
+          echo '50623133b59a7aa68544c0bef6df13d060ce8c721e088296d255bdb34d911825  build/release-qa/candyverse-1.0.0-1.apk' | sha256sum --check
       - name: Enable KVM on disposable runner
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
