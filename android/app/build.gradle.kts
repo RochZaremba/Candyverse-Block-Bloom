@@ -6,6 +6,7 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val qaInstrumentation = providers.gradleProperty("candyverseInstrumentation").orNull == "true"
 val signingProperties = Properties()
 val signingPropertiesPath = System.getenv("CANDYVERSE_KEY_PROPERTIES")
 val signingPropertiesFile = signingPropertiesPath?.let { file(it).canonicalFile }
@@ -22,6 +23,7 @@ if (signingPropertiesFile != null) {
 
 gradle.taskGraph.whenReady {
     if (allTasks.any { it.name.contains("release", ignoreCase = true) }) {
+        require(!qaInstrumentation) { "QA instrumentation cannot produce a release." }
         require(signingPropertiesFile != null) {
             "Release signing required. Set CANDYVERSE_KEY_PROPERTIES to an external credentials file."
         }
@@ -44,13 +46,14 @@ android {
     }
 
     // Profile instrumentation is opt-in and never changes the release variant.
-    if (providers.gradleProperty("candyverseInstrumentation").orNull == "true") {
+    if (qaInstrumentation) {
         testBuildType = "profile"
     }
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        applicationId = "com.renvo.candyverse"
+        applicationId = if (qaInstrumentation) "com.renvo.candyverse.qa" else "com.renvo.candyverse"
+        manifestPlaceholders["candyverseAppLabel"] = if (qaInstrumentation) "Candyverse QA" else "Candyverse: Block & Bloom"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24

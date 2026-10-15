@@ -13,10 +13,13 @@ import org.junit.runner.RunWith;
 @RunWith(FlutterTestRunner.class)
 public class CandyverseTest {
     private static Class<? extends FlutterActivity> applicationActivity() {
-        String packageName = InstrumentationRegistry.getInstrumentation()
-                .getTargetContext().getPackageName();
+        android.content.Context target = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent launch = target.getPackageManager().getLaunchIntentForPackage(target.getPackageName());
+        if (launch == null || launch.getComponent() == null) {
+            throw new IllegalStateException("QA launcher activity is missing");
+        }
         try {
-            return Class.forName(packageName + ".MainActivity")
+            return Class.forName(launch.getComponent().getClassName())
                     .asSubclass(FlutterActivity.class);
         } catch (ClassNotFoundException error) {
             throw new IllegalStateException("QA target activity is missing", error);
