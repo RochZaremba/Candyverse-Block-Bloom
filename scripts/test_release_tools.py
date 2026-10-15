@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from audit_android_artifact import validate_elf
+from audit_android_artifact import validate_elf, packaged_xml
 from create_upload_key import outside_repository, properties_escape
 
 
@@ -20,6 +20,18 @@ def native_library(segments):
 
 
 class ReleaseToolsTests(unittest.TestCase):
+    def test_resolves_shrunk_and_development_xml_from_resource_table(self):
+        for path in ('res/Qq.xml', 'res/xml/backup_rules.xml'):
+            resources = f'    resource 0x7f100000 xml/backup_rules\n      () (file) {path} type=XML\n'
+            self.assertEqual(packaged_xml(resources, 'backup_rules'), ('0x7f100000', path))
+        with self.assertRaises(ValueError):
+            packaged_xml(resources, 'data_extraction_rules')
+
+    def test_rejects_missing_default_or_parent_traversal_xml_path(self):
+        for variant in ('(v31) (file) res/Qq.xml', '() (file) res/../Qq.xml'):
+            with self.assertRaises(ValueError):
+                packaged_xml(f'resource 0x7f100000 xml/backup_rules\n {variant} type=XML\n', 'backup_rules')
+
     def test_store_icon_matches_play_file_requirements(self):
         from PIL import Image
         path = Path(__file__).resolve().parent.parent/'assets/brand/store_icon_512.png'

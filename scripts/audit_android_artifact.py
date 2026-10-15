@@ -48,6 +48,16 @@ def validate_elf(data, name='library'):
             if not suffix:
                 raise ValueError(f'16KB partial RELRO alignment failed: {name}')
 
+def packaged_xml(resources, name):
+    # Release resource shrinking renames ZIP paths; resolve through resources.arsc.
+    entry = re.search(
+        r'resource (0x[0-9a-f]+) (?:'+re.escape(APP_ID)+r':)?xml/'+re.escape(name)
+        +r'\b\n\s+\(\) \(file\) (res/[^\s]+\.xml) type=XML', resources)
+    if entry is None or '..' in entry[2].split('/'):
+        raise ValueError(f'Missing default XML resource: {name}')
+    return entry[1], entry[2]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('apk', type=Path)
@@ -75,10 +85,10 @@ def main():
         raise ValueError('Backup is not disabled.')
     resources = command(aapt, 'dump', 'resources', apk)
     for name, attribute in [('backup_rules', 'fullBackupContent'), ('data_extraction_rules', 'dataExtractionRules')]:
-        resource = re.search(r'resource (0x[0-9a-f]+) (?:'+re.escape(APP_ID)+r':)?xml/'+name+r'\b', resources)
-        if resource is None or not re.search(r':'+attribute+r'\([^\n]+\)=@'+resource[1], manifest):
+        resource_id, resource_path = packaged_xml(resources, name)
+        if not re.search(r':'+attribute+r'\([^\n]+\)=@'+resource_id, manifest):
             raise ValueError(f'Manifest must reference the packaged {name}.')
-        tree = command(aapt, 'dump', 'xmltree', apk, '--file', f'res/xml/{name}.xml')
+        tree = command(aapt, 'dump', 'xmltree', apk, '--file', resource_path)
         sections = [tree] if name == 'backup_rules' else re.split(r'E: (?:cloud-backup|device-transfer) ', tree)[1:]
         if len(sections) != (1 if name == 'backup_rules' else 2):
             raise ValueError('Missing cloud or device-transfer backup exclusions.')
