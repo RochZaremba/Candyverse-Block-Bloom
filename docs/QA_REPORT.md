@@ -67,3 +67,12 @@ nie jest zastąpiony ponownym `pumpWidget`.
 
 Po uruchomieniu uzupełnij datę, head/PR, rzeczywiste komendy, liczby, urządzenie,
 problemy i poprawki; pozostaw niewykonane kontrole jako NOT RUN / BLOCKED.
+
+## Wykryte ograniczenie runnera
+
+Run38695515416 zakończył się utratą emulatora. Diagnostyka hosta potwierdziła
+segfault `RenderThread` emulatora; dostępne14GB pamięci wyklucza wcześniejsze
+podejrzenie OOM w tej próbie. Zmieniono emulator na SwiftShader GLES z wyłączoną
+emulacją Vulkan (`-feature -Vulkan`), bez zmiany produkcyjnych ustawień silnika.
+Dalsze wyniki dotyczą tej konfiguracji; Vulkan i60FPS na fizycznym telefonie
+pozostają niepotwierdzone. Timeout screenshotu ogranicza blokadę testu.

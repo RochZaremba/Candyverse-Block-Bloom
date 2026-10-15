@@ -82,6 +82,7 @@ void main() {
     }
 
     Future<void> capture(String name) async {
+      debugPrint('QA screenshot: $name');
       // Surface conversion may precede the first native buffer on software GPU.
       // Retry only Android PixelCopy startup errors, never hide test failures.
       for (var attempt = 0; attempt < 15; attempt++) {
@@ -90,7 +91,9 @@ void main() {
           () => Future<void>.delayed(const Duration(seconds: 1)),
         );
         try {
-          await binding.takeScreenshot(name);
+          await binding
+              .takeScreenshot(name)
+              .timeout(const Duration(seconds: 30));
           return;
         } on PlatformException catch (error) {
           if (!error.code.contains('Could not copy the pixels') ||
