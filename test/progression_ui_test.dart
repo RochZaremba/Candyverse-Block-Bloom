@@ -12,8 +12,11 @@ import 'package:candyverse/game/application/game_controller.dart';
 import 'package:candyverse/game/domain/game_engine.dart';
 
 import 'dart:io';
+import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:flutter/services.dart';
+import 'package:flutter/rendering.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -138,6 +141,85 @@ void main() {
       greaterThan(0),
     );
   });
+  testWidgets(
+    'checkpoint keeps every painted pixel while blocking another move',
+    (tester) async {
+      final checkpoint = Completer<void>();
+      var writes = 0;
+      final controller = GameController(
+        engine: GameEngine.seeded(seed: 8),
+        onSnapshot: (_) {
+          writes++;
+          return checkpoint.future;
+        },
+      );
+      addTearDown(controller.dispose);
+      final captureKey = GlobalKey();
+      await prepare(
+        tester,
+        MaterialApp(
+          theme: theme.material,
+          home: RepaintBoundary(
+            key: captureKey,
+            child: GameScreen(theme: theme, controller: controller),
+          ),
+        ),
+      );
+      Future<List<int>> pixels() async {
+        final boundary =
+            captureKey.currentContext!.findRenderObject()
+                as RenderRepaintBoundary;
+        final image = await boundary.toImage();
+        try {
+          final bytes = await image.toByteData(
+            format: ui.ImageByteFormat.rawRgba,
+          );
+          return bytes!.buffer.asUint8List().toList();
+        } finally {
+          image.dispose();
+        }
+      }
+
+      final origin = controller.engine
+          .getLegalPlacements(
+            controller.state.board,
+            controller.state.tray.first!,
+          )
+          .first;
+      await tester.tap(find.byKey(const ValueKey('tray-0')));
+      await tester.pump();
+      await tester.tap(
+        find.byKey(ValueKey('cell-${origin.row}-${origin.col}')),
+      );
+      await tester.pump(const Duration(milliseconds: 16));
+      expect(controller.saving, isTrue);
+      final firstFrame = await tester.runAsync(pixels);
+      final savedState = controller.state;
+      await tester.tap(
+        find.byKey(const ValueKey('tray-1')),
+        warnIfMissed: false,
+      );
+      await tester.tap(
+        find.byKey(const ValueKey('cell-7-7')),
+        warnIfMissed: false,
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(identical(controller.state, savedState), isTrue);
+      expect(writes, 1);
+      final pendingFrame = await tester.runAsync(pixels);
+      checkpoint.complete();
+      await tester.pumpAndSettle();
+      expect(controller.blocked, isFalse);
+      final acknowledgedFrame = await tester.runAsync(pixels);
+      expect(
+        firstFrame,
+        acknowledgedFrame,
+        reason: 'A durable checkpoint must not cover the accepted move with a flash.',
+      );
+      expect(pendingFrame, acknowledgedFrame);
+    },
+  );
+
   testWidgets('save failure presents a real retry and blocks placement', (
     tester,
   ) async {

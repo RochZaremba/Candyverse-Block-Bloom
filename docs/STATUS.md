@@ -27,7 +27,7 @@ Repo `RochZaremba/Candyverse-Block-Bloom`; fetch HTTPS, push SSH.
 | T-015 Rendered assets | IN_REVIEW |29d96db, provenance/PROMPTS, goldeny; czeka native/CI/merge |
 | T-016 Menu / English default | IN_REVIEW |2 przyciski i gear, stare języki zachowane; czeka native/CI/merge |
 | T-017 Transitions / notices | IN_REVIEW | candy UI, opaque transitions i reduced-motion tests; czeka native/CI/merge |
-| T-018 Celebrations / release QA | IN_PROGRESS | podpisane1.1.0+2, lokalne193 testy PASS; native i CI jeszcze niezaliczone |
+| T-018 Celebrations / release QA | IN_PROGRESS | poprawka flash30fa7b0; podpisane1.1.0+3/61c34a4, lokalne194 testy PASS; nowe native/CI/telefon oczekują |
 
 ## Historyczne potwierdzone testy1.0.0+1
 
@@ -139,3 +139,40 @@ Blokery Play Console i backupu klucza pozostają aktualne.
 
 **Jedno następne zadanie:** zakończyć i udokumentować fizyczny smoke T-018,
 następnie przygotować nowego kandydata1.1.0+2 do macierzy zgodności.
+
+### Bloker zgłoszony przez właściciela po instalacji1.1.0+2
+
+Właściciel potwierdził nową oprawę/przejścia, ale wykrył miganie podczas placement.
+Przyczyna: GameController.saving po każdym ruchu wyświetlał pełnoekranową warstwę
+creamWhite95%. Poprawka zachowuje przezroczystą barierę wejścia/semantyki podczas
+zwykłego zapisu; czytelny błąd i retry pozostają. Nowy test porównuje wszystkie
+piksele przy16ms/100ms opóźnionego zapisu z obrazem po ACK i sprawdza odrzucenie
+kolejnego dotyku. Przed poprawką RED, po poprawce wraz z retry5/5 PASS.
+
+Build1.1.0+2 nie jest dopuszczony do publikacji mimo zielonego Flutter CI38731841063
+(193/71/19), czterech podpisanych przypadków38731841152 i telefonu1202s/699ruchów/
+742reakcji (natywny JUnit1/0/0; końcowy eksport wrappera dokończono ręcznie po
+edycji działającego skryptu). Raporty i zrzuty zachowano w worktree kingdom-handoff,
+commityab14489/62fdc2f/e69ed04. Draftv1.1.0-rc.1 pozostaje nieopublikowany.
+Nowa wersja z poprawką będzie1.1.0+3 / v1.1.0-rc.2; wymaga nowych binariów,
+audytu, hashy workflow, testów i potwierdzenia placement na telefonie.
+
+Poprawka `30fa7b0`; źródło podpisanych binariów1.1.0+3: `61c34a4`.
+Pełne `flutter test --concurrency=2`194/194 PASS, `flutter analyze` PASS,
+format65 plików bez zmian, Python19/19 i docs/linki PASS. APK i universal APK
+przechodzą audyt manifest/uprawnień/backup/ELF64/ZIP16KB. Potwierdzono aapt2
+versionCode3, dotychczasowy certyfikat, AAB validate/config16KB i jarsigner.
+Pliki: `/home/roch/.cache/candyverse/artifacts/kingdom-1.1.0-3/`:
+
+- APK `3af487f4105810001d293af7e460ee41d51eda003376f10576d1d7799909be75`.
+- AAB `fcb152da8df7fe66939ce8c93c038289fcc75a5c6057197af10453b9becf3262`.
+- Universal `32e552b82cf81425eeb1e5369d218f1833e6f619a2ab848f990a3f53ea2c453c`.
+
+Telefon odłączony przy próbie aktualizacji code3: adb device not found, niczego
+nie zainstalowano. Poproszono właściciela o krótkie podłączenie i sprawdzenie
+placement. Na telefonie nadal jest poprzednie1.1.0+2. Agenci zakończyli przeglądy;
+przy dodatkowej delegacji narzędzie zgłosiło brak kredytów, poprawkę i regresję
+dokończył koordynator. Nie oznaczać nowego code3 jako przetestowanego wynikami code2.
+
+Jedno następne zadanie: uruchomić macierz i native20min dla nowego draftu
+v1.1.0-rc.2/code3 oraz potwierdzić brak migania po aktualizacji telefonu.
