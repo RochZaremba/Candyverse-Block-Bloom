@@ -1,6 +1,6 @@
 # Candy Kingdom — kandydat1.1.0+3
 
-Data:2026-10-15. **Google Play: nieopublikowane.** Źródło zakresu:
+Data:2026-10-15. **Publiczny prerelease GitHub; Google Play nieopublikowane.** Źródło zakresu:
 [Candy Kingdom](KINGDOM_EXPANSION.md) i ADR-0016/0017. Poprzedni niepublikowany
 [code2](KINGDOM_CODE2_REPORT.md) odrzucono po ręcznym wykryciu flash checkpointu.
 Historyczny publiczny1.0.0-rc.1 pozostaje bez zmian.
@@ -21,7 +21,7 @@ Certyfikat SHA256 pozostaje
 `2064a303250785a1ef85029a03a543dc759ab6d715f1fb2f05dccdca04e70506`.
 Klucz zewnętrzny nie był regenerowany; hasła nie trafiły do repo ani argumentów.
 Pliki lokalne: `/home/roch/.cache/candyverse/artifacts/kingdom-1.1.0-3/`.
-Kandydat `v1.1.0-rc.2` ma te same hashe. Nie publikować zastąpionego code2.
+[Publiczny kandydatv1.1.0-rc.2](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/tag/v1.1.0-rc.2) ma te same hashe. Publikacja2026-10-15T13:36:14Z, tag merge PR#14/7b5db1a. Nie publikować zastąpionego code2.
 
 ## Naprawa i potwierdzone testy
 

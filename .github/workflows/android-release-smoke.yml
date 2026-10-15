@@ -13,9 +13,9 @@ permissions:
   contents: read
 jobs:
   production-entrypoint:
-    # Download the frozen draft candidate without exposing signing credentials.
+    # The verified candidate is public; no signing credentials or write scope.
     permissions:
-      contents: write
+      contents: read
     name: production-entrypoint (API${{ matrix.api }}, pages${{ matrix.page-size }}, ${{ matrix.kind }}, ${{ matrix.renderer }})
     runs-on: ubuntu-latest
     timeout-minutes: 20

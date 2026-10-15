@@ -11,7 +11,7 @@
 | Zadania + zależności | [Roadmap](ROADMAP.md) |
 | Obecny rzeczywisty stan i handoff | [Status](STATUS.md) |
 | Testy i DoD | [Test Plan](TEST_PLAN.md) |
-| Publikacja Google Play | [Release](RELEASE_GOOGLE_PLAY.md) i [raport kandydata](RELEASE_REPORT.md) |
+| Publikacja Google Play | [Release](RELEASE_GOOGLE_PLAY.md) i [raport Candy Kingdom](KINGDOM_RELEASE_REPORT.md) |
 | Prywatność i rodziny | [Privacy & Safety](PRIVACY_AND_SAFETY.md) |
 | Pomysły na później | [Post V1](POST_V1.md) |
 | Historia decyzji | [ADR](adr/README.md) |

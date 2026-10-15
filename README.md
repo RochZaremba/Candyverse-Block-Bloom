@@ -1,10 +1,10 @@
 # Candyverse: Block & Bloom 
 
-> **Stan: T-001–T-011 scalone i przetestowane.** Gra V1 ma sześć ekranów, zapis offline, wyspę, ulepszenia oraz Settings/reset/PL-EN. Test20min na fizycznym Androidzie i CI przeszedł; podpisane APK/AAB1.0.0 oraz materiały są dostępne w publicznym prerelease; nie oznacza to publikacji w Google Play. Szczegóły i ograniczenia w [STATUS](docs/STATUS.md). Aktualizacja:2026-10-15.
+> **Candy Kingdom1.1.0+3:**30 poziomów, prestiż/gwiazdki, pasywny dochód, renderowane zwierzaki i nowy UX. T-001–T-018 scalone i technicznie przetestowane. Publiczny kandydat GitHub jest gotowy; **Google Play nieopublikowane**. [Stan i ograniczenia](docs/STATUS.md), [raport nowego wydania](docs/KINGDOM_RELEASE_REPORT.md). Aktualizacja:2026-10-15.
 
 Kolorowa gra mobilna 2D na Androida: **block puzzle 8×8 + lekkie ulepszenia roguelite + rozwijanie cukierkowej wyspy**. Pierwsze wydanie ma być dopracowane wizualnie, offline, bez reklam, zakupów, kont i backendu. Odbiorcy: głównie 10–16 lat, także starsi.
 
-[**Pobierz APK1.0.0-rc.1**](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/download/v1.0.0-rc.1/candyverse-1.0.0-1.apk) · [AAB, hashe i materiały wydania](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/tag/v1.0.0-rc.1)
+[**Pobierz APK1.1.0+3**](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/download/v1.1.0-rc.2/candyverse-1.1.0-3.apk) · [AAB, hashe i materiały wydania](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/tag/v1.1.0-rc.2)
 
 ## Szybki start
 
