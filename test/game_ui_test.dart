@@ -102,6 +102,31 @@ void main() {
     }
   }
 
+  for (final size in [const Size(393, 650), const Size(320, 592)]) {
+    testWidgets('all three pieces stay visible on phone $size', (tester) async {
+      final controller = singles();
+      addTearDown(controller.dispose);
+      await show(tester, controller, width: size.width, height: size.height);
+      for (var slot = 0; slot < 3; slot++) {
+        final bounds = tester.getRect(find.byKey(ValueKey('tray-$slot')));
+        expect(bounds.bottom, lessThanOrEqualTo(size.height));
+        expect(bounds.top, greaterThanOrEqualTo(0));
+      }
+      if (size.width == 393) {
+        await expectLater(
+          find.byType(GameScreen),
+          matchesGoldenFile('goldens/game_phone_compact.png'),
+        );
+      }
+      await tester.tap(find.byKey(const ValueKey('tray-2')));
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('cell-7-7')));
+      await tester.pump();
+      expect(controller.state.board.occupiedCount, 1);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets(
     'Home Play opens actual game and back confirmation preserves it',
     (tester) async {

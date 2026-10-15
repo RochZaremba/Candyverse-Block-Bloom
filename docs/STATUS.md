@@ -43,3 +43,5 @@ Dopuszczalne statusy: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE` (po kryteriach ak
 
 - **T-010 runner natywny:** ADR-0015, AndroidJUnitRunner/FlutterTestRunner w wariancie profile, wyłącznie testowe zależności. Lokalnie JDK21 `assembleProfile assembleProfileAndroidTest` SUCCESS47s; format/analyze/docs/bash syntax PASS. UUID raportu, Stopwatch i hostowy czas zapobiegają zaliczeniu starego lub skróconego wyniku.20min nowego runnera jeszcze NOT RUN; PR#10 pozostaje otwarty.
 - **Konto właściciela:** Play Console8799678699020536617 osobiste, weryfikacja w toku.
+
+- **Poprawka QA układu:** kompaktowy Game dla krótkich ekranów, wszystkie figury widoczne bez scrolla przy zwykłym tekście.157/157 Flutter,62/62 Dart, analyze i golden PASS. Nowa referencja `game_phone_compact.png`; finalny APK/AAB trzeba przebudować i ponownie sprawdzić. Native20min nowego runnera nadal PENDING.
