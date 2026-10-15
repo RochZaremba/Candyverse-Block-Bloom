@@ -141,6 +141,7 @@ class IslandScreen extends StatelessWidget {
                 child: IslandScene(
                   theme: theme,
                   island: island,
+                  worldIndex: island.stars % 3,
                   onBuildingTap: (kind) => _details(context, kind),
                 ),
               ),

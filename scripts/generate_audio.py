@@ -7,7 +7,9 @@ from pathlib import Path
 RATE = 22050
 CUES = {'place': [(660, 0), (990, .025)],
         'clear': [(523.25, 0), (659.25, .065), (783.99, .13)],
-        'upgrade': [(659.25, 0), (783.99, .085), (1046.5, .17)]}
+        'upgrade': [(659.25, 0), (783.99, .085), (1046.5, .17)],
+        'fanfare': [(523.25, 0), (659.25, .10), (783.99, .20),
+                    (1046.5, .32), (1318.5, .43), (1567.98, .43)]}
 for name, notes in CUES.items():
     duration = max(start for _, start in notes) + .18
     samples = []

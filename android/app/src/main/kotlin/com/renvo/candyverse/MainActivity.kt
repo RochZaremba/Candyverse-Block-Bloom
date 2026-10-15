@@ -24,7 +24,7 @@ class MainActivity : FlutterActivity() {
         ).build()
         soundPool = pool
         pool.setOnLoadCompleteListener { _, id, status -> if (status == 0) loaded.add(id) }
-        for (cue in listOf("place", "clear", "upgrade")) {
+        for (cue in listOf("place", "clear", "upgrade", "fanfare")) {
             val path = FlutterInjector.instance().flutterLoader().getLookupKeyForAsset("assets/audio/$cue.wav")
             try {
                 assets.openFd(path).use { sounds[cue] = pool.load(it, 1) }

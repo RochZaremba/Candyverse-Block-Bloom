@@ -74,7 +74,7 @@ class _PersistentIslandScreenState extends State<PersistentIslandScreen> {
   Future<void> _prestige() async {
     try {
       if (await widget.session.prestige() && mounted) {
-        FeedbackScope.maybeOf(context)?.play(CandyCue.upgrade);
+        FeedbackScope.maybeOf(context)?.play(CandyCue.fanfare);
         showCandyMessage(
           context,
           AppStrings.of(
@@ -115,7 +115,7 @@ class _PersistentIslandScreenState extends State<PersistentIslandScreen> {
                   final bought = await session.purchase(kind);
                   if (!context.mounted) return;
                   if (bought) {
-                    FeedbackScope.maybeOf(context)?.play(CandyCue.upgrade);
+                    FeedbackScope.maybeOf(context)?.play(CandyCue.fanfare);
                   }
                   showCandyMessage(
                     context,
