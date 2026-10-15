@@ -33,3 +33,5 @@ Istniejące ADR-y:
 - [0011 Save write gate and recovery](0011-save-write-gate-and-recovery.md)
 
 - [0013 Settings, localization and reset](0013-settings-localization-and-reset.md)
+
+- [0015 Native profile instrumentation](0015-native-profile-instrumentation.md)

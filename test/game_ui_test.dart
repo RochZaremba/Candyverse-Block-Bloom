@@ -102,6 +102,80 @@ void main() {
     }
   }
 
+  for (final size in [const Size(393, 650), const Size(320, 592)]) {
+    testWidgets('all three pieces stay visible on phone $size', (tester) async {
+      final controller = singles();
+      addTearDown(controller.dispose);
+      await show(tester, controller, width: size.width, height: size.height);
+      for (var slot = 0; slot < 3; slot++) {
+        final bounds = tester.getRect(find.byKey(ValueKey('tray-$slot')));
+        expect(bounds.bottom, lessThanOrEqualTo(size.height));
+        expect(bounds.top, greaterThanOrEqualTo(0));
+      }
+      if (size.width == 393) {
+        await expectLater(
+          find.byType(GameScreen),
+          matchesGoldenFile('goldens/game_phone_compact.png'),
+        );
+      }
+      await tester.tap(find.byKey(const ValueKey('tray-2')));
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('cell-7-7')));
+      await tester.pump();
+      expect(controller.state.board.occupiedCount, 1);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('all catalogue masks fit fully inside phone tray panels', (
+    tester,
+  ) async {
+    for (final size in [const Size(320, 592), const Size(393, 650)]) {
+      for (final piece in pieceCatalog) {
+        await tester.pumpWidget(const SizedBox());
+        final controller = GameController(
+          engine: GameEngine(traySource: (_) => [piece, piece, piece]),
+        );
+        addTearDown(controller.dispose);
+        await show(tester, controller, width: size.width, height: size.height);
+        for (var slot = 0; slot < 3; slot++) {
+          final tray = find.byKey(ValueKey('tray-$slot'));
+          final bounds = tester.getRect(tray).deflate(8);
+          final tiles = find.descendant(
+            of: tray,
+            matching: find.byType(CandyTile),
+          );
+          expect(tiles, findsNWidgets(piece.cells.length));
+          for (final tile in tiles.evaluate()) {
+            final rect = tester.getRect(
+              find.byElementPredicate((e) => identical(e, tile)),
+            );
+            expect(
+              rect.left,
+              greaterThanOrEqualTo(bounds.left - .01),
+              reason: piece.id,
+            );
+            expect(
+              rect.top,
+              greaterThanOrEqualTo(bounds.top - .01),
+              reason: piece.id,
+            );
+            expect(
+              rect.right,
+              lessThanOrEqualTo(bounds.right + .01),
+              reason: piece.id,
+            );
+            expect(
+              rect.bottom,
+              lessThanOrEqualTo(bounds.bottom + .01),
+              reason: piece.id,
+            );
+          }
+        }
+      }
+    }
+  });
+
   testWidgets(
     'Home Play opens actual game and back confirmation preserves it',
     (tester) async {
@@ -142,6 +216,31 @@ void main() {
       expect(controller.state.tray[1], isNull);
       expect(controller.state.tray[0], isNotNull);
       expect(controller.state.score, 10);
+    },
+  );
+
+  testWidgets(
+    'invalid drag and explicit reselection still allow a line clear',
+    (tester) async {
+      final controller = singles(
+        board: Board.empty().withCells({
+          for (var col = 0; col < 7; col++) (row: 0, col: col): 'candyPink',
+        }),
+      );
+      addTearDown(controller.dispose);
+      await show(tester, controller, reduced: true);
+      final before = controller.state;
+      await drag(tester, 0, 0, 0);
+      expect(controller.state, same(before));
+      for (final key in ['tray-1', 'tray-0', 'cell-0-0']) {
+        await tester.tap(find.byKey(ValueKey(key)));
+        await tester.pump();
+      }
+      expect(controller.state, same(before));
+      await tester.tap(find.byKey(const ValueKey('cell-0-7')));
+      await tester.pumpAndSettle();
+      expect(controller.state.totalClearedLines, 1);
+      expect(controller.state.board.occupiedCount, 0);
     },
   );
 

@@ -19,7 +19,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    // Profile instrumentation is opt-in and never changes the release variant.
+    if (providers.gradleProperty("candyverseInstrumentation").orNull == "true") {
+        testBuildType = "profile"
+    }
+
     defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.candyverse"
         // You can update the following values to match your application needs.
@@ -51,4 +57,9 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    androidTestImplementation("androidx.test:runner:1.2.0")
+    androidTestImplementation("androidx.test:rules:1.2.0")
 }
