@@ -676,7 +676,12 @@ class _GameScreenState extends State<GameScreen> {
                         color: theme.color('ink').withValues(alpha: .4),
                       ),
                     )
-                  : Center(child: _piece(piece, 20)),
+                  : Center(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: _piece(piece, 20),
+                      ),
+                    ),
             ),
           ),
         ),

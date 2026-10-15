@@ -5,7 +5,7 @@ Nie oznaczamy testu stabilności jako zakończonego przed odczytem raportu.
 
 ## Wyniki potwierdzone
 
-- `flutter test`:157/157, w tym goldeny, PL/EN,320/412dp, tekst200%, reset i odzyskiwanie zapisu.
+- `flutter test`:158/158, w tym goldeny, PL/EN,320/412dp, tekst200%, reset i odzyskiwanie zapisu.
 - `dart test test/game`:62/62; `flutter analyze`, format i kontrola dokumentacji PASS.
 - JDK21 `assembleProfile assembleProfileAndroidTest`: PASS na branchach T-010 i T-011; testAPK zawiera natywny FlutterTestRunner.
 - Poprawiono układ Game na krótkich telefonach: plansza dopasowuje rozmiar, panele są bardziej zwarte, wszystkie trzy figury mieszczą się bez scrolla przy zwykłym tekście. Testy393×650 i320×592 sprawdzają pełne granice figur oraz wykonują placement. Zwiększony tekst zachowuje przewijanie. Referencja: `test/goldens/game_phone_compact.png`.
@@ -41,3 +41,5 @@ Artefakty `build/qa-smoke`: report.json, profilowy build, instrumentacja/JUnit, 
 CI korzysta z KVM, API35 google_apis x86_64, Pixel2, SwiftShader GLES, wyłączonej emulacji Vulkan/GLDirectMem i włączonych animacji. Domyślny renderer produkcyjny pozostaje bez zmian. Poprzednie próby FlutterDriver traciły połączenie; jeden kernel log potwierdził segfault hostowego RenderThread, lecz nie ustalono jednej przyczyny wszystkich awarii. Żadna z nieudanych prób nie zalicza20 minut. Zastąpiono hostowe RPC natywnym runnerem SDK, bez obniżania czasu lub trybu profile.
 
 Aktualizacja runnera: natywny run38708821882 także utracił emulator przed pełną rozgrywką. CI wybiera jawnie software rendering przez testowy Intent, bez hostowego VMService i bez zmiany konfiguracji release. Raport softwareRendering=true dotyczy CPU; GPU potwierdza osobny smoke produkcyjnego APK. Wynik20min nadal PENDING.
+
+Dodatkowy przegląd PNG wykrył ucięcie4-polowej pionowej figury wewnątrz kompaktowego tray. FittedBox skaluje wyłącznie podgląd figury, bez zmiany jej maski lub reguł placement. Test wszystkich14 masek w trzech slotach przy320×592 i393×650 potwierdza granice każdego renderowanego CandyTile;158 Flutter tests, analyze i format PASS. Finalny podpisany build wymaga przebudowy i powtórzenia smoke.
