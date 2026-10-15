@@ -1,6 +1,6 @@
 # Raport kandydata Android1.0.0+1
 
-Data:2026-10-15. Stan: **kandydat sprawdzony technicznie, integracja i prerelease w toku**. Nie przesłano aplikacji do Google Play.
+Data:2026-10-15. Stan: **publiczny prerelease, techniczne QA PASS**. Nie przesłano aplikacji do Google Play.
 
 ## Tożsamość i artefakty
 
@@ -16,7 +16,7 @@ Data:2026-10-15. Stan: **kandydat sprawdzony technicznie, integracja i prereleas
 | AAB rozmiar |50197815 bajtów |
 | Certyfikat SHA256 | `2064a303250785a1ef85029a03a543dc759ab6d715f1fb2f05dccdca04e70506` |
 
-Podpisany APK/AAB są w lokalnym `/home/roch/.cache/candyverse/artifacts/`, a kopie o zgodnych digestach są załącznikami szkicu GitHub `v1.0.0-rc.1`. Publikacja prerelease dopiero po zielonych kontrolach. To nie jest wydanie w Play.
+Podpisany APK/AAB są w lokalnym `/home/roch/.cache/candyverse/artifacts/`, a kopie o zgodnych digestach są załącznikami [publicznego prerelease `v1.0.0-rc.1`](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/tag/v1.0.0-rc.1). Opublikowano po zielonych kontrolach, tag `67f4ae5`, PR#11 MERGED. To nie jest wydanie w Play.
 
 ## Potwierdzone kontrole
 
@@ -51,3 +51,7 @@ Wcześniejsze emulatory utraciły proces hosta lub Android system_server; jedna 
 Próba universal APK38719106009 nie przeszła wznowienia: log am start pokazał dostarczenie Intent do wciąż aktywnej Activity, podczas gdy późniejsze dumpsys i PNG pokazały grę STOPPED i launcher na pierwszym planie, bez app exit/crash. Harness obecnie czeka na rzeczywisty foreground innej aplikacji po KEYCODE_HOME, zanim wznowi grę. Nowy test AAB38719876208 PASS. Nie zaliczamy nieudanej próby jako sukcesu.
 
 Dwie próby16KB na head6b0f2c5 utraciły całe urządzenie (przy Game, następnie po force-stop/resume), bez potwierdzonego OOM/segfault w logu hosta. Wyłączono eksperymentalne GLDirectMem wyłącznie dla tego emulatora; APK i domyślny renderer bez zmian. Konfiguracja38721355212 PASS na wszystkich czterech wariantach. Dodatkowy job Skia usunięto po zakończeniu porównania — oba wariantyAPI36 przeszły, brak podstaw do zmiany renderera produkcyjnego.
+
+Kontrole finalnego head16f3db4 przed merge: Flutter38722227574 SUCCESS i wszystkie4 joby zgodności38722227448 SUCCESS. Dokumenty QA wskazują również wcześniejsze pozytywne runy dokładnie tych samych niezmienionych binariów. Publiczny store-kit jest snapshotem dokumentacji z chwili pakowania; bieżący STATUS i raport w repo zawierają późniejsze potwierdzenie publikacji.
+
+Weryfikacja po publikacji bez tokenu/cookies: pełne pobranie APK i store-kit HTTP200, rozmiary i SHA256 zgodne z manifestem; AAB HEAD HTTP200/50197815B. To rzeczywiście dostępne publiczne pliki, a nie sam szkic release.
