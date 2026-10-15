@@ -28,8 +28,14 @@ Treat the properties file as a secret. Do not attach it to a PR, chat, CI log or
 
 Back up both files and the password securely outside this machine before upload.
 For a shared release pipeline, supply the same external files through the CI secret
-store; do not generate a different upload key on every build. Google Play App
-Signing uses a separate app-signing key; retain this upload key for future uploads.
+store; do not generate a different upload key on every build. The current key also signs the standalone APK. Preserve its certificate if those
+installations should update through Google Play: during Play App Signing setup,
+provide this existing signing key through Google's PEPK flow instead of accepting
+a newly generated app-signing key. A new Google-generated certificate would
+require uninstalling the standalone app, which can lose offline progress.
+After enrollment, a separate upload key can be registered without changing the
+app-signing identity. Do not regenerate this directory for each release.
+See ADR-0014; enrollment and legal terms require the publisher's verified account.
 See [Flutter's Android signing guide](https://docs.flutter.dev/deployment/android).
 
 ## Build and verify
