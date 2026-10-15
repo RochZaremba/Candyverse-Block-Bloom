@@ -14,8 +14,12 @@ Every five cleared lines, choose an available upgrade:
 • Rainbow Eraser removes one occupied cell after confirmation.
 Upgrades last only for the current game.
 
-Earn Candy Coins by clearing lines. After a run ends, spend them on the next levels of your Candy Tree, Jelly House and Rainbow Fountain. Each upgrade changes the island's appearance. Pink Mochi, Blue Jelly, Lemon Blob and Minty Monster react to your touch.
+Earn Candy Coins by clearing lines. After a run ends, spend them on your Candy Tree, Jelly House and Rainbow Fountain. Each building has 30 levels, with growing upgrade costs and six visual stages. A kitten, puppy, bunny and fox bring your island to life and react to your touch.
+
+Developed buildings earn passive Candy Coins, including while you are away. Your next visit settles the elapsed time using your device clock. There is no daily collection deadline.
+
+When all three buildings reach level 30, choose whether to start a new island. After confirmation, your buildings return to level 0 and you earn a permanent star. Each star adds 10% to passive income, and the landscape changes between three themes. Your coins, best score, current game and settings stay with you.
 
 Play offline, without accounts, ads or paid in-app purchases. Progress and your current game are saved locally. Take a break and return without a penalty for being away.
 
-Choose Polish or English, switch sound and haptics off, or reduce motion. You can delete local data in settings after confirmation. The publisher has no cloud save; uninstalling may remove your progress.
+New profiles start in English; Polish is available in settings. An existing profile keeps its chosen language. Switch sound and haptics off or reduce motion. You can delete local data in settings after confirmation. The publisher has no cloud save; uninstalling may remove your progress.

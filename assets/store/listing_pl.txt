@@ -14,8 +14,12 @@ Co pięć wyczyszczonych linii wybierasz dostępne ulepszenie:
 • Rainbow Eraser pozwala wymazać jedno zajęte pole po potwierdzeniu.
 Ulepszenia działają tylko w bieżącej grze.
 
-Candy Coins zdobywasz za wyczyszczone linie. Po zakończeniu podejścia możesz wydać je na kolejne poziomy cukierkowego drzewa, galaretkowego domku i tęczowej fontanny. Każda rozbudowa zmienia wygląd wyspy. Pink Mochi, Blue Jelly, Lemon Blob i Minty Monster reagują na dotyk.
+Candy Coins zdobywasz za wyczyszczone linie. Po zakończeniu podejścia możesz wydać je na rozbudowę cukierkowego drzewa, galaretkowego domku i tęczowej fontanny. Każdy obiekt ma 30 poziomów, rosnące koszty ulepszeń i sześć etapów wyglądu. Kotek, piesek, królik i lisek ożywiają wyspę i reagują na dotyk.
+
+Rozbudowane obiekty zarabiają pasywnie Candy Coins, także podczas nieobecności. Przy kolejnym powrocie gra rozlicza czas według zegara urządzenia. Nie ma codziennego terminu odbioru.
+
+Gdy wszystkie trzy obiekty osiągną poziom 30, możesz zdecydować o rozpoczęciu nowej wyspy. Po potwierdzeniu obiekty wracają do poziomu 0, a Ty zdobywasz trwałą gwiazdkę. Każda gwiazdka dodaje 10% do pasywnego dochodu, a krajobraz zmienia się pomiędzy trzema motywami. Zachowujesz monety, rekord, rozpoczętą grę i ustawienia.
 
 Gra działa offline, bez kont, reklam i płatnych zakupów w aplikacji. Postęp i rozpoczęta gra są zapisywane lokalnie. Zrób przerwę i wróć bez kary za nieobecność.
 
-Dostępne są języki polski i angielski, wyłączanie dźwięku i haptyki oraz ograniczony ruch. Dane można usunąć w ustawieniach po potwierdzeniu. Wydawca nie prowadzi zapisu w chmurze; odinstalowanie może usunąć postęp.
+Nowy profil zaczyna w języku angielskim; polski wybierzesz w ustawieniach. Istniejący profil zachowuje wybrany język. Możesz wyłączyć dźwięk i haptykę lub ograniczyć ruch. Dane można usunąć w ustawieniach po potwierdzeniu. Wydawca nie prowadzi zapisu w chmurze; odinstalowanie może usunąć postęp.

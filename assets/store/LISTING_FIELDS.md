@@ -2,8 +2,10 @@
 
 The first paragraph of each `listing_*.txt` is the title, the second is the short
 description, and the remaining paragraphs are the full description. These are
-actual V1 features from PRD/GDD, without pricing, ranking or unverifiable quality
-claims. Language: `pl-PL` and `en-US`. Publisher: Renvo; support contact:
+Candy Kingdom1.1.0+2 candidate features from PRD/GDD and
+[KINGDOM_EXPANSION](../../docs/KINGDOM_EXPANSION.md), without pricing, ranking
+or unverifiable quality claims. Candidate QA and publication status are tracked
+in [STATUS](../../docs/STATUS.md). Language: `pl-PL` and `en-US`. Publisher: Renvo; support contact:
 rochzaremba@gmail.com. No production store record has been created or submitted.
 
 | Field | Limit | PL/EN |
@@ -17,17 +19,19 @@ Sources checked2026-10-15:
 [Preview assets](https://support.google.com/googleplay/android-developer/answer/9866151?hl=en).
 
 - [PL text](listing_pl.txt), [EN text](listing_en.txt).
-- [Original 512px store icon](../brand/store_icon_512.png).
+- [Rendered kitten 512px store icon](../brand/store_icon_512.png).
 - [PL feature graphic](feature_graphic_pl.png), [EN feature graphic](feature_graphic_en.png).
 
-Feature graphics are original promotional illustrations, not screenshots. Screenshots
-must be captured from the actual final app separately, with no invented gameplay or
-unreleased content. These graphics show the existing candy mark and palette.
+The existing feature graphics show the older1.0.0-rc.1 candy mark and palette.
+They are historical promotional illustrations, not screenshots or current
+Candy Kingdom presentation. Replace submission materials with reviewed new
+branding and screenshots captured from the actual signed candidate, without
+invented gameplay. Source artwork and prompts: [Candy Kingdom provenance](../kingdom/README.md).
 
 Public privacy URL must point to the verified hosted version of
 [the complete bilingual policy](../../public_pages/index.html). Keep it accessible
 without sign-in. Confirm publisher identity, trademark/name availability, rights to
-original assets, target audience and store declarations before submission. The
+supplied and generated assets, target audience and store declarations before submission. The
 source files do not assert those checks have been completed.
 
-Actual final phone screenshots and capture provenance: [screenshots](screenshots/README.md).
+Historical rc.1 phone screenshots and capture provenance: [screenshots](screenshots/README.md).
