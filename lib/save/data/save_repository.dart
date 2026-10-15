@@ -40,6 +40,10 @@ class SaveRecoveryRequired implements Exception {
   final String raw;
 }
 
+class SaveResetUncertain implements Exception {
+  const SaveResetUncertain();
+}
+
 class SaveRepository {
   SaveRepository(this.storage);
   static const key = 'candyverse.save.v1';
@@ -60,7 +64,21 @@ class SaveRepository {
 
   Future<void> save(AppSaveV1 value) => storage.write(key, value.encode());
   Future<void> reset() async {
-    await storage.remove(key);
+    // Delete diagnostics first: a failure must not remove the playable profile.
+    // The canonical key is the final destructive operation.
     await storage.remove(quarantineKey);
+    try {
+      await storage.remove(key);
+    } catch (_) {
+      // A plugin may delete the value before its acknowledgement is lost.
+      // Only readback can distinguish that from a failed deletion.
+      String? remaining;
+      try {
+        remaining = await storage.read(key);
+      } catch (_) {
+        throw const SaveResetUncertain();
+      }
+      if (remaining != null) rethrow;
+    }
   }
 }

@@ -1,3 +1,5 @@
+import '../../core/localization/app_strings.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
@@ -32,11 +34,12 @@ class IslandScreen extends StatelessWidget {
                 children: [
                   IconButton(
                     onPressed: () => Navigator.pop(context),
-                    tooltip: 'Wróć do menu',
+                    tooltip: AppStrings.of(context).translate('Wróć do menu'),
                     icon: const Icon(Icons.arrow_back_rounded),
                   ),
-                  const Expanded(
-                    child: Text(
+                  Expanded(
+                    child: appText(
+                      context,
                       'Twoja cukierkowa wyspa',
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -50,7 +53,8 @@ class IslandScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               if (wallet != null)
-                Text(
+                appText(
+                  context,
                   'Candy Coins: $wallet',
                   style: const TextStyle(
                     fontSize: 20,
@@ -65,7 +69,8 @@ class IslandScreen extends StatelessWidget {
                   onBuildingTap: (kind) => _details(context, kind),
                 ),
               ),
-              const Text(
+              appText(
+                context,
                 'Dotknij mieszkańca, aby się przywitać.',
                 textAlign: TextAlign.center,
               ),
@@ -79,8 +84,11 @@ class IslandScreen extends StatelessWidget {
                   ),
                   color: theme.color('creamWhite'),
                   child: ListTile(
-                    title: Text(buildingName(kind)),
-                    subtitle: Text('Poziom ${island.level(kind)}/3'),
+                    title: appText(context, buildingName(kind)),
+                    subtitle: appText(
+                      context,
+                      'Poziom ${island.level(kind)}/3',
+                    ),
                     onTap: () => _details(context, kind),
                     trailing: const Icon(Icons.chevron_right_rounded),
                   ),
@@ -95,8 +103,9 @@ class IslandScreen extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(buildingName(kind)),
-        content: Text(
+        title: appText(context, buildingName(kind)),
+        content: appText(
+          context,
           'Poziom ${island.level(kind)} z 3.\n${switch (kind) {
             BuildingKind.candyTree => 'Miękkie korony pełne kolorowych cukierków.',
             BuildingKind.jellyHouse => 'Przytulny galaretkowy domek dla mieszkańców.',
@@ -106,7 +115,7 @@ class IslandScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Wróć na wyspę'),
+            child: appText(context, 'Wróć na wyspę'),
           ),
           if (onPurchase != null && island.level(kind) < 3)
             FilledButton(
@@ -114,7 +123,8 @@ class IslandScreen extends StatelessWidget {
                 Navigator.pop(context);
                 onPurchase!(kind);
               },
-              child: Text(
+              child: appText(
+                context,
                 price == null
                     ? 'Rozbuduj'
                     : 'Rozbuduj • ${price!(kind)} Candy Coins',

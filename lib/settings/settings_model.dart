@@ -8,8 +8,9 @@ class SettingsModel extends ChangeNotifier {
     : _sound = initial.sound,
       _haptics = initial.haptics,
       _reduceMotion = initial.reduceMotion,
-      language = initial.language;
-  final String language;
+      _language = initial.language;
+  String _language;
+  String get language => _language;
   bool persisted = false;
   SavedSettings get snapshot => SavedSettings(
     sound: sound,
@@ -23,6 +24,21 @@ class SettingsModel extends ChangeNotifier {
   bool get sound => _sound;
   bool get haptics => _haptics;
   bool get reduceMotion => _reduceMotion;
+  void setLanguage(String value) {
+    if (!['pl', 'en'].contains(value)) throw ArgumentError.value(value);
+    if (_language == value) return;
+    _language = value;
+    notifyListeners();
+  }
+
+  void restore(SavedSettings value) {
+    _sound = value.sound;
+    _haptics = value.haptics;
+    _reduceMotion = value.reduceMotion;
+    _language = value.language;
+    notifyListeners();
+  }
+
   void setSound(bool value) {
     if (_sound == value) return;
     _sound = value;

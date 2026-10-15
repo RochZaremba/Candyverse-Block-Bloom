@@ -1,8 +1,12 @@
+import '../core/localization/app_strings.dart';
+
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
 import '../game/presentation/game_screen.dart';
 import '../settings/settings_sheet.dart';
+import '../settings/settings_screen.dart';
+import '../island/presentation/persistent_island_screen.dart';
 import '../core/feedback/feedback_service.dart';
 import 'candy_backdrop.dart';
 import '../island/domain/island_state.dart';
@@ -42,7 +46,8 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text(
+                  appText(
+                    context,
                     'Candyverse',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -53,7 +58,8 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  appText(
+                    context,
                     'BLOCK & BLOOM',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -64,18 +70,24 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text(
+                  appText(
+                    context,
                     'Ułóż. Połącz. Rozkwitaj.',
                     style: TextStyle(fontSize: 16, color: theme.color('ink')),
                   ),
                   if (session != null) ...[
                     const SizedBox(height: 12),
-                    Text(
+                    appText(
+                      context,
                       'Rekord: ${session!.save.bestScore}  •  Candy Coins: ${session!.save.wallet}',
                       textAlign: TextAlign.center,
                     ),
                     if (session!.error != null)
-                      Text(session!.error!, textAlign: TextAlign.center),
+                      appText(
+                        context,
+                        session!.error!,
+                        textAlign: TextAlign.center,
+                      ),
                   ],
                   const SizedBox(height: 24),
                   FilledButton(
@@ -89,7 +101,9 @@ class HomeScreen extends StatelessWidget {
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    onPressed: session?.busy == true
+                    onPressed:
+                        session?.busy == true ||
+                            session?.resetNeedsRetry == true
                         ? null
                         : () async {
                             FeedbackScope.maybeOf(context)
@@ -109,7 +123,8 @@ class HomeScreen extends StatelessWidget {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(
+                                    content: appText(
+                                      context,
                                       session!.error ??
                                           'Błąd zapisu. Spróbuj ponownie.',
                                     ),
@@ -118,8 +133,13 @@ class HomeScreen extends StatelessWidget {
                               }
                             }
                           },
-                    child: Text(
-                      session?.save.activeRun == null ? 'GRAJ' : 'WZNÓW',
+                    child: appText(
+                      context,
+                      session?.busy == true
+                          ? 'Zapisuję…'
+                          : session?.save.activeRun == null
+                          ? 'GRAJ'
+                          : 'WZNÓW',
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -128,59 +148,33 @@ class HomeScreen extends StatelessWidget {
                       MaterialPageRoute<void>(
                         builder: (_) => session == null
                             ? IslandScreen(theme: theme, island: currentIsland)
-                            : ListenableBuilder(
-                                listenable: session!,
-                                builder: (context, _) => IslandScreen(
-                                  theme: theme,
-                                  island: session!.save.island,
-                                  wallet: session!.save.wallet,
-                                  price: session!.save.price,
-                                  onPurchase: session!.busy
-                                      ? null
-                                      : (kind) async {
-                                          try {
-                                            final bought = await session!
-                                                .purchase(kind);
-                                            if (!context.mounted) return;
-                                            if (bought) {
-                                              FeedbackScope.maybeOf(context)
-                                                  ?.play(CandyCue.upgrade);
-                                            }
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: Text(
-                                                  bought ? 'Wyspa rozkwita!' : 'Za mało Candy Coins. Zdobywasz je po zakończeniu podejścia.',
-                                                ),
-                                              ),
-                                            );
-                                          } catch (_) {
-                                            if (context.mounted) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                    SnackBar(
-                                                      content: Text(
-                                                        session!.error ??
-                                                            'Błąd zapisu.',
-                                                      ),
-                                                    ),
-                                                  );
-                                            }
-                                          }
-                                        },
-                                ),
+                            : PersistentIslandScreen(
+                                theme: theme,
+                                session: session!,
                               ),
                       ),
                     ),
                     icon: const Icon(Icons.landscape_rounded),
-                    label: const Text('Odwiedź wyspę'),
+                    label: appText(context, 'Odwiedź wyspę'),
                   ),
                   TextButton.icon(
-                    onPressed: () =>
-                        showFeedbackSettings(context, theme: theme),
+                    onPressed: () {
+                      if (session == null) {
+                        showFeedbackSettings(context, theme: theme);
+                        return;
+                      }
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) =>
+                              SettingsScreen(theme: theme, session: session!),
+                        ),
+                      );
+                    },
                     icon: const Icon(Icons.tune_rounded),
-                    label: const Text('Dźwięk i ruch'),
+                    label: appText(
+                      context,
+                      session == null ? 'Dźwięk i ruch' : 'Ustawienia',
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Container(
@@ -189,7 +183,8 @@ class HomeScreen extends StatelessWidget {
                       color: theme.color('creamWhite'),
                       borderRadius: BorderRadius.circular(theme.panelRadius),
                     ),
-                    child: Text(
+                    child: appText(
+                      context,
                       'Małe klocki, wielkie możliwości.\n'
                       'Twój cukierkowy świat rozkwita bez pośpiechu.',
                       textAlign: TextAlign.center,
