@@ -29,3 +29,5 @@ Public privacy URL must point to the verified hosted version of
 without sign-in. Confirm publisher identity, trademark/name availability, rights to
 original assets, target audience and store declarations before submission. The
 source files do not assert those checks have been completed.
+
+Actual final phone screenshots and capture provenance: [screenshots](screenshots/README.md).

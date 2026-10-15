@@ -18,7 +18,7 @@
 - [x] Publiczna polityka PL/EN: https://rochzaremba.github.io/Candyverse-Block-Bloom/ — HTTP200 i zgodność źródła potwierdzone.
 - [x] Klucz do podpisu APK/AAB utworzony poza repo; artefakty podpisane.
 - [ ] Backup klucza i haseł poza komputerem, do wykonania przez właściciela.
-- [ ] Realne grafiki sklepu (ikona, feature graphic, screenshoty) zgodne z rzeczywistą grą i licencjami.
+- [x] Autorskie ikony i feature graphics oraz dwa rzeczywiste screenshoty finalnego APK z provenance w `assets/store/`.
 - [x] Typ/status konta: osobiste, weryfikacja w toku.
 - [ ] Zakończenie weryfikacji i organizacja rzeczywistej grupy testerów.
 
@@ -57,7 +57,7 @@ zaakceptowano deklaracji/warunków w imieniu wydawcy.
 - Prywatny klucz: `/home/roch/.candyverse-signing/v1/`, poza Git; wymagany bezpieczny
   backup poza komputerem. Zachowaj certyfikat przy przejściu APK→Play (ADR-0014).
 - Formularze: [Store declarations](STORE_DECLARATIONS.md). Nie zostały wysłane.
-- Testy20min i smoke podpisanego entrypointu są w toku, bez deklaracji sukcesu.
+- Test20min na telefonie i w CI oraz pełna macierz podpisanego APK/AAB PASS; właściciel potwierdził dźwięk/haptykę i przełączniki. Dowody w QA_REPORT i RELEASE_REPORT.
 
 Po weryfikacji konta: utworzyć wpis gry, zachować tożsamość podpisu, przesłać
 zweryfikowany AAB na test internal/closed i wykonać wymagane etapy nowego konta

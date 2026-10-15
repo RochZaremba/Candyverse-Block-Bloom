@@ -53,4 +53,4 @@ Czytaj [AGENTS.md](AGENTS.md), [docs/INDEX.md](docs/INDEX.md) i [docs/STATUS.md]
 
 ## Uwaga o materiałach
 
-`assets/design_tokens.json` zawiera paletę i parametry animacji, **nie prawdziwe assety gry**. `templates/PRIVACY_POLICY_*.md` to **wzory do uzupełnienia po audycie kodu**, a nie oświadczenia o już sprawdzonych praktykach. Przed publikacją właściciel musi ustalić nazwę, unikalny `applicationId`, dane kontaktowe, prawa do assetów i klucz podpisujący.
+`assets/design_tokens.json` zawiera paletę i parametry animacji, **nie prawdziwe assety gry**. `templates/PRIVACY_POLICY_*.md` to **wzory do uzupełnienia po audycie kodu**, a nie oświadczenia o już sprawdzonych praktykach. Identyfikator, kontakt i klucz wydania są ustalone; rzeczywiste raporty są w `docs/`. Przed Google Play właściciel kończy weryfikację konta, potwierdza deklaracje i prawa do materiałów oraz wykonuje wymagany test zamknięty.

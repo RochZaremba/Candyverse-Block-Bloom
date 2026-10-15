@@ -22,4 +22,4 @@
 
 ## Status dokumentacji
 
-Pakiet v0.1 = specyfikacja i plan. `docs/STATUS.md` startuje z zadaniami `TODO`; nie udaje zakończonej implementacji. Data przeglądu wymogów sklepu: 2026-10-14. Przed releasem zweryfikuj polityki ponownie.
+Pierwotna specyfikacja v0.1 pozostaje źródłem zakresu V1. Stan implementacji i wyniki testów prowadzi [STATUS](STATUS.md); raporty [QA](QA_REPORT.md) i [wydania](RELEASE_REPORT.md) zawierają potwierdzone dowody oraz ograniczenia. Przed submission sprawdź ponownie wymagania sklepu.
