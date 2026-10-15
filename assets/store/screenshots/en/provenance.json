@@ -1,24 +1,25 @@
 {
-  "version": "1.1.0+2",
-  "sourceCommit": "6e0780f",
-  "workflowHead": "f060300cc9e690fc8041a7052d0267827af5336e",
-  "workflowRun": 38731841152,
-  "workflowUrl": "https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38731841152",
+  "version": "1.1.0+3",
+  "sourceCommit": "61c34a44de1bfebc0d9c31aa6243a2c049f10018",
+  "workflowHead": "231258a1ed1257dbe2994489ff8f3fa6cd11f6bb",
+  "workflowRun": 38734971548,
+  "api24SuccessfulArtifactId": 11973451624,
+  "workflowUrl": "https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38734971548",
   "capture": "native adb screencap",
   "api": 24,
   "pageSize": 4096,
   "productionEntrypoint": true,
   "fixtureProgression": false,
-  "apkSha256": "cb84b22b4422bc88f6cb5cd84a6d514e5e5f37e2200e2041df6f77a12ec1bfda",
+  "apkSha256": "3af487f4105810001d293af7e460ee41d51eda003376f10576d1d7799909be75",
   "files": {
     "release-home-en.png": {
-      "sha256": "7ed6d801a55810651e8ee581a615ad0fdad2bd99bbf4a6ffb426bd247d6bf577",
+      "sha256": "5e71a653a4b3e0823cc25d45218a2378ceeb9c4fd6ef5d5293af25fda24d4830",
       "width": 1080,
       "height": 1920,
       "edited": false
     },
     "release-game-en.png": {
-      "sha256": "8345dc92d0e36aad6be0caa6f2f731000dc066438c81e46dd4db8b7ff97f5c20",
+      "sha256": "760b8b95c93c9d59ab8204e1edcc14773560a35fe9c48e8505808bb524eb49ee",
       "width": 1080,
       "height": 1920,
       "edited": false

@@ -42,15 +42,22 @@ próba drugiego dotyku nie zmienia stanu. Animacje lokalne pozostają.
   zainstalowany na telefonie (odłączony); nie przypisujemy mu ręcznego PASS.
   Baseline renderowanej oprawy/telefonu code2 jest opisany oddzielnie.
 
-## CI nowego źródła — oczekuje zakończenia
+## CI nowego źródła
 
-- Flutter38734971516.
+- [Flutter38734971516 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38734971516):194Flutter/71Dart/19Python/analyze/debugAPK.
 - Signed Android compatibility38734971548: API36/APK, API35/16KB/APK
-  i API36/universal PASS w pierwszej próbie. API24 wymaga ponowienia: UI
+  i API36/universal PASS w pierwszej próbie. API24 w pierwszej próbie wymagało ponowienia: UI
   zasłoniło systemowe okno „Messenger has stopped”, a Candyverse Home był
   wyrenderowany pod nim. [Zachowany zrzut awarii infrastruktury](qa/kingdom-code3-api24-attempt1-failure.png).
   XML/logi są lokalnie w qa-code3-signed-attempt1/api24. Nie zaliczono tej próby;
-  powtarzany jest wyłącznie nieudany job na świeżym emulatorze, bez zmian APK.
+  powtórzono wyłącznie nieudany job na świeżym emulatorze, bez zmian APK.
+  **Finalnie wszystkie4PASS**,
+  [CI38734971548](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38734971548).
+  Pełne64pola identyczne po tle i force-stop, rzeczywisty input i PNG.
+  [API24](qa/kingdom-code3-signed-api24-pages4096-apk-default.json),
+  [API35/16KB](qa/kingdom-code3-signed-api35-pages16384-apk-default.json),
+  [API36/APK](qa/kingdom-code3-signed-api36-pages4096-apk-default.json),
+  [API36/z AAB](qa/kingdom-code3-signed-api36-pages4096-aab-default.json).
 - Android smoke38734971558:20min aktywnej gry, Android DataStore, dochód,
   poziom30, prestiż i wszystkie sześć ekranów; renderer CPU nie dowodzi GPU FPS.
 
@@ -59,7 +66,8 @@ próba drugiego dotyku nie zmienia stanu. Animacje lokalne pozostają.
 Lokalne assety/prompty: [provenance](../assets/kingdom/README.md),
 nowy [banner1024×500](../assets/store/kingdom_feature_graphic.png)
 i [prompt](../assets/store/KINGDOM_FEATURE_PROVENANCE.md), ikona512px i listing
-PL/EN. Nowe screenshoty muszą pochodzić z powyższego podpisanego code3.
+PL/EN. Nowe nieedytowane screenshoty Home/Game EN1080×1920 pochodzą z powyższego
+podpisanego code3: [provenance](../assets/store/screenshots/en/provenance.json).
 
 Zegar offline nie zapewnia antycheatu. Pełna rozbudowa bez fixture nie została
 ręcznie rozegrana; brak presji/codziennych terminów pozostaje kontraktem.

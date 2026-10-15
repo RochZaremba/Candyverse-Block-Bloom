@@ -1,0 +1,27 @@
+{
+  "version": "1.1.0+2",
+  "sourceCommit": "6e0780f",
+  "workflowHead": "f060300cc9e690fc8041a7052d0267827af5336e",
+  "workflowRun": 38731841152,
+  "workflowUrl": "https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38731841152",
+  "capture": "native adb screencap",
+  "api": 24,
+  "pageSize": 4096,
+  "productionEntrypoint": true,
+  "fixtureProgression": false,
+  "apkSha256": "cb84b22b4422bc88f6cb5cd84a6d514e5e5f37e2200e2041df6f77a12ec1bfda",
+  "files": {
+    "release-home-en.png": {
+      "sha256": "7ed6d801a55810651e8ee581a615ad0fdad2bd99bbf4a6ffb426bd247d6bf577",
+      "width": 1080,
+      "height": 1920,
+      "edited": false
+    },
+    "release-game-en.png": {
+      "sha256": "8345dc92d0e36aad6be0caa6f2f731000dc066438c81e46dd4db8b7ff97f5c20",
+      "width": 1080,
+      "height": 1920,
+      "edited": false
+    }
+  }
+}

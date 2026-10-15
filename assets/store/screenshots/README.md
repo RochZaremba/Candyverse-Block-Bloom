@@ -1,9 +1,11 @@
 # Rzeczywiste screenshoty Android
 
-Candy Kingdom1.1.0+2: nieedytowane Home/Game EN1080×1920 z podpisanego
+Candy Kingdom1.1.0+3: nieedytowane Home/Game EN1080×1920 z podpisanego
 produkcyjnego APK, Android7/API24, rzeczywisty input i adb screencap.
-[Provenance i hashe](en/provenance.json), CI38731841152/headf060300.
+[Provenance i hashe](en/provenance.json), CI38734971548/head231258a.
 Bez fixture postępu i nakładek. To dowód renderu, nie wydajności telefonu.
+
+Zastąpiony code2 zachowano w `code2-en/`; nie jest materiałem nowego wydania.
 
 ## Historyczne1.0.0+1
 
