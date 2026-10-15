@@ -1,86 +1,63 @@
-# Candy Kingdom — kandydat1.1.0+2
+# Candy Kingdom — kandydat1.1.0+3
 
-Data:2026-10-15. Google Play: nieopublikowane. Raport dotyczy rozszerzenia
-[Candy Kingdom](KINGDOM_EXPANSION.md); historyczny [raport1.0.0](RELEASE_REPORT.md)
-i pliki v1.0.0-rc.1 pozostają niezmienione.
+Data:2026-10-15. **Google Play: nieopublikowane.** Źródło zakresu:
+[Candy Kingdom](KINGDOM_EXPANSION.md) i ADR-0016/0017. Poprzedni niepublikowany
+[code2](KINGDOM_CODE2_REPORT.md) odrzucono po ręcznym wykryciu flash checkpointu.
+Historyczny publiczny1.0.0-rc.1 pozostaje bez zmian.
 
-## Tożsamość zamrożonych plików
+## Zamrożone binaria
 
-Źródło binariów: commit6e0780f. Finalny head PR#14f060300 zawiera późniejsze
-zmiany dokumentacji, listingów, grafiki sklepu, workflow i ochrony diagnostycznego drive; kod produkcyjny jest
-identyczny. Flutter3.47.2/Dart3.13.2; AndroidSDK24/36, versionCode2.
-ApplicationId `com.renvo.candyverse`, Renvo / rochzaremba@gmail.com.
+Źródło61c34a44de1bfebc0d9c31aa6243a2c049f10018; head PR#14 to231258a.
+ApplicationId `com.renvo.candyverse`, Renvo / rochzaremba@gmail.com,
+Flutter3.47.2/Dart3.13.2, Android min/target/compile24/36/36, versionCode3.
 
 | Plik | Bajty | SHA256 |
 | --- | --- | --- |
-| candyverse-1.1.0-2.apk |63001694 | `cb84b22b4422bc88f6cb5cd84a6d514e5e5f37e2200e2041df6f77a12ec1bfda` |
-| candyverse-1.1.0-2.aab |61933291 | `f3ae85ca7bf187395e6c32d2c3e91d6b4b35cb365f6fe3a989e79f49753ada7a` |
-| candyverse-1.1.0-from-aab.apk |63050867 | `20f3ee18aa8b3ec07c07d9aba284485f98345a2b4edb9877f251af7afeb34730` |
+| candyverse-1.1.0-3.apk |63001694 | `3af487f4105810001d293af7e460ee41d51eda003376f10576d1d7799909be75` |
+| candyverse-1.1.0-3.aab |61933456 | `fcb152da8df7fe66939ce8c93c038289fcc75a5c6057197af10453b9becf3262` |
+| candyverse-1.1.0-3-from-aab.apk |63050867 | `32e552b82cf81425eeb1e5369d218f1833e6f619a2ab848f990a3f53ea2c453c` |
 
-Certyfikat obu APK: `2064a303250785a1ef85029a03a543dc759ab6d715f1fb2f05dccdca04e70506`,
-ten sam co1.0.0. Klucz zewnętrzny nie był regenerowany ani publikowany.
-Lokalne kopie: `/home/roch/.cache/candyverse/artifacts/kingdom-1.1.0/`.
+Certyfikat SHA256 pozostaje
+`2064a303250785a1ef85029a03a543dc759ab6d715f1fb2f05dccdca04e70506`.
+Klucz zewnętrzny nie był regenerowany; hasła nie trafiły do repo ani argumentów.
+Pliki lokalne: `/home/roch/.cache/candyverse/artifacts/kingdom-1.1.0-3/`.
+Draft `v1.1.0-rc.2` ma te same hashe. Nie publikować zastąpionego code2.
 
-## Potwierdzone lokalnie
+## Naprawa i potwierdzone testy
 
-- Format/analyze PASS;193/193 Flutter,71/71 Dart silnika,19/19 Python release tools.
-- Goldeny Home, rozwoju0/1/5/6/15/30 i trzech motywów, layout320/412dp,
-  tekst200%, PL/EN i reduced-motion; rzeczywista grafika wczytana przed capture.
-- Hostowy rozszerzony smoke PASS: pasywny dochód, poziom30, anulowanie/prestiż,
-  zapis gwiazdki i zachowanie portfela/runu. To nie zastępuje Android DataStore.
-- Build APK/AAB release PASS z istniejącym zewnętrznym kluczem. APK oraz APK
-  wygenerowane z AAB: poprawny manifest, uprawnienia, brak INTERNET/debuggable,
-  wykluczenia backupu, sześć ELF64 i ZIP16KB, apksigner PASS.
-- aapt2 potwierdza1.1.0/code2. Bundletool1.18.3 validate/config16KB/build-apks
-  PASS; jarsigner potwierdza podpis AAB. Ostrzeżenia self-signed/brak timestamp
-  i kolejność ZIP/JarInputStream zachowano w lokalnych logach.
-- Przegląd agentów ekonomii i release bez wykrytego blokera. Nowy zapis schema2
-  odczytuje schema1, zachowuje wybrany język, run i saldo; dochód nie obejmuje
-  czasu sprzed migracji. To lokalny zegar, bez obietnicy antycheatu.
+GameController nadal serializuje ruch i blokuje kolejną mutację do ACK.
+Przyczyną flash była95% biała warstwa prezentacji zapisu, nie reguły silnika.
+Zwykły zapis ma teraz przezroczystą barierę wejścia/semantyki; błąd i retry
+pozostają widoczne. Regresja RED przed30fa7b0, GREEN po: wszystkie piksele
+ekranu przy16ms/100ms opóźnionego zapisu odpowiadają obrazowi po ACK;
+próba drugiego dotyku nie zmienia stanu. Animacje lokalne pozostają.
 
-## Weryfikacja Androida
+- Pełne194/194 Flutter PASS, analyze PASS, format65 plików bez zmian;
+ 19/19 Python release tools i linki/docs PASS.
+- Podpisane APK/AAB release PASS. APK i universal: SDK, manifest, brak INTERNET,
+  uprawnienia, backup exclusions, sześć ELF64 oraz ZIP16KB PASS.
+- aapt2 potwierdza1.1.0/code3; apksigner certyfikat zgodny z poprzednim wydaniem.
+  Bundletool1.18.3 validate/config PAGE_ALIGNMENT_16K/build-apks i jarsigner PASS.
+- Właściciel jawnie polecił **pominąć ponowny test telefonu**. Code3 nie został
+  zainstalowany na telefonie (odłączony); nie przypisujemy mu ręcznego PASS.
+  Baseline renderowanej oprawy/telefonu code2 jest opisany oddzielnie.
 
-Fizyczny20min profile na Android16/API36/arm64/4KB działa w osobnym ID
-`com.renvo.candyverse.qa`; nie kasuje danych zwykłej gry. Pierwszą próbę przerwano
-przed instalacją, nie zalicza się do czasu. Ponowna próba: **natywne QA PASS**:
-1202s aktywnej gry,699 ruchów,742 reakcje,38 cykli; natywny DataStore i wszystkie
-trzy flagi dochodu/poziomu30/prestiżu potwierdzone. Gradle SUCCESS, JUnit1/0/0.
-[Raport](qa/kingdom-phone-api36-profile.json),
-[środowisko i ograniczenia wrappera](qa/kingdom-phone-environment.json).
-7364 próbki FrameTiming: build p95=12542µs, raster p95=9051µs;42/2 próbek
-powyżej16667µs. Nie jest to dowód stałych60FPS ani benchmark średniej klasy.
+## CI nowego źródła — oczekuje zakończenia
 
-Końcowy wrapper zwrócił exit2: plik skryptu zmieniono, gdy jego proces oczekiwał
-na instrumentację. Test Androida, walidacja metryk i kopia JUnit zakończyły się
-przed błędem odczytu ogona skryptu. Eksport errors.log dokończono ręcznie;
-finalny skrypt przechodzi bash -n. Nie ukrywamy tego jako w pełni zielonego
-wyjścia wrappera; niezależny świeży proces CI weryfikuje finalny plik.
+- Flutter38734971516.
+- Signed Android compatibility38734971548: APK API24, API36, rzeczywiste
+  API35/16KB; universal APK z finalnego AAB na API36.
+- Android smoke38734971558:20min aktywnej gry, Android DataStore, dochód,
+  poziom30, prestiż i wszystkie sześć ekranów; renderer CPU nie dowodzi GPU FPS.
 
-Zwykłą aplikację zaktualizowano przez adb install -r do podpisanego universal APK
-z AAB: install SUCCESS, version1.1.0/code2, COLD launch OK814ms. Nie wykonywano
-clear/uninstall aplikacji produkcyjnej. Ocena nowej oprawy przez właściciela
-została poproszona; odpowiedź jeszcze nieotrzymana.
+## Materiały i ograniczenia
 
-CI finalnego headf060300:
+Lokalne assety/prompty: [provenance](../assets/kingdom/README.md),
+nowy [banner1024×500](../assets/store/kingdom_feature_graphic.png)
+i [prompt](../assets/store/KINGDOM_FEATURE_PROVENANCE.md), ikona512px i listing
+PL/EN. Nowe screenshoty muszą pochodzić z powyższego podpisanego code3.
 
-- [Flutter38731841063 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38731841063).
-- [Signed compatibility38731841152 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38731841152): wszystkie cztery przypadki domyślnego renderera,
-  rzeczywisty input oraz pełna64-polowa plansza po tle i force-stop.
-  [API24/APK](qa/kingdom-signed-api24-pages4096-apk-default.json),
-  [API36/APK](qa/kingdom-signed-api36-pages4096-apk-default.json),
-  [API35/16KB/APK](qa/kingdom-signed-api35-pages16384-apk-default.json),
-  [API36/z AAB](qa/kingdom-signed-api36-pages4096-aab-default.json).
-- Android smoke38731841069 —20min aktywnej interakcji i natywny zapis na CPU.
-
-Nie oznaczać kandydata jako zweryfikowanego na podstawie dawnych wyników1.0.0.
-
-## Materiały i zewnętrzne czynności
-
-Renderowane lokalne assety i prompty: [provenance](../assets/kingdom/README.md).
-Nowy [feature graphic1024×500](../assets/store/kingdom_feature_graphic.png)
-z [promptem](../assets/store/KINGDOM_FEATURE_PROVENANCE.md), ikona512px
-i aktualny listing PL/EN. Historyczne screenshoty1.0.0 nie opisują nowego UI.
-
-Konto Play właściciela pozostaje w weryfikacji; nie przesłano AAB do Console,
-nie zaakceptowano deklaracji ani warunków za wydawcę. Backup klucza poza
-komputerem i zachowanie certyfikatu przy Play App Signing: ADR-0014.
+Zegar offline nie zapewnia antycheatu. Pełna rozbudowa bez fixture nie została
+ręcznie rozegrana; brak presji/codziennych terminów pozostaje kontraktem.
+Konto osobiste Play w weryfikacji; brak uploadu AAB i prawnych deklaracji
+za wydawcę. Backup klucza poza komputerem i ciągłość certyfikatu: ADR-0014.
