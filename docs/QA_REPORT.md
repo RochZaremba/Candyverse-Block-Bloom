@@ -91,3 +91,10 @@ kamienie milowe, a natywne screenshoty pochodzą ze smoke podpisanego APK.
 Opcjonalne `--dart-define=CANDYVERSE_CAPTURE_FLUTTER_UI=true` zachowuje capture
 Flutter UI do urządzeń, które go wspierają. Raport wskazuje metodę capture.
 Czas dwell zapisujemy przed końcowym resetem, aby reset nie zwiększał pomiaru.
+
+Po kolejnej awarii hostowego RenderThread również bez GPU capture wybieramy
+stabilnościowy profil API35 (target/compile aplikacji pozostaje36), GLES i
+GLDirectMem. Podpisany APK ma niezależny smoke API24/API36 i środowiska16KB.
+To zmiana urządzenia QA, nie konfiguracji produkcyjnego silnika. Wyłączenie
+Vulkan i GLDirectMem jest znanym obejściem emulacji, którego wynik nadal trzeba
+potwierdzić: [runner issue393](https://github.com/ReactiveCircus/android-emulator-runner/issues/393).

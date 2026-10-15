@@ -38,12 +38,12 @@ jobs:
           CANDYVERSE_SMOKE_MINUTES: '20'
           CANDYVERSE_QA_OUTPUT: build/qa-smoke
         with:
-          api-level: 36
+          api-level: 35
           target: google_apis
           arch: x86_64
           ram-size: 1536
           profile: pixel_2
-          emulator-options: -no-window -gpu swiftshader -feature -Vulkan -noaudio -no-boot-anim -no-snapshot
+          emulator-options: -no-window -gpu swiftshader -feature -Vulkan,GLDirectMem -noaudio -no-boot-anim -no-snapshot
           disable-animations: false
           script: scripts/android_smoke.sh
       - name: Record runner diagnostics
@@ -55,7 +55,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: android-smoke-api36
+          name: android-smoke-api35
           path: build/qa-smoke/
           if-no-files-found: warn
           retention-days: 14
