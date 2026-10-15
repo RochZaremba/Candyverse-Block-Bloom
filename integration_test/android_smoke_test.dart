@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:candyverse/app/app.dart';
@@ -81,8 +82,23 @@ void main() {
     }
 
     Future<void> capture(String name) async {
-      await tester.pump(const Duration(milliseconds: 300));
-      await binding.takeScreenshot(name);
+      // Surface conversion may precede the first native buffer on software GPU.
+      // Retry only Android PixelCopy startup errors, never hide test failures.
+      for (var attempt = 0; attempt < 15; attempt++) {
+        await tester.pump(const Duration(milliseconds: 300));
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(seconds: 1)),
+        );
+        try {
+          await binding.takeScreenshot(name);
+          return;
+        } on PlatformException catch (error) {
+          if (!error.code.contains('Could not copy the pixels') ||
+              attempt == 14) {
+            rethrow;
+          }
+        }
+      }
     }
 
     Future<void> checkpoint() async {
