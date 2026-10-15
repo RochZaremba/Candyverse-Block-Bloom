@@ -42,7 +42,24 @@ Lokalne kopie: `/home/roch/.cache/candyverse/artifacts/kingdom-1.1.0/`.
 
 Fizyczny20min profile na Android16/API36/arm64/4KB działa w osobnym ID
 `com.renvo.candyverse.qa`; nie kasuje danych zwykłej gry. Pierwszą próbę przerwano
-przed instalacją, nie zalicza się do czasu. Wynik ponownej próby oczekuje.
+przed instalacją, nie zalicza się do czasu. Ponowna próba: **natywne QA PASS**:
+1202s aktywnej gry,699 ruchów,742 reakcje,38 cykli; natywny DataStore i wszystkie
+trzy flagi dochodu/poziomu30/prestiżu potwierdzone. Gradle SUCCESS, JUnit1/0/0.
+[Raport](qa/kingdom-phone-api36-profile.json),
+[środowisko i ograniczenia wrappera](qa/kingdom-phone-environment.json).
+7364 próbki FrameTiming: build p95=12542µs, raster p95=9051µs;42/2 próbek
+powyżej16667µs. Nie jest to dowód stałych60FPS ani benchmark średniej klasy.
+
+Końcowy wrapper zwrócił exit2: plik skryptu zmieniono, gdy jego proces oczekiwał
+na instrumentację. Test Androida, walidacja metryk i kopia JUnit zakończyły się
+przed błędem odczytu ogona skryptu. Eksport errors.log dokończono ręcznie;
+finalny skrypt przechodzi bash -n. Nie ukrywamy tego jako w pełni zielonego
+wyjścia wrappera; niezależny świeży proces CI weryfikuje finalny plik.
+
+Zwykłą aplikację zaktualizowano przez adb install -r do podpisanego universal APK
+z AAB: install SUCCESS, version1.1.0/code2, COLD launch OK814ms. Nie wykonywano
+clear/uninstall aplikacji produkcyjnej. Ocena nowej oprawy przez właściciela
+została poproszona; odpowiedź jeszcze nieotrzymana.
 
 CI finalnego headf060300:
 

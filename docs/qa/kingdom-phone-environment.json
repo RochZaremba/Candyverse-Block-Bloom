@@ -1,0 +1,17 @@
+{
+  "model": "2412DPC0AG",
+  "api": 36,
+  "pageSize": 4096,
+  "applicationId": "com.renvo.candyverse.qa",
+  "mode": "profile",
+  "softwareRendering": false,
+  "junit": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0
+  },
+  "gradleBuildSuccessful": true,
+  "wrapperExitCode": 2,
+  "postprocessingCompletedManually": true,
+  "note": "The running shell script was edited during the test. Android, metrics validation and JUnit completed before the final shell-tail parse error. The errors.log capture was completed manually; the unchanged final script passes bash -n."
+}
