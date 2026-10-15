@@ -21,7 +21,7 @@ Certyfikat SHA256 pozostaje
 `2064a303250785a1ef85029a03a543dc759ab6d715f1fb2f05dccdca04e70506`.
 Klucz zewnętrzny nie był regenerowany; hasła nie trafiły do repo ani argumentów.
 Pliki lokalne: `/home/roch/.cache/candyverse/artifacts/kingdom-1.1.0-3/`.
-Draft `v1.1.0-rc.2` ma te same hashe. Nie publikować zastąpionego code2.
+Kandydat `v1.1.0-rc.2` ma te same hashe. Nie publikować zastąpionego code2.
 
 ## Naprawa i potwierdzone testy
 
@@ -58,8 +58,11 @@ próba drugiego dotyku nie zmienia stanu. Animacje lokalne pozostają.
   [API35/16KB](qa/kingdom-code3-signed-api35-pages16384-apk-default.json),
   [API36/APK](qa/kingdom-code3-signed-api36-pages4096-apk-default.json),
   [API36/z AAB](qa/kingdom-code3-signed-api36-pages4096-aab-default.json).
-- Android smoke38734971558:20min aktywnej gry, Android DataStore, dochód,
-  poziom30, prestiż i wszystkie sześć ekranów; renderer CPU nie dowodzi GPU FPS.
+- [Android smoke38734971558 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38734971558):1202s aktywnej gry,691 ruchów,740 reakcji,37 cykli,
+  Android DataStore i flagi dochód/poziom30/prestiż PASS. JUnit1/0/0.
+  [Surowy raport](qa/kingdom-code3-ci-api35-profile-cpu.json).7292 FrameTiming:
+  build p95=5693µs, raster p95=52847µs. To renderer CPU, nie wydajność GPU
+  ani potwierdzenie60FPS; fizyczny retest code3 pominięty na polecenie właściciela.
 
 ## Materiały i ograniczenia
 
