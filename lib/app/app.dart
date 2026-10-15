@@ -27,6 +27,21 @@ class _CandyverseAppState extends State<CandyverseApp> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(
+      const AssetImage('assets/kingdom/brand-sheet.png'),
+      context,
+      onError: (_, _) {},
+    );
+    precacheImage(
+      const AssetImage('assets/kingdom/mascots.png'),
+      context,
+      onError: (_, _) {},
+    );
+  }
+
+  @override
   void dispose() {
     feedback.dispose();
     widget.session.dispose();

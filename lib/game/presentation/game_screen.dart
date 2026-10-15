@@ -1,3 +1,4 @@
+import '../../core/presentation/candy_message.dart';
 import '../../core/localization/app_strings.dart';
 
 import 'dart:async';
@@ -110,7 +111,7 @@ class _GameScreenState extends State<GameScreen> {
     setState(() => confirmingErase = true);
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => CandyDialog(
         title: appText(context, 'Wymazać to pole?'),
         content: appText(
           context,
@@ -204,7 +205,7 @@ class _GameScreenState extends State<GameScreen> {
     }
     final leave = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => CandyDialog(
         title: appText(context, 'Wrócić do menu?'),
         content: appText(
           context,

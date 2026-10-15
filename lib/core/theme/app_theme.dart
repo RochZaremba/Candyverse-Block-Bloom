@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../presentation/candy_transition.dart';
+
 /// The checked-in design tokens are the single source of visual values.
 class AppTheme {
   AppTheme._(
@@ -53,6 +55,17 @@ class AppTheme {
       onSurface: color('ink'),
     ),
     scaffoldBackgroundColor: color('creamWhite'),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CandyPageTransitionsBuilder(),
+        TargetPlatform.iOS: CandyPageTransitionsBuilder(),
+        TargetPlatform.linux: CandyPageTransitionsBuilder(),
+      },
+    ),
+    appBarTheme: AppBarTheme(
+      backgroundColor: color('creamWhite'),
+      surfaceTintColor: Colors.transparent,
+    ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(minimumSize: const Size(48, 48)),
     ),
