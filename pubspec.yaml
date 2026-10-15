@@ -1,7 +1,7 @@
 name: candyverse
 description: Offline candy block puzzle and island game for Android.
 publish_to: none
-version: 0.1.0+1
+version: 1.0.0+1
 
 environment:
   sdk: ^3.13.2
@@ -24,3 +24,4 @@ flutter:
   assets:
     - assets/design_tokens.json
     - assets/audio/
+    - assets/privacy/

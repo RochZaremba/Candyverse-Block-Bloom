@@ -1,0 +1,49 @@
+Polityka prywatności
+
+Aktualizacja: 15 października 2026. Dotyczy wersji 1 gry na Androida.
+
+Wydawca
+
+Renvo
+
+Aplikacja
+
+Candyverse: Block & Bloom
+
+Identyfikator aplikacji
+
+com.renvo.candyverse
+
+Kontakt
+
+rochzaremba@gmail.com
+
+Gra działa offline
+
+Nie potrzebujesz konta ani połączenia z internetem do rozgrywki. Gra nie zawiera reklam, płatnych zakupów w aplikacji, analityki, śledzenia reklamowego, czatu ani komunikacji między graczami. Candy Coins są wyłącznie wirtualną walutą zdobywaną podczas gry.
+
+Co zapisujemy i po co
+
+Na urządzeniu zapisujemy planszę i figury bieżącego podejścia, stan losowania, wynik, wyczyszczone linie, wybrane ulepszenia, monety, rekord i poziomy obiektów na wyspie. Zapisujemy też język oraz ustawienia dźwięku, haptyki i animacji. Dzięki temu można wznowić rozgrywkę i zachować postęp.
+
+Jeśli zapis jest uszkodzony lub ma nieobsługiwaną wersję, jego kopia może pozostać lokalnie na potrzeby odzyskiwania. Nie wysyłamy jej do wydawcy. Gra nie zbiera imienia, adresu, e-maila, lokalizacji, kontaktów ani identyfikatorów reklamowych. Nie wysyła postępu ani danych o użytkowaniu do naszych serwerów lub dostawców reklam i analityki.
+
+Przechowywanie, kopie i usuwanie
+
+Dane pozostają w lokalnym zapisie do ich usunięcia, zastąpienia podczas rozgrywki lub odinstalowania aplikacji. W ustawieniach wybierz „Usuń lokalne dane” i potwierdź operację, aby usunąć postęp, monety, rekord, bieżącą grę, ustawienia i lokalną kopię uszkodzonego zapisu. Nie można tego cofnąć. Wydawca nie prowadzi kopii w chmurze.
+
+Aplikacja wyłącza standardową kopię Androida i wyklucza swoje dane z kopii w chmurze oraz przenoszenia między urządzeniami. Narzędzia producenta, systemowe lub uprzywilejowane mogą działać inaczej. Usunięcie aplikacji może usunąć postęp; reset nie daje gwarancji usunięcia każdej kopii utworzonej poza aplikacją.
+
+Młodsi gracze
+
+Gra jest przeznaczona również dla młodszych odbiorców. Nie prosimy dzieci o dane osobowe i nie prowadzimy reklam, profilowania, płatnych losowań ani komunikacji społecznościowej. Rodzic lub opiekun może skontaktować się z nami w sprawach prywatności.
+
+Kontakt e-mail i ta strona
+
+Jeśli napiszesz do nas e-mail, otrzymamy Twój adres i treść wiadomości, aby odpowiedzieć na pytanie. Nie załączaj danych dzieci, danych wrażliwych ani prywatnego zapisu gry. Wiadomość jest obsługiwana przez usługę pocztową Gmail; możesz poprosić o usunięcie korespondencji, o ile nie musimy jej zachować z obowiązku prawnego.
+
+Ta strona nie zawiera skryptów analitycznych, formularzy ani dodanych przez nas plików cookie. Otwarcie strony w przeglądarce wymaga internetu; dostawca hostingu i przeglądarka mogą przetwarzać zwykłe dane połączenia, takie jak adres IP i informacje techniczne. Nie jest to transmisja postępu z gry.
+
+Zmiany i pytania
+
+Jeśli sposób działania gry lub jej dostawcy zmienią się, zaktualizujemy tę politykę i datę powyżej. W sprawach prywatności napisz do Renvo: rochzaremba@gmail.com.
