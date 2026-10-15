@@ -15,11 +15,27 @@ import xml.etree.ElementTree as ET
 APP = 'com.renvo.candyverse'
 
 
+def read_page_size(adb):
+    try:
+        size = int(adb('shell', 'getconf', 'PAGE_SIZE'))
+    except (subprocess.CalledProcessError, ValueError):
+        # Android7's shell image predates getconf; inspect its own VMA mapping.
+        mapping = adb('shell', 'cat', '/proc/self/smaps')
+        match = re.search(r'^KernelPageSize:\s+(\d+)\s+kB', mapping, re.MULTILINE)
+        if match is None:
+            raise RuntimeError('Could not determine kernel page size.')
+        size = int(match[1])*1024
+    if size not in (4096, 16384):
+        raise RuntimeError(f'Unexpected page size: {size}')
+    return size
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('apk', type=Path)
     parser.add_argument('--device', default='emulator-5554')
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--expected-page-size', type=int, choices=(4096, 16384))
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
 
@@ -64,6 +80,9 @@ def main():
     def launch():
         adb('shell', 'am', 'start', '-W', '-n', APP+'/.MainActivity')
 
+    page_size = read_page_size(adb)
+    if args.expected_page_size is not None and page_size != args.expected_page_size:
+        raise RuntimeError(f'Expected page size {args.expected_page_size}, got {page_size}')
     adb('install', '-r', str(args.apk.resolve()))
     launch()
     locate(r'^GRAJ$')
@@ -102,7 +121,7 @@ def main():
         raise RuntimeError('Production process exited.')
     report = {'status': 'PASS', 'applicationId': APP,
               'api': adb('shell', 'getprop', 'ro.build.version.sdk'),
-              'pageSize': adb('shell', 'getconf', 'PAGE_SIZE'),
+              'pageSize': page_size,
               'entrypoint': 'production', 'nativeInput': True,
               'backgroundResume': True, 'forceStopRestore': True,
               'representativeHardware': False}
