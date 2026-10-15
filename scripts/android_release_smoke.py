@@ -6,6 +6,7 @@ Never clears app data. Run on a fresh disposable emulator, not a player's phone.
 """
 import argparse
 import atexit
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -188,6 +189,7 @@ def main():
     if not adb('shell', 'pidof', APP):
         raise RuntimeError('Production process exited.')
     report = {'status': 'PASS', 'applicationId': APP,
+              'apkSha256': hashlib.sha256(args.apk.read_bytes()).hexdigest(),
               'api': adb('shell', 'getprop', 'ro.build.version.sdk'),
               'pageSize': page_size, 'deviceMemTotalKiB': total_memory,
               'entrypoint': 'production', 'nativeInput': True,
