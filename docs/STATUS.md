@@ -85,8 +85,10 @@ Grafiki AI są lokalne, nie ma runtimeAI/nowych SDK; [źródła i prompty](../as
 
 ## Przekazanie
 
-Root main zawiera PR#14. Raporty/listing/README/publiczne linki i ograniczenie
-workflow do contents:read są przygotowane na docs/kingdom-release-handoff.
+Root main z implementacją: PR#14/7b5db1a. Przekazanie raportów, listing/README,
+publicznych linków i contents:read: [PR#15](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/15),
+branch docs/kingdom-release-handoff, commit531fc68 i aktualizacja tego odnośnika.
+Kod aplikacji pozostaje identyczny z przetestowanym źródłem61c34a4.
 Wcześniejsze commity dowodów:ab14489/62fdc2f/e69ed04; code3:5dcc9f8/f4666f1.
 Nowy agent czyta AGENTS→README→INDEX→STATUS→ROADMAP; nie powtarza wykonanej implementacji.
 
