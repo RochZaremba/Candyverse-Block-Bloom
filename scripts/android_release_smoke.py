@@ -58,6 +58,8 @@ def main():
             (args.output/'activity-state.txt').write_bytes(state.stdout+state.stderr)
             exits = subprocess.run(['adb', '-s', args.device, 'shell', 'dumpsys', 'activity', 'exit-info', APP], capture_output=True, timeout=20)
             (args.output/'process-exits.txt').write_bytes(exits.stdout+exits.stderr)
+            memory = subprocess.run(['adb', '-s', args.device, 'shell', 'cat', '/proc/meminfo'], capture_output=True, timeout=20)
+            (args.output/'device-memory.txt').write_bytes(memory.stdout+memory.stderr)
         except (OSError, subprocess.TimeoutExpired) as error:
             (args.output/'diagnostics-error.txt').write_text(str(error))
 
@@ -112,6 +114,7 @@ def main():
         if not data.startswith(b'\x89PNG\r\n\x1a\n') or len(data) < 20000:
             raise RuntimeError('Native screenshot is missing or appears unrendered.')
         (args.output/f'{name}.png').write_bytes(data)
+        (args.output/f'{name}-memory.txt').write_text(adb('shell', 'dumpsys', 'meminfo', APP))
 
     def launch():
         result = adb('shell', 'am', 'start', '-W', '-n', APP+'/.MainActivity')
@@ -120,6 +123,7 @@ def main():
 
     (args.output/'display.txt').write_text(adb('shell', 'wm', 'size')+'\n'+adb('shell', 'wm', 'density')+'\n')
     page_size = read_page_size(adb)
+    total_memory = int(re.search(r'MemTotal:\s+(\d+)', adb('shell', 'cat', '/proc/meminfo'))[1])
     if args.expected_page_size is not None and page_size != args.expected_page_size:
         raise RuntimeError(f'Expected page size {args.expected_page_size}, got {page_size}')
     adb('install', '-r', str(args.apk.resolve()))
@@ -162,7 +166,7 @@ def main():
         raise RuntimeError('Production process exited.')
     report = {'status': 'PASS', 'applicationId': APP,
               'api': adb('shell', 'getprop', 'ro.build.version.sdk'),
-              'pageSize': page_size,
+              'pageSize': page_size, 'deviceMemTotalKiB': total_memory,
               'entrypoint': 'production', 'nativeInput': True,
               'backgroundResume': True, 'forceStopRestore': True,
               'representativeHardware': False}

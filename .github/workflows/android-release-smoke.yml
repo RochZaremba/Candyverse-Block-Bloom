@@ -26,12 +26,15 @@ jobs:
           - api: 24
             target: google_apis
             page-size: 4096
+            ram: 2048
           - api: 36
             target: google_apis
             page-size: 4096
+            ram: 2048
           - api: 35
             target: google_apis_ps16k
             page-size: 16384
+            ram: 4096
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -57,7 +60,7 @@ jobs:
           target: ${{ matrix.target }}
           arch: x86_64
           profile: pixel_2
-          ram-size: 2048
+          ram-size: ${{ matrix.ram }}
           emulator-options: -no-window -gpu swiftshader -feature -Vulkan -noaudio -no-boot-anim -no-snapshot
           disable-animations: true
           script: |
