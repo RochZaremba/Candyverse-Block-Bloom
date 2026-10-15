@@ -1,6 +1,6 @@
-# Candyverse: Block & Bloom — pakiet startowy dla Codexa
+# Candyverse: Block & Bloom 
 
-> **Stan: T-001–T-009 scalone i przetestowane.** Gra V1 ma sześć ekranów, zapis offline, wyspę, ulepszenia oraz Settings/reset/PL-EN. Trwają QA Android i przygotowanie podpisanego wydania1.0.0; nie oznacza to publikacji w Google Play. Szczegóły i ograniczenia w [STATUS](docs/STATUS.md). Aktualizacja:2026-10-15.
+> **Stan: T-001–T-010 scalone i przetestowane.** Gra V1 ma sześć ekranów, zapis offline, wyspę, ulepszenia oraz Settings/reset/PL-EN. Test20min na fizycznym Androidzie i CI przeszedł; podpisane APK/AAB1.0.0 oraz materiały są przygotowane do integracji; nie oznacza to publikacji w Google Play. Szczegóły i ograniczenia w [STATUS](docs/STATUS.md). Aktualizacja:2026-10-15.
 
 Kolorowa gra mobilna 2D na Androida: **block puzzle 8×8 + lekkie ulepszenia roguelite + rozwijanie cukierkowej wyspy**. Pierwsze wydanie ma być dopracowane wizualnie, offline, bez reklam, zakupów, kont i backendu. Odbiorcy: głównie 10–16 lat, także starsi.
 
@@ -28,7 +28,7 @@ flutter build apk --debug
 
 Referencje Game/ghost/Game Over: `test/goldens/game_*.png`. Referencja Home: [`test/goldens/home_320.png`](test/goldens/home_320.png). Testy obejmują 320/412 dp i skalę tekstu 1×/2×. Fonty Roboto w `test/fonts/` (Apache 2.0, dołączona licencja) służą wyłącznie powtarzalnym testom wizualnym. Kontrole GitHub Actions używają tej samej wersji Fluttera.
 
-Czytaj [AGENTS.md](AGENTS.md), [docs/INDEX.md](docs/INDEX.md) i [docs/STATUS.md](docs/STATUS.md) przed wznowieniem prac. Następny etap: **T-010 — QA Android i profilowanie**.
+Czytaj [AGENTS.md](AGENTS.md), [docs/INDEX.md](docs/INDEX.md) i [docs/STATUS.md](docs/STATUS.md) przed wznowieniem prac. Następny etap: **T-011 — integracja i prerelease; Google Play wymaga ukończenia etapów konta właściciela**.
 
 ## Dokumenty źródłowe (nie zastępuj ich jednym wielkim promptem)
 

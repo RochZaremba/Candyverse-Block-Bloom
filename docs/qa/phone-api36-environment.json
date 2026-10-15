@@ -1,0 +1,17 @@
+{
+  "sourceCommit": "000259dc6a6911d847201ed944f914c67d666b09",
+  "model": "2412DPC0AG",
+  "androidRelease": "16",
+  "api": 36,
+  "abi": "arm64-v8a",
+  "pageSize": 4096,
+  "physicalDevice": true,
+  "renderer": "Impeller Vulkan (confirmed by Android logcat)",
+  "applicationId": "com.example.candyverse",
+  "buildMode": "profile",
+  "fixtureProgression": true,
+  "privateLogsStoredLocally": true,
+  "audioAndHapticsObserved": true,
+  "manualVerification": "Owner confirmed sound, haptics and both independent disable switches on the final AAB-derived production APK, 2026-10-15.",
+  "productionApkSha256": "cc9523e95b6af5135776d43730c6df0068c1ea255569a840107f0342a1582771"
+}

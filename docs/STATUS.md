@@ -1,8 +1,9 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
 **Aktualizacja:**2026-10-15. **Google Play: nieopublikowane.**
-Main: `d50e612` (PR#9). T-010 i T-011 pozostają otwarte do końcowych testów.
-Repozytorium: `RochZaremba/Candyverse-Block-Bloom`; fetch HTTPS, push SSH.
+Main: `41800a6`, merge [PR#10](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/10).
+T-001–T-010 scalone; T-011 sprawdzone technicznie, finalna integracja w toku.
+Repo `RochZaremba/Candyverse-Block-Bloom`; fetch HTTPS, push SSH.
 
 ## Zadania
 
@@ -17,39 +18,47 @@ Repozytorium: `RochZaremba/Candyverse-Block-Bloom`; fetch HTTPS, push SSH.
 | T-007 Island | DONE | PR#7, merge `24ba7c3` |
 | T-008 Save/economy | DONE | PR#8, merge `b4cb8b4` |
 | T-009 Settings/i18n | DONE | PR#9, merge `d50e612`, CI38651090829 SUCCESS |
-| T-010 QA/performance | IN_PROGRESS | PR#10, `000259d`; native20min w toku |
-| T-011 Store/release | IN_PROGRESS | PR#11 draft, `6b0f2c5`; końcowe QA i materiały |
+| T-010 QA/performance | DONE | PR#10, head `000259d`, merge `41800a6`; CI i telefon20min PASS |
+| T-011 Store/release | IN_PROGRESS | PR#11 draft, head `685f935`; końcowa integracja i publikacja GitHub |
 
-## Potwierdzone wyniki
+## Potwierdzone testy
 
-- `flutter test`:160/160 na T-010 oraz zintegrowanym T-011; `dart test test/game`:62/62. Analyze, format, kontrola dokumentacji PASS. Narzędzia release:16/16 testów Python PASS. CI Flutter T-01038718430226 SUCCESS.
-- Pełny współdzielony scenariusz hostowy zalicza wszystkie fixture i cykl ruchów/reakcji/replay/reset. MemoryStorage i krótszy czas są jawnie oznaczone; nie zaliczają native QA.
-- Poprawiono Game na krótkich ekranach i skalowanie podglądu figur. Test wszystkich14 masek ×3 sloty ×2 rozmiary; goldeny i tekst200%. Brak zmiany reguł gry.
-- Finalne podpisane APK/AAB1.0.0+1 zbudowano z produkcyjnego kodu `8b642bb`. Późniejsze zmiany dotyczą harnessu, dokumentacji i CI. Audyt manifestu, podpisu, minimalnych permissions, wykluczeń backupu, sześciu ELF64 i ZIP16KB PASS. Bundletool validate/config/universal oraz jarsigner PASS — [raport wydania](RELEASE_REPORT.md).
-- Finalny APK przeszedł produkcyjny smoke API24 oraz API35/16KB z pełnym64-polowym porównaniem planszy po tle i force-stop. CI38719106009; takżeAPI36 APK PASS. Wariant AAB zatrzymał się po HOME: am start wysłano przed przejściem launchera na pierwszy plan, a aplikacja pozostała STOPPED bez crasha. Harness teraz wymaga dowodu rzeczywistego tła przed launch; ponowny wynik AAB do odczytu. Dawne udane testy innego hasha nie zastępują finalnego kandydata.
-- Dwa rzeczywiste, nieedytowane screenshoty finalnego APK1080×1920 w `assets/store/screenshots/`; mają metadane CI i hashe. Listing PL/EN, autorskie feature graphics i launcher/store icon gotowe.
-- [Publiczna polityka PL/EN](https://rochzaremba.github.io/Candyverse-Block-Bloom/) aktywna HTTP200; identyczna treść dostępna offline w Settings. Hosting branch `docs/privacy-site`, commit `efe5f2a`.
+-160/160 Flutter na T-010 i zintegrowanym T-011;62/62 Dart silnika. Format/analyze/docs PASS.16/16 Python narzędzi release. CI Flutter T-01038718430226 oraz T-01138721355323 SUCCESS.
+- **Telefon2412DPC0AG, Android16/API36, arm64,4KB:** profile Impeller/Vulkan,1202s aktywnej gry,699 ruchów,744 reakcje,38 cykli.7338 próbek FrameTiming; build p95=10,893ms, raster p95=8,550ms. Gradle SUCCESS, JUnit1/0 failures/0 errors. [Raport](qa/phone-api36-profile.json).
+- **CI emulator API35/CPU:** native DataStore,1202s,686 ruchów,740 reakcji,37 cykli,7232 FrameTiming samples. [CI38718430099 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38718430099), [raport](qa/ci-api35-profile-cpu.json). CPU nie potwierdza wydajności GPU.
+- **Właściciel:** dźwięk, odczuwalna haptyka i oba niezależne przełączniki potwierdzone na produkcyjnym APK wygenerowanym z finalnego AAB. Zainstalowano bez czyszczenia danych. Testowa aplikacja T-010 miała osobny ID i preferencje; nie wykonywano clear/uninstall aplikacji produkcyjnej.
+- **Finalny podpisany APK/AAB:** SDK24/36, certyfikat release, brak INTERNET/nieoczekiwanych permissions, wykluczenia backupu, sześć ELF64+ZIP16KB PASS. Bundletool validate/config/universal i jarsigner PASS.
+- **Zgodność produkcyjna:** wszystkie cztery joby [CI38721355212](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38721355212) SUCCESS na685f935: API24/API36 APK, rzeczywiste API35/16KB APK, API36 APK z finalnego AAB. Input Androida, PNG, tło/powrót, force-stop i pełna identyczna64-polowa plansza po wznowieniu. [Raport wydania](RELEASE_REPORT.md), [QA](QA_REPORT.md), dowody JSON w `docs/qa/`.
+- Poprawiono Game na krótkich ekranach i skalowanie preview wszystkich14 masek. Testy granic figur,320×592/393×650, goldeny i tekst200%. Reguły gry bez zmian.
 
-## Trwające testy i ograniczenia
+## Wydanie i materiały
 
-- Telefon właściciela model2412DPC0AG, Android16/API36, arm64,4096B: natywny20min profile na domyślnym Impeller/Vulkan. Osobna aplikacja `com.example.candyverse`, namespace zapisu QA; nie czyścimy danych `com.renvo.candyverse`. Wynik PENDING. Logi lokalnie `/home/roch/.cache/candyverse/qa-phone-final/`.
-- CI T-01038718430099: natywny20min runner z jawnym software rendererem. Czas Stopwatch, token i liczniki chronią przed zaliczeniem samego oczekiwania/starego logu. Wynik PENDING. ADR-0015 opisuje ograniczenia.
-- Emulator GPU ma niestabilne próby, w tym zniknięcie całego urządzenia, system_server SIGSEGV oraz jeden potwierdzony LOW_MEMORY przy RAM2GB. Nie ustalono jednej przyczyny wszystkich awarii. Obecny run porównuje domyślny renderer z jawnie oznaczonym Skia diagnostic; produkcyjny renderer pozostaje bez zmian. Diagnostyczne opt-out nie zalicza domyślnej konfiguracji.
-- Odsłuch i odczuwalna haptyka nadal wymagają wyniku ręcznego testu właściciela. Nie potwierdzono60FPS na reprezentatywnym telefonie ani długiej oceny tempa ekonomii bez fixture.
+Identyfikator `com.renvo.candyverse`; Renvo, rochzaremba@gmail.com. Wersja1.0.0+1.
+Produkcja zbudowana z `8b642bb`; później zmieniono tylko testy/docs/CI.
+Pliki w `/home/roch/.cache/candyverse/artifacts/` oraz **szkicu** GitHub `v1.0.0-rc.1`:
 
-## Wydanie i blokery zewnętrzne
+- APK SHA256 `8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975`.
+- AAB SHA256 `a07af0a46f36cfcd3cbde96a582b7ad8541140aa4045f91be203bdefe428efd3`.
+- APK z AAB SHA256 `cc9523e95b6af5135776d43730c6df0068c1ea255569a840107f0342a1582771`.
 
-- Identyfikator `com.renvo.candyverse`; Renvo, rochzaremba@gmail.com. Konto Play Console8799678699020536617 jest osobiste, weryfikacja w toku. Sam identyfikator nie daje dostępu do przesyłania aplikacji.
-- Podpisane pliki są lokalnie `/home/roch/.cache/candyverse/artifacts/` i w **szkicu** GitHub `v1.0.0-rc.1`; to nie jest opublikowany prerelease ani wydanie Play. Publikacja GitHub po końcowych zielonych kontrolach.
-- Prywatny klucz `/home/roch/.candyverse-signing/v1/` poza Git, katalog0700/pliki0600; potrzebny backup poza komputerem. Nie regenerować. Zachować certyfikat przy Play App Signing (ADR-0014).
-- Google Play wymaga zakończenia weryfikacji, rzeczywistych testerów nowego konta osobistego (12 opt-in/14 kolejnych dni), deklaracji/IARC właściciela i dostępu produkcyjnego. Nie przesłano AAB ani nie zaakceptowano zobowiązań prawnych w imieniu wydawcy.
+Listing PL/EN, oryginalne feature graphics i launcher/store icon gotowe.
+Dwa nieedytowane PNG1080×1920 w `assets/store/screenshots/` z provenance/hashami.
+[Polityka PL/EN](https://rochzaremba.github.io/Candyverse-Block-Bloom/) HTTP200,
+byte-identyczna ze źródłem; cała treść również offline w Settings.
+Hosting branch `docs/privacy-site`, commit `efe5f2a`.
+
+## Ograniczenia i blokery zewnętrzne
+
+- Play Console8799678699020536617: konto osobiste, weryfikacja w toku. Nie potwierdzono dostępu narzędziowego ani utworzenia aplikacji w Console. Nie przesłano AAB/deklaracji i nie zaakceptowano zobowiązań prawnych za wydawcę.
+- Po weryfikacji: wpis aplikacji, formularze/IARC właściciela, test internal/closed, wymagane12 testerów opt-in/14 kolejnych dni i wniosek o dostęp produkcyjny. APK GitHub nie zalicza testu Play. [Instrukcja](RELEASE_GOOGLE_PLAY.md).
+- Prywatny klucz `/home/roch/.candyverse-signing/v1/`, poza Git, katalog0700/pliki0600; backup poza komputerem wymagany od właściciela. Nie regenerować. Zachować certyfikat przy Play App Signing (ADR-0014).
+-60FPS jest celem; p95 części klatki nie dowodzi stałej liczby FPS. Telefon nie został wybrany jako reprezentatywny benchmark średniej klasy. Brak długiej ręcznej oceny tempa ekonomii bez fixture; fixture nie są kodem produkcyjnym.
+- Emulator GPU bywał niestabilny, z utratą całego urządzenia; jedna próba LOW_MEMORY, inne bez ustalonej przyczyny. Nieudane próby zachowano, nie zaliczają QA. Finalna macierz jest zielona; produkcyjny renderer nie został zmieniony. Szczegóły w RELEASE_REPORT.
 
 ## Kontynuacja
 
-Worktree T-010: `/home/roch/programing/Renvo/candyverse-workers/t010`, branch `test/qa-hardening`, [PR#10](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/10).
-Worktree T-011: `/home/roch/programing/Renvo/candyverse-workers/t011`, branch `chore/playstore-release`, [PR#11](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/11).
-Root `main` pozostaje stabilny. Nie używać starych branchy workerów jako aktualnej wersji.
+Root `main` stabilny. T-010 worktree `.../candyverse-workers/t010`, branch `test/qa-hardening`, PR#10 MERGED.
+T-011 worktree `/home/roch/programing/Renvo/candyverse-workers/t011`, branch `chore/playstore-release`, [PR#11](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/11).
+Logi telefonu lokalnie `/home/roch/.cache/candyverse/qa-phone-final/`; nie publikować identyfikatora USB i logów pozostałych aplikacji.
 
-**Jedno następne zadanie:** odebrać raport końcowy20min na fizycznym telefonie i wynik CI T-010, następnie scalić PR#10 wyłącznie po zielonych kontrolach.
-
-Kontrola16KB6b0f2c5 nie przeszła dwóch prób przez utratę całego emulatora; API24/API36/APK-z-AAB PASS. Kolejna konfiguracja wyłącza GLDirectMem wyłącznie na16KB. Nie zmieniono APK ani jego renderera. Telefon nadal testuje domyślny Vulkan.
+**Jedno następne zadanie:** scalić main/T-010 do T-011, zakończyć kontrole PR#11 i opublikować sprawdzony prerelease GitHub; Play pozostaje zablokowany weryfikacją i wymaganym testem konta osobistego.

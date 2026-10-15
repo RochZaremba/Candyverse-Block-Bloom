@@ -1,8 +1,7 @@
 # T-010 — raport QA
 
 Stan2026-10-15:160/160 testów Flutter i62/62 testów silnika PASS.
-Pełny20min natywny scenariusz na fizycznym telefonie i w CI jest w toku;
-nie zaliczamy go przed końcowym raportem i JUnit.
+Pełny20min scenariusz na fizycznym telefonie PASS:1202s aktywnej gry,699 ruchów,744 reakcje,38 cykli. Gradle SUCCESS, JUnit1 test/0 failures/0 errors. CI emulatora również PASS (run38718430099).
 
 ## Zakres i potwierdzone kontrole
 
@@ -28,15 +27,28 @@ dodatnich liczników ruchów/reakcji/cykli, FrameTiming oraz Gradle/JUnit SUCCES
 
 | Środowisko | Stan |
 | --- | --- |
-| Telefon2412DPC0AG, Android16/API36, arm64,4KB | IN_PROGRESS; profile Impeller/Vulkan, softwareRendering=false |
-| CI API35, x86_64, Pixel2/KVM | IN_PROGRESS; jawne softwareRendering=true, run38718430099 |
-| Odsłuch / odczuwalna haptyka | Wymagany wynik ręczny właściciela |
+| Telefon2412DPC0AG, Android16/API36, arm64,4KB | PASS;1202s,699 ruchów,744 reakcje,38 cykli; profile Impeller/Vulkan, softwareRendering=false |
+| CI API35, x86_64, Pixel2/KVM | PASS;1202s,686 ruchów,740 reakcji,37 cykli; jawne softwareRendering=true, run38718430099 |
+| Odsłuch / odczuwalna haptyka | PASS: właściciel potwierdził dźwięk/wibracje i oba niezależne przełączniki na finalnym APK z AAB |
 |60FPS na reprezentatywnym średnim telefonie | Niepotwierdzone; cel, nie deklaracja |
 | Tempo ekonomii bez fixture | Nie wykonano długiej ręcznej oceny |
 
 FrameTiming build/raster p95 to czas części klatki, a nie liczba FPS. Wyniku
 CPU emulatora nie przedstawiamy jako wydajności GPU. Telefon jest rzeczywistym
 urządzeniem właściciela; nie uznajemy go automatycznie za reprezentatywny benchmark.
+
+[Raport CI CPU](qa/ci-api35-profile-cpu.json), [CI38718430099 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38718430099).
+7232 próbek, build p95=7939µs, raster p95=85993µs. To CPU, nie benchmark GPU.
+PR#10 scalono jako `41800a6` po wszystkich zielonych kontrolach.
+
+## Profil fizycznego telefonu
+
+[Surowy raport](qa/phone-api36-profile.json), [środowisko](qa/phone-api36-environment.json).
+7338 próbek FrameTiming: build p95=10893µs, raster p95=8550µs;
+10 próbek build i5 raster przekroczyło16667µs. systemReducedMotion=false,
+softwareRendering=false, storageKind=native-data-store. Cały scenariusz1228s,
+aktywny dwell1202s, host instrumentacji1340s (z build/instalacją).
+Nie publikujemy logów z pozostałych aplikacji telefonu ani jego identyfikatora USB.
 
 ## Odtworzenie i ochrona danych
 

@@ -1,0 +1,22 @@
+{
+  "elapsedSeconds": 1229,
+  "activeDwellSeconds": 1202,
+  "requestedActiveMinutes": 20,
+  "dwellMoves": 686,
+  "dwellReactions": 740,
+  "dwellCycles": 37,
+  "frameCount": 7232,
+  "systemReducedMotion": false,
+  "buildP95Micros": 7939,
+  "rasterP95Micros": 85993,
+  "buildOver16667": 89,
+  "rasterOver16667": 7232,
+  "fixtureProgression": true,
+  "storageKind": "native-data-store",
+  "runToken": "ace0e671936d484c922d139a6930eb18",
+  "captureMethod": "disabled",
+  "representativeHardware": false,
+  "softwareRendering": true,
+  "runner": "native-android-instrumentation",
+  "hostInstrumentationElapsedSeconds": 1300
+}

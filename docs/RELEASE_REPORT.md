@@ -1,6 +1,6 @@
 # Raport kandydata Android1.0.0+1
 
-Data:2026-10-15. Stan: **kandydat, końcowe QA w toku**. Nie przesłano aplikacji do Google Play.
+Data:2026-10-15. Stan: **kandydat sprawdzony technicznie, integracja i prerelease w toku**. Nie przesłano aplikacji do Google Play.
 
 ## Tożsamość i artefakty
 
@@ -31,11 +31,11 @@ Podpisany APK/AAB są w lokalnym `/home/roch/.cache/candyverse/artifacts/`, a ko
 
 ## Kontrole uruchomienia
 
-Finalny podpisany APK przeszedł produkcyjny smoke API24 i API36, a universal APK z finalnego AAB przeszedł API36 w [CI38719876208](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38719876208). Ten sam APK8e4 przeszedł rzeczywiste16KB/API35 w [CI38719106009](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38719106009); ponowienie na aktualnym head w toku. Każdy pozytywny raport potwierdza hash, input Androida, screenshoty oraz identyczną pełną64-polową planszę po tle i force-stop. Universal APK ma SHA256 `cc9523e95b6af5135776d43730c6df0068c1ea255569a840107f0342a1582771`.
+Finalny podpisany APK przeszedł produkcyjny smoke API24, API36 i rzeczywiste API35/16KB, a universal APK z finalnego AAB przeszedł API36. Wszystkie cztery joby [CI38721355212](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38721355212) SUCCESS na head685f935. Każdy raport potwierdza hash, input Androida, screenshoty oraz identyczną pełną64-polową planszę po tle i force-stop. Universal APK ma SHA256 `cc9523e95b6af5135776d43730c6df0068c1ea255569a840107f0342a1582771`.
 
 Dodatkowy wariant Skia diagnostic również przeszedł, lecz nie jest podstawą zaliczenia domyślnego renderera. APK/config pozostają bez zmian. Nie przypisujemy wcześniejszych awarii wyłącznie Impellerowi.
 
-Pełny20min scenariusz profile opisuje [QA_REPORT](QA_REPORT.md); wynik aktualnego runnera CPU pozostaje PENDING. Emulator nie potwierdza60FPS na reprezentatywnym telefonie. Odsłuch i wibracje pozostają do ręcznego sprawdzenia przez właściciela, który zgłosił możliwość testu.
+Pełny20min scenariusz profile opisuje [QA_REPORT](QA_REPORT.md); telefon2412DPC0AG/Android16 przeszedł1202s aktywnej gry i końcowy reset, natywne JUnit PASS. Emulator CPU również przeszedł1202s aktywności:686 ruchów/740 reakcji/37 cykli, CI38718430099 SUCCESS. Emulator nie potwierdza60FPS na reprezentatywnym telefonie. Właściciel potwierdził dźwięk, haptykę i oba przełączniki na zwykłej wersji z finalnego AAB (2026-10-15).
 
 ## Materiały i czynności właściciela
 
@@ -46,8 +46,8 @@ Pełny20min scenariusz profile opisuje [QA_REPORT](QA_REPORT.md); wynik aktualne
 
 ## Ograniczenia środowiska QA
 
-Wcześniejsze emulatory utraciły proces hosta lub Android system_server; jedna próba16KB/RAM2GB ma potwierdzony LOW_MEMORY. Nie ustalono jednej przyczyny wszystkich awarii. Aktualna konfiguracja przypina emulator37.1.11/build15917651, używa SwiftShader bez emulacji Vulkan i4GB gościa dla16KB. To konfiguracja środowiska, bez zmiany renderera aplikacji. [Archiwum Android](https://developer.android.com/studio/emulator_archive), [akceleracja i sterowniki](https://developer.android.com/studio/run/emulator-acceleration).
+Wcześniejsze emulatory utraciły proces hosta lub Android system_server; jedna próba16KB/RAM2GB ma potwierdzony LOW_MEMORY. Nie ustalono jednej przyczyny wszystkich awarii. Konfiguracja udanej macierzy przypina emulator37.1.11/build15917651, używa SwiftShader bez emulacji Vulkan; dla16KB ma4GB gościa i wyłączone GLDirectMem. To konfiguracja środowiska, bez zmiany renderera aplikacji. [Archiwum Android](https://developer.android.com/studio/emulator_archive), [akceleracja i sterowniki](https://developer.android.com/studio/run/emulator-acceleration).
 
 Próba universal APK38719106009 nie przeszła wznowienia: log am start pokazał dostarczenie Intent do wciąż aktywnej Activity, podczas gdy późniejsze dumpsys i PNG pokazały grę STOPPED i launcher na pierwszym planie, bez app exit/crash. Harness obecnie czeka na rzeczywisty foreground innej aplikacji po KEYCODE_HOME, zanim wznowi grę. Nowy test AAB38719876208 PASS. Nie zaliczamy nieudanej próby jako sukcesu.
 
-Dwie próby16KB na head6b0f2c5 utraciły całe urządzenie (przy Game, następnie po force-stop/resume), bez potwierdzonego OOM/segfault w logu hosta. Wyłączono eksperymentalne GLDirectMem wyłącznie dla tego emulatora; APK i domyślny renderer bez zmian. Nowy wynik w toku. Dodatkowy job Skia usunięto po zakończeniu porównania — oba wariantyAPI36 przeszły, brak podstaw do zmiany renderera produkcyjnego.
+Dwie próby16KB na head6b0f2c5 utraciły całe urządzenie (przy Game, następnie po force-stop/resume), bez potwierdzonego OOM/segfault w logu hosta. Wyłączono eksperymentalne GLDirectMem wyłącznie dla tego emulatora; APK i domyślny renderer bez zmian. Konfiguracja38721355212 PASS na wszystkich czterech wariantach. Dodatkowy job Skia usunięto po zakończeniu porównania — oba wariantyAPI36 przeszły, brak podstaw do zmiany renderera produkcyjnego.
