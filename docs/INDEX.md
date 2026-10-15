@@ -23,3 +23,5 @@
 ## Status dokumentacji
 
 Pierwotna specyfikacja v0.1 pozostaje źródłem zakresu V1. Stan implementacji i wyniki testów prowadzi [STATUS](STATUS.md); raporty [QA](QA_REPORT.md) i [wydania](RELEASE_REPORT.md) zawierają potwierdzone dowody oraz ograniczenia. Przed submission sprawdź ponownie wymagania sklepu.
+
+Rozszerzenie po rc.1: [Candy Kingdom — plan i kontrakt](KINGDOM_EXPANSION.md).

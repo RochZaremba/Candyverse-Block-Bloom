@@ -81,3 +81,9 @@ Pink Mochi, Blue Jelly, Lemon Blob, Minty Monster. Każda ma inny kształt i min
 `Start` → `Place` → `Clear` → `Points & juice` → (`Upgrade at threshold`) → `Continue` → (`Game over`) → `Coins once` → `Island or Retry`.
 
 Nie implementuj streaków codziennych, wymuszonych przerw reklamowych ani mechanizmów presji społecznej. Animacje są celebracją gracza, nie sztucznym opóźnieniem interakcji.
+
+## Kontrakt po rc.1 — Candy Kingdom
+
+Zatwierdzone przez właściciela2026-10-15: sekcje5–6 dotyczące limitu3 poziomów,
+braku pasywnego dochodu i dawnych sylwetek zastępuje [KINGDOM_EXPANSION](KINGDOM_EXPANSION.md).
+Zasady planszy, punktacji, Lucky Jelly i idempotentnej nagrody runu bez zmian.

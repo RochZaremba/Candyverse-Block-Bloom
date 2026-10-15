@@ -37,3 +37,5 @@ Istniejące ADR-y:
 
 - [0014 Signing certificate continuity](0014-signing-certificate-continuity.md)
 - [0015 Native profile instrumentation](0015-native-profile-instrumentation.md)
+
+- [ADR-0016 — Kingdom progression and art](0016-kingdom-progression-and-art.md)

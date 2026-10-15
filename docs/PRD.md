@@ -49,3 +49,8 @@ Reklamy/AdMob, IAP, backend, login, leaderboard online, multiplayer, czat, strea
 ## Kryteria wydania
 
 Zobacz [Test Plan](TEST_PLAN.md) i [Release](RELEASE_GOOGLE_PLAY.md). Spełnienie checklisty technicznej nie gwarantuje zatwierdzenia przez Google. Właściciel dokonuje ostatecznych deklaracji prawnych i sklepowych.
+
+## Zatwierdzone rozszerzenie po rc.1
+
+Polecenie właściciela2026-10-15 zastępuje ograniczenia3 poziomów/braku dochodu
+pasywnego i rozszerza oprawę oraz UX. Szczegółowy kontrakt: [Candy Kingdom](KINGDOM_EXPANSION.md), [ADR-0016](adr/0016-kingdom-progression-and-art.md). Historyczne P0 powyżej opisuje wydane rc.1.
