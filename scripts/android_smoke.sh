@@ -18,6 +18,8 @@ if [[ "$qa_mode" != profile && "$qa_mode" != debug ]]; then
 fi
 mkdir -p "$qa_output"
 export CANDYVERSE_QA_OUTPUT="$qa_output"
+# Release the single-use build JVM before the active emulator scenario.
+export GRADLE_OPTS="${GRADLE_OPTS:-} -Dorg.gradle.daemon=false"
 adb -s "$qa_device" get-state
 # adb may connect before Android's package service is ready, especially without KVM.
 qa_boot_deadline=$((SECONDS + 600))

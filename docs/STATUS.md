@@ -37,3 +37,6 @@ Dopuszczalne statusy: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE` (po kryteriach ak
 
 - **T-010 próba pierwsza:** natywny profile build/start wykonany, test przerwany przy pierwszym screenshot przez Android PixelCopy result3 (brak bufora). Nie jest wynikiem pozytywnym. Dodano ograniczone retry wyłącznie tego błędu; pozostałe błędy propagują się. Ponowny emulator po restarcie hosta uruchamiany bez KVM.
 - **Klucz:** wygenerowany prywatnie poza wszystkimi worktree, `/var/tmp/roch-candyverse-signing-v1/` (katalog0700, pliki0600). Hasła niewypisywane i poza Git. Wymaga trwałego, bezpiecznego backupu właściciela; `/var/tmp` może podlegać czyszczeniu. Podpisany finalny build jeszcze niewykonany.
+
+- **Aktualizacja właściciela:** identyfikator konta Play Console `8799678699020536617`. Nie potwierdzono jeszcze dostępu narzędziowego, rodzaju konta ani gotowości produkcyjnej. Klucz ma teraz trwałą prywatną kopię `/home/roch/.candyverse-signing/v1/`, poza Git; wymagany backup poza tym komputerem.
+- **CI T-010:** pierwszy KVM run `38694449126` zakończony FAILURE po utracie całego emulatora, przed ukończeniem scenariusza. Dodano ograniczenie pamięci/workerów Gradle i diagnostykę kernela; wynik kolejnej próby do sprawdzenia.

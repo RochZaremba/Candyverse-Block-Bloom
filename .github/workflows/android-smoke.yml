@@ -38,10 +38,17 @@ jobs:
           api-level: 36
           target: google_apis
           arch: x86_64
+          ram-size: 1536
           profile: pixel_2
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
           disable-animations: true
           script: scripts/android_smoke.sh
+      - name: Record runner diagnostics
+        if: always()
+        run: |
+          mkdir -p build/qa-smoke
+          free -m > build/qa-smoke/runner-memory.txt
+          sudo dmesg --color=never | tail -n 200 > build/qa-smoke/runner-kernel.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
