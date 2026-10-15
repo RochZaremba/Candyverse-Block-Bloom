@@ -139,3 +139,23 @@ Blokery Play Console i backupu klucza pozostają aktualne.
 
 **Jedno następne zadanie:** zakończyć i udokumentować fizyczny smoke T-018,
 następnie przygotować nowego kandydata1.1.0+2 do macierzy zgodności.
+
+### Bloker zgłoszony przez właściciela po instalacji1.1.0+2
+
+Właściciel potwierdził nową oprawę/przejścia, ale wykrył miganie podczas placement.
+Przyczyna: GameController.saving po każdym ruchu wyświetlał pełnoekranową warstwę
+creamWhite95%. Poprawka zachowuje przezroczystą barierę wejścia/semantyki podczas
+zwykłego zapisu; czytelny błąd i retry pozostają. Nowy test porównuje wszystkie
+piksele przy16ms/100ms opóźnionego zapisu z obrazem po ACK i sprawdza odrzucenie
+kolejnego dotyku. Przed poprawką RED, po poprawce wraz z retry5/5 PASS.
+
+Build1.1.0+2 nie jest dopuszczony do publikacji mimo zielonego Flutter CI38731841063
+(193/71/19), czterech podpisanych przypadków38731841152 i telefonu1202s/699ruchów/
+742reakcji (natywny JUnit1/0/0; końcowy eksport wrappera dokończono ręcznie po
+edycji działającego skryptu). Raporty i zrzuty zachowano w worktree kingdom-handoff,
+commityab14489/62fdc2f/e69ed04. Draftv1.1.0-rc.1 pozostaje nieopublikowany.
+Nowa wersja z poprawką będzie1.1.0+3 / v1.1.0-rc.2; wymaga nowych binariów,
+audytu, hashy workflow, testów i potwierdzenia placement na telefonie.
+
+Jedno następne zadanie: zbudować i przetestować nowego kandydata z poprawką
+migania placement, bez scalania/publikowania poprzedniego APK.
