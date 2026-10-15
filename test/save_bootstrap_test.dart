@@ -41,30 +41,33 @@ void main() {
   ) async {
     final storage = MemoryStorage()..values[SaveRepository.key] = 'broken';
     await show(tester, SaveRepository(storage));
-    expect(find.text('Nie można otworzyć zapisu'), findsOneWidget);
-    await tester.tap(find.text('Rozpocznij od nowa'));
+    expect(find.text('Could not open your save'), findsOneWidget);
+    await tester.tap(find.text('Start fresh'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Anuluj'));
+    await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
     expect(storage.values[SaveRepository.key], 'broken');
-    await tester.tap(find.text('Rozpocznij od nowa'));
+    await tester.tap(find.text('Start fresh'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Rozpocznij od nowa').last);
+    await tester.tap(find.text('Start fresh').last);
     await tester.pumpAndSettle();
-    expect(find.text('GRAJ'), findsOneWidget);
+    expect(find.text('PLAY'), findsOneWidget);
     expect(storage.values[SaveRepository.quarantineKey], 'broken');
-    expect(storage.values[SaveRepository.key], isNull);
+    expect(
+      AppSaveV1.decode(storage.values[SaveRepository.key]!).settings.language,
+      'en',
+    );
   });
   testWidgets('temporary read error exposes retry and no destructive reset', (
     tester,
   ) async {
     final storage = UnreadableStorage();
     await show(tester, SaveRepository(storage));
-    expect(find.text('Rozpocznij od nowa'), findsNothing);
+    expect(find.text('Start fresh'), findsNothing);
     storage.fail = false;
-    await tester.tap(find.text('Spróbuj ponownie'));
+    await tester.tap(find.text('Try again'));
     await tester.pumpAndSettle();
-    expect(find.text('GRAJ'), findsOneWidget);
+    expect(find.text('PLAY'), findsOneWidget);
   });
   testWidgets('English device localizes unreadable save and recovery dialog', (
     tester,
@@ -94,13 +97,13 @@ void main() {
     expect(find.text('Could not open your save'), findsOneWidget);
   });
 
-  testWidgets('unsupported device language falls back to Polish recovery', (
+  testWidgets('unsupported device language falls back to English recovery', (
     tester,
   ) async {
     final storage = MemoryStorage()..values[SaveRepository.key] = 'broken';
     await show(tester, SaveRepository(storage), locale: const Locale('de'));
-    expect(find.text('Nie można otworzyć zapisu'), findsOneWidget);
-    expect(find.text('Spróbuj ponownie'), findsOneWidget);
+    expect(find.text('Could not open your save'), findsOneWidget);
+    expect(find.text('Try again'), findsOneWidget);
   });
 
   for (final savedLanguage in ['pl', 'en']) {
