@@ -5,7 +5,7 @@ Nie oznaczamy testu stabilności jako zakończonego przed odczytem raportu.
 
 ## Wyniki potwierdzone
 
-- `flutter test`:158/158, w tym goldeny, PL/EN,320/412dp, tekst200%, reset i odzyskiwanie zapisu.
+- `flutter test`:159/159, w tym goldeny, PL/EN,320/412dp, tekst200%, reset i odzyskiwanie zapisu.
 - `dart test test/game`:62/62; `flutter analyze`, format i kontrola dokumentacji PASS.
 - JDK21 `assembleProfile assembleProfileAndroidTest`: PASS na branchach T-010 i T-011; testAPK zawiera natywny FlutterTestRunner.
 - Poprawiono układ Game na krótkich telefonach: plansza dopasowuje rozmiar, panele są bardziej zwarte, wszystkie trzy figury mieszczą się bez scrolla przy zwykłym tekście. Testy393×650 i320×592 sprawdzają pełne granice figur oraz wykonują placement. Zwiększony tekst zachowuje przewijanie. Referencja: `test/goldens/game_phone_compact.png`.
@@ -45,3 +45,5 @@ Aktualizacja runnera: natywny run38708821882 także utracił emulator przed peł
 Dodatkowy przegląd PNG wykrył ucięcie4-polowej pionowej figury wewnątrz kompaktowego tray. FittedBox skaluje wyłącznie podgląd figury, bez zmiany jej maski lub reguł placement. Test wszystkich14 masek w trzech slotach przy320×592 i393×650 potwierdza granice każdego renderowanego CandyTile;158 Flutter tests, analyze i format PASS. Finalny podpisany build wymaga przebudowy i powtórzenia smoke.
 
 Naprawa startu native CPU: `ActivityTestRule.getActivityIntent()` w AndroidX1.2.0 zwraca null (potwierdzone bytecode); dodany wariant dopisywał extras do null. FlutterTestRunner przechwytuje RuntimeException i czeka na Dart results, więc job pozostawał w oczekiwaniu bez rozgrywki. Obecnie tworzymy jawny Intent i propagujemy błąd launch jako AssertionError, aby nie trafił do tego catch. Oczekiwanie nie jest pomiarem aktywnej gry; finalny20min nadal wymaga nowego raportu.
+
+Native run38714825323 dotarł do Game i poprawnie zgłosił nieudaną asercję scenariusza, bez utraty emulatora: nielegalny drag zachowuje zaznaczenie, więc ponowny tap tego samego slotu je wyłączał. Harness jawnie wybiera inny slot i wraca do0 przed próbą tap placement. Dodano widget regression invalid drag→reselection→invalid tap→line clear;159/159 Flutter i analyze PASS.20min nadal niezaliczone przed finalnym wynikiem.

@@ -182,6 +182,9 @@ void main() {
     await gesture.up();
     await tester.pump(const Duration(milliseconds: 200));
     expect(controller.state, same(before));
+    // An invalid drag keeps its selected piece; select a different slot first
+    // so this sequence explicitly selects slot0 instead of toggling it off.
+    await tap(find.byKey(const ValueKey('tray-1')));
     await tap(find.byKey(const ValueKey('tray-0')));
     await tap(find.byKey(const ValueKey('cell-0-0')));
     expect(controller.state, same(before));

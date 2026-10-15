@@ -51,3 +51,5 @@ Dopuszczalne statusy: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE` (po kryteriach ak
 - **Pełne podglądy figur:** skalowanie preview w tray zapobiega ucinaniu vertical4/horizontal4 w małych panelach. Test wszystkich14 masek ×3 sloty ×2 rozmiary,158/158 Flutter, analyze/format PASS. Finalny APK/AAB do przebudowy; następne zadanie pozostaje pełnym native QA aktualnego head.
 
 - **Naprawa samego runnera CPU:** wykryto null Intent w AndroidX1.2.0 i przechwytywanie RuntimeException przez SDKFlutterTestRunner. Dodano jawny Intent i fail-fast AssertionError przy błędzie launch. Poprzednie oczekujące joby nie rozpoczęły aktywnej gry, nie zaliczają20min. Następne zadanie: pełny native smoke poprawionego runnera.
+
+- **Scenariusz native:** po naprawie Intent runner rzeczywiście uruchomił grę, zgłosił błąd9→10 linii w samym teście (tap odznaczał figurę zachowaną po illegal drag). Poprawiono jawny reselection;159/159 Flutter/analyze PASS, regresja odtwarza tę sekwencję. Następny krok: uruchomić pełny native20min aktualnego head.
