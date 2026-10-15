@@ -127,6 +127,55 @@ void main() {
     });
   }
 
+  testWidgets('all catalogue masks fit fully inside phone tray panels', (
+    tester,
+  ) async {
+    for (final size in [const Size(320, 592), const Size(393, 650)]) {
+      for (final piece in pieceCatalog) {
+        await tester.pumpWidget(const SizedBox());
+        final controller = GameController(
+          engine: GameEngine(traySource: (_) => [piece, piece, piece]),
+        );
+        addTearDown(controller.dispose);
+        await show(tester, controller, width: size.width, height: size.height);
+        for (var slot = 0; slot < 3; slot++) {
+          final tray = find.byKey(ValueKey('tray-$slot'));
+          final bounds = tester.getRect(tray).deflate(8);
+          final tiles = find.descendant(
+            of: tray,
+            matching: find.byType(CandyTile),
+          );
+          expect(tiles, findsNWidgets(piece.cells.length));
+          for (final tile in tiles.evaluate()) {
+            final rect = tester.getRect(
+              find.byElementPredicate((e) => identical(e, tile)),
+            );
+            expect(
+              rect.left,
+              greaterThanOrEqualTo(bounds.left - .01),
+              reason: piece.id,
+            );
+            expect(
+              rect.top,
+              greaterThanOrEqualTo(bounds.top - .01),
+              reason: piece.id,
+            );
+            expect(
+              rect.right,
+              lessThanOrEqualTo(bounds.right + .01),
+              reason: piece.id,
+            );
+            expect(
+              rect.bottom,
+              lessThanOrEqualTo(bounds.bottom + .01),
+              reason: piece.id,
+            );
+          }
+        }
+      }
+    }
+  });
+
   testWidgets(
     'Home Play opens actual game and back confirmation preserves it',
     (tester) async {
