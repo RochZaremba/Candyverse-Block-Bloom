@@ -98,3 +98,11 @@ GLDirectMem. Podpisany APK ma niezależny smoke API24/API36 i środowiska16KB.
 To zmiana urządzenia QA, nie konfiguracji produkcyjnego silnika. Wyłączenie
 Vulkan i GLDirectMem jest znanym obejściem emulacji, którego wynik nadal trzeba
 potwierdzić: [runner issue393](https://github.com/ReactiveCircus/android-emulator-runner/issues/393).
+
+Profilowy runner CI używa teraz opcjonalnego backendu Skia software
+(`CANDYVERSE_SOFTWARE_RENDERING=1`, flagi Flutter SDK), zachowując AOT profile,
+natywny zapis i prawdziwe widgety. Bez tej opcji API35 także utraciło emulator.
+To obejście środowiska testowego; wynik FrameTiming dotyczy CPU i nie ocenia
+60FPS/Vulkan telefonu. Produkcyjny APK zachowuje domyślny renderer i ma osobny
+smoke bez flag programowego renderowania. Stream logcat zapisuje lifecycle
+przed ewentualnym rozłączeniem urządzenia.

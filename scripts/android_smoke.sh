@@ -8,6 +8,13 @@ qa_device=${CANDYVERSE_QA_DEVICE:-emulator-5554}
 qa_minutes=${CANDYVERSE_SMOKE_MINUTES:-0}
 qa_output=${CANDYVERSE_QA_OUTPUT:-"$repo_root/build/qa-smoke"}
 qa_mode=${CANDYVERSE_QA_MODE:-profile}
+qa_software=${CANDYVERSE_SOFTWARE_RENDERING:-0}
+qa_renderer_args=()
+qa_software_define=false
+if [[ "$qa_software" == 1 ]]; then
+  qa_renderer_args=(--enable-software-rendering --no-enable-impeller)
+  qa_software_define=true
+fi
 if [[ ! "$qa_minutes" =~ ^[0-9]+$ ]] || ((qa_minutes > 60)); then
   printf 'CANDYVERSE_SMOKE_MINUTES must be an integer from 0 to 60.\n' >&2
   exit 2
@@ -35,10 +42,14 @@ adb -s "$qa_device" shell getprop ro.product.model > "$qa_output/device-model.tx
 adb -s "$qa_device" shell getconf PAGE_SIZE > "$qa_output/page-size.txt"
 flutter --version > "$qa_output/flutter-version.txt"
 # Do not clear global logcat: retain other workers' diagnostic history.
-flutter drive --"$qa_mode" -d "$qa_device" \
+adb -s "$qa_device" logcat -v threadtime AndroidRuntime:E libc:F DEBUG:F ActivityTaskManager:I ActivityManager:I flutter:E '*:S' > "$qa_output/android-lifecycle.log" 2>&1 &
+qa_logcat_pid=$!
+trap 'kill "$qa_logcat_pid" 2>/dev/null || true' EXIT
+flutter drive --"$qa_mode" "${qa_renderer_args[@]}" -d "$qa_device" \
   --driver integration_test/smoke_driver.dart \
   --target integration_test/android_smoke_test.dart \
   --dart-define="CANDYVERSE_SMOKE_MINUTES=$qa_minutes" \
+  --dart-define="CANDYVERSE_SOFTWARE_RENDERING=$qa_software_define" \
   2>&1 | tee "$qa_output/flutter-drive.log"
 adb -s "$qa_device" logcat -d -t 2000 AndroidRuntime:E flutter:E '*:S' > "$qa_output/errors.log"
 python3 - "$qa_output/report.json" <<'PY'
