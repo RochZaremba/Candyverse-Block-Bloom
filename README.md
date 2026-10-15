@@ -1,8 +1,10 @@
 # Candyverse: Block & Bloom 
 
-> **Stan: T-001–T-010 scalone i przetestowane.** Gra V1 ma sześć ekranów, zapis offline, wyspę, ulepszenia oraz Settings/reset/PL-EN. Test20min na fizycznym Androidzie i CI przeszedł; podpisane APK/AAB1.0.0 oraz materiały są przygotowane do integracji; nie oznacza to publikacji w Google Play. Szczegóły i ograniczenia w [STATUS](docs/STATUS.md). Aktualizacja:2026-10-15.
+> **Stan: T-001–T-011 scalone i przetestowane.** Gra V1 ma sześć ekranów, zapis offline, wyspę, ulepszenia oraz Settings/reset/PL-EN. Test20min na fizycznym Androidzie i CI przeszedł; podpisane APK/AAB1.0.0 oraz materiały są dostępne w publicznym prerelease; nie oznacza to publikacji w Google Play. Szczegóły i ograniczenia w [STATUS](docs/STATUS.md). Aktualizacja:2026-10-15.
 
 Kolorowa gra mobilna 2D na Androida: **block puzzle 8×8 + lekkie ulepszenia roguelite + rozwijanie cukierkowej wyspy**. Pierwsze wydanie ma być dopracowane wizualnie, offline, bez reklam, zakupów, kont i backendu. Odbiorcy: głównie 10–16 lat, także starsi.
+
+[**Pobierz APK1.0.0-rc.1**](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/download/v1.0.0-rc.1/candyverse-1.0.0-1.apk) · [AAB, hashe i materiały wydania](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/tag/v1.0.0-rc.1)
 
 ## Szybki start
 
@@ -28,7 +30,7 @@ flutter build apk --debug
 
 Referencje Game/ghost/Game Over: `test/goldens/game_*.png`. Referencja Home: [`test/goldens/home_320.png`](test/goldens/home_320.png). Testy obejmują 320/412 dp i skalę tekstu 1×/2×. Fonty Roboto w `test/fonts/` (Apache 2.0, dołączona licencja) służą wyłącznie powtarzalnym testom wizualnym. Kontrole GitHub Actions używają tej samej wersji Fluttera.
 
-Czytaj [AGENTS.md](AGENTS.md), [docs/INDEX.md](docs/INDEX.md) i [docs/STATUS.md](docs/STATUS.md) przed wznowieniem prac. Następny etap: **T-011 — integracja i prerelease; Google Play wymaga ukończenia etapów konta właściciela**.
+Czytaj [AGENTS.md](AGENTS.md), [docs/INDEX.md](docs/INDEX.md) i [docs/STATUS.md](docs/STATUS.md) przed wznowieniem prac. Następny krok: **test wewnętrzny Play po zakończeniu weryfikacji konta właściciela**.
 
 ## Dokumenty źródłowe (nie zastępuj ich jednym wielkim promptem)
 

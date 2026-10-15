@@ -13,10 +13,7 @@ permissions:
   contents: read
 jobs:
   production-entrypoint:
-    # GitHub requires push access to read private draft release candidates.
-    # Only the download step receives GH_TOKEN; signing material stays local.
-    permissions:
-      contents: write
+    # The verified candidate is public; read-only access is sufficient.
     name: production-entrypoint (API${{ matrix.api }}, pages${{ matrix.page-size }}, ${{ matrix.kind }}, ${{ matrix.renderer }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -66,6 +63,8 @@ jobs:
             sha256: cc9523e95b6af5135776d43730c6df0068c1ea255569a840107f0342a1582771
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-java@v4
         with:
           distribution: temurin

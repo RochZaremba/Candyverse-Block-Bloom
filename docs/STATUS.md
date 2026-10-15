@@ -1,8 +1,8 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
 **Aktualizacja:**2026-10-15. **Google Play: nieopublikowane.**
-Main: `41800a6`, merge [PR#10](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/10).
-T-001–T-010 scalone; T-011 sprawdzone technicznie, finalna integracja w toku.
+Main: `67f4ae5`, merge [PR#11](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/11); wcześniej PR#10/`41800a6`.
+T-001–T-011 scalone. Publiczny prerelease GitHub gotowy. Publikacja Google Play **BLOCKED** etapami konta właściciela, nieukończona.
 Repo `RochZaremba/Candyverse-Block-Bloom`; fetch HTTPS, push SSH.
 
 ## Zadania
@@ -19,7 +19,7 @@ Repo `RochZaremba/Candyverse-Block-Bloom`; fetch HTTPS, push SSH.
 | T-008 Save/economy | DONE | PR#8, merge `b4cb8b4` |
 | T-009 Settings/i18n | DONE | PR#9, merge `d50e612`, CI38651090829 SUCCESS |
 | T-010 QA/performance | DONE | PR#10, head `000259d`, merge `41800a6`; CI i telefon20min PASS |
-| T-011 Store/release | IN_PROGRESS | PR#11 draft, head `685f935`; końcowa integracja i publikacja GitHub |
+| T-011 Store/release | DONE | PR#11, head `16f3db4`, merge `67f4ae5`; podpisane APK/AAB i publiczny prerelease; Play nieopublikowane |
 
 ## Potwierdzone testy
 
@@ -35,7 +35,7 @@ Repo `RochZaremba/Candyverse-Block-Bloom`; fetch HTTPS, push SSH.
 
 Identyfikator `com.renvo.candyverse`; Renvo, rochzaremba@gmail.com. Wersja1.0.0+1.
 Produkcja zbudowana z `8b642bb`; później zmieniono tylko testy/docs/CI.
-Pliki w `/home/roch/.cache/candyverse/artifacts/` oraz **szkicu** GitHub `v1.0.0-rc.1`:
+Pliki w `/home/roch/.cache/candyverse/artifacts/` oraz [publicznym prerelease `v1.0.0-rc.1`](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/tag/v1.0.0-rc.1):
 
 - APK SHA256 `8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975`.
 - AAB SHA256 `a07af0a46f36cfcd3cbde96a582b7ad8541140aa4045f91be203bdefe428efd3`.
@@ -58,7 +58,14 @@ Hosting branch `docs/privacy-site`, commit `efe5f2a`.
 ## Kontynuacja
 
 Root `main` stabilny. T-010 worktree `.../candyverse-workers/t010`, branch `test/qa-hardening`, PR#10 MERGED.
-T-011 worktree `/home/roch/programing/Renvo/candyverse-workers/t011`, branch `chore/playstore-release`, [PR#11](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/11).
+T-011 worktree `/home/roch/programing/Renvo/candyverse-workers/t011`, branch `chore/playstore-release`, PR#11 MERGED.
+Handoff po publikacji: branch `chore/public-release-handoff` w root; aktualizacja dokumentacji i zmniejszenie CI contents write→read dla publicznych plików.
 Logi telefonu lokalnie `/home/roch/.cache/candyverse/qa-phone-final/`; nie publikować identyfikatora USB i logów pozostałych aplikacji.
 
-**Jedno następne zadanie:** scalić main/T-010 do T-011, zakończyć kontrole PR#11 i opublikować sprawdzony prerelease GitHub; Play pozostaje zablokowany weryfikacją i wymaganym testem konta osobistego.
+## Zamknięcie sesji wydania
+
+- PR#10 i#11 MERGED po wszystkich zielonych kontrolach. Finalny head wydania16f3db4: Flutter38722227574 SUCCESS i wszystkie cztery przypadki zgodności38722227448 SUCCESS. Tag `v1.0.0-rc.1` wskazuje `67f4ae5`.
+- Prerelease opublikowano2026-10-15 o10:48:29 UTC. Załączniki: APK/AAB/universal APK, SHA256SUMS, build-info.json i store-kit ZIP. Brak kluczy prywatnych w załącznikach.
+- Podpisane binaria pozostają niezmienione. Store-kit jest snapshotem przygotowania kandydata; aktualny stan sesji jest w tym pliku. Nie mylić publicznego APK z zaliczeniem testu Google Play.
+
+**Jedno następne zadanie:** po zakończeniu weryfikacji konta właściciela utworzyć wpis Candyverse w Play Console i przesłać zweryfikowany AAB1.0.0+1 do testu wewnętrznego, zgodnie z RELEASE_GOOGLE_PLAY. Nie podawać haseł ani klucza w czacie.
