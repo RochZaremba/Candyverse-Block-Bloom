@@ -70,3 +70,7 @@ Logi telefonu lokalnie `/home/roch/.cache/candyverse/qa-phone-final/`; nie publi
 - Podpisane binaria pozostają niezmienione. Store-kit jest snapshotem przygotowania kandydata; aktualny stan sesji jest w tym pliku. Nie mylić publicznego APK z zaliczeniem testu Google Play.
 
 **Jedno następne zadanie:** po zakończeniu weryfikacji konta właściciela utworzyć wpis Candyverse w Play Console i przesłać zweryfikowany AAB1.0.0+1 do testu wewnętrznego, zgodnie z RELEASE_GOOGLE_PLAY. Nie podawać haseł ani klucza w czacie.
+
+## Nowa sesja — Candy Kingdom2026-10-15
+
+Właściciel jawnie rozszerzył V1; plan wszystkich zmian zapisany w KINGDOM_EXPANSION, PRD/GDD/Visual i ADR-0016. Baseline flutter test160/160 PASS; main349684e czysty przed pracą. Branch feat/candy-kingdom-expansion. T-012 IN_PROGRESS; T-013–T-018 TODO. Nowe assety i funkcje nie są jeszcze ukończone. Następne zadanie: implementacja schema2 i30 poziomów z testami migracji.

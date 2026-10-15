@@ -25,3 +25,18 @@ T-001 bootstrap osobny PR; T-002 i T-003 mogą mieć osobne PR; UI i VFX nie pow
 - T-005 i T-007 są pełnoprawnymi, wymagającymi etapami; **nie obniżaj jakości grafiki ze względu na nazwę MVP**.
 - Jeśli zabraknie dostępu do urządzenia, nie kłam o smoke testach — zapisz blokadę w STATUS i kontynuuj testy dostępne lokalnie.
 - Po zakończeniu T-011 przejdź przez `docs/RELEASE_GOOGLE_PLAY.md`; nie publikuj bez właściciela.
+
+## Zamówione rozszerzenie Candy Kingdom po rc.1
+
+Właściciel2026-10-15 zatwierdził rozszerzenie zakresu. Szczegóły i kryteria:
+[KINGDOM_EXPANSION](KINGDOM_EXPANSION.md).
+
+| ID | Zadanie | Zależności | Kryterium akceptacji | Preferowany branch |
+| --- | --- | --- | --- | --- |
+| T-012 | Kontrakt i migracja | T-011 | zatwierdzony plan, PRD/GDD/ADR, migracja starego zapisu | feat/candy-kingdom-expansion |
+| T-013 |30 poziomów i pasywna ekonomia | T-012 | testy cen/czasu/atomowości/resume | feat/kingdom-economy |
+| T-014 | Prestiż / gwiazdki | T-013 | potwierdzony reset3×30, trwała gwiazdka i nowy krajobraz | feat/kingdom-economy |
+| T-015 | Renderowane assety i postacie | T-012 | marka właściciela,4 zwierzaki AI, budynki/wyspy i provenance | feat/kingdom-art |
+| T-016 | Menu i domyślny EN | T-012 |2 przyciski, gear, zachowanie starego języka | feat/kingdom-navigation |
+| T-017 | Płynne przejścia / komunikaty | T-016 | brak flash, candy UI z maskotką i dostępność | feat/kingdom-navigation |
+| T-018 | Celebracje i QA | T-013–T-017 | efekty, testy/goldeny/build/native smoke i nowy kandydat | feat/candy-kingdom-expansion |

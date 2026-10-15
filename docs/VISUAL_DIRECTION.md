@@ -53,3 +53,9 @@ Limity: unikać pełnoekranowych białych fleszy i błysków, brak efektów stro
 Przed zamknięciem PR UI: udokumentuj realny screenshot/golden test lub screenshot z emulatora; sprawdź mały ekran, polskie długie napisy, powiększony tekst, ograniczenie ruchu, brak overflow, czytelność bez dźwięku.
 
 Nie oznaczaj P0 graficznego jako ukończonego, jeśli ekrany to nieostylowane szare formularze.
+
+## Kierunek Candy Kingdom po rc.1
+
+Właściciel2026-10-15 zatwierdził renderowaną oprawę na podstawie swojej grafiki,
+cztery zwierzaki i więcej animacji. [Plan](KINGDOM_EXPANSION.md) zastępuje dawny
+limit3 renderów i code-native postacie; kontrast, dostępność i brak fleszy obowiązują.
