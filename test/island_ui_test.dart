@@ -118,11 +118,16 @@ void main() {
   ) async {
     viewport(tester);
     final semantics = tester.ensureSemantics();
+    final settings = SettingsModel()..setLanguage('pl');
+    addTearDown(settings.dispose);
     try {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: IslandScene(theme: theme, island: IslandState()),
+        SettingsScope(
+          settings: settings,
+          child: MaterialApp(
+            home: Scaffold(
+              body: IslandScene(theme: theme, island: IslandState()),
+            ),
           ),
         ),
       );
@@ -281,9 +286,7 @@ void main() {
     final session = AppSession.memory();
     session.settings.setLanguage('pl');
     await tester.pumpWidget(CandyverseApp(theme: theme, session: session));
-    final islandButton = find.textContaining(
-      RegExp(r'^(Odwiedź wyspę|Wyspa)$'),
-    );
+    final islandButton = find.byKey(const Key('home-island'));
     await tester.ensureVisible(islandButton);
     await tester.tap(islandButton);
     await tester.pumpAndSettle();
