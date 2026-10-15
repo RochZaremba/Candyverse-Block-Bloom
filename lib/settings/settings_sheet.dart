@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
+import '../core/presentation/candy_message.dart';
 import '../core/localization/app_strings.dart';
 import 'settings_model.dart';
 
@@ -12,6 +13,13 @@ void showFeedbackSettings(BuildContext context, {required AppTheme theme}) {
     context: context,
     isScrollControlled: true,
     backgroundColor: theme.color('creamWhite'),
+    shape: RoundedRectangleBorder(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+      side: BorderSide(
+        color: theme.color('candyPink').withValues(alpha: .5),
+        width: 3,
+      ),
+    ),
     builder: (context) => SafeArea(
       child: SingleChildScrollView(
         child: ListenableBuilder(
@@ -19,6 +27,15 @@ void showFeedbackSettings(BuildContext context, {required AppTheme theme}) {
           builder: (context, _) => Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              const SizedBox(height: 16),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: const SizedBox(
+                  width: 72,
+                  height: 72,
+                  child: CandyBrandImage(icon: true),
+                ),
+              ),
               Padding(
                 padding: EdgeInsets.all(20),
                 child: Text(

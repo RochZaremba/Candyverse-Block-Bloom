@@ -54,6 +54,12 @@ void main() {
       tester.platformDispatcher.clearAccessibilityFeaturesTestValue();
     });
     await tester.pumpWidget(CandyverseApp(theme: theme, session: session));
+    await tester.runAsync(
+      () => precacheImage(
+        const AssetImage('assets/kingdom/brand-sheet.png'),
+        tester.element(find.byType(Scaffold).first),
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
@@ -82,10 +88,13 @@ void main() {
   testWidgets(
     'Home settings EN change persists and island/game translate live',
     (tester) async {
-      final session = AppSession.memory(seedSource: () => 8);
+      final session = AppSession.memory(
+        save: AppSaveV1(settings: const SavedSettings(language: 'pl')),
+        seedSource: () => 8,
+      );
       final repo = session.repository;
       await show(tester, session);
-      await tester.tap(find.text('Ustawienia'));
+      await tester.tap(find.byKey(const Key('home-settings')));
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('English'));
       await tester.tap(find.text('English'));
@@ -101,7 +110,7 @@ void main() {
         find.byType(Scaffold),
         matchesGoldenFile('goldens/home_en_412.png'),
       );
-      await tester.tap(find.text('Visit island'));
+      await tester.tap(find.text('ISLAND'));
       await tester.pumpAndSettle();
       expect(find.text('Your candy island'), findsOneWidget);
       expect(find.text('Candy Tree'), findsOneWidget);
@@ -151,7 +160,7 @@ void main() {
       ),
     );
     await show(tester, session);
-    await tester.tap(find.text('RESUME'));
+    await tester.tap(find.text('PLAY'));
     await tester.pumpAndSettle();
     expect(find.text('Choose an upgrade'), findsOneWidget);
     expect(
@@ -183,7 +192,7 @@ void main() {
     );
     await tester.pumpWidget(CandyverseApp(theme: theme, session: next));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('RESUME'));
+    await tester.tap(find.text('PLAY'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Finish run'));
     await tester.pumpAndSettle();

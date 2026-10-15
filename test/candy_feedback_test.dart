@@ -177,8 +177,8 @@ void main() {
     await tester.pumpWidget(
       CandyverseApp(theme: theme, session: AppSession.memory()),
     );
-    await tester.ensureVisible(find.text('Ustawienia'));
-    await tester.tap(find.text('Ustawienia'));
+    await tester.ensureVisible(find.byKey(const Key('home-settings')));
+    await tester.tap(find.byKey(const Key('home-settings')));
     await tester.pumpAndSettle();
     final switches = find.byType(SwitchListTile);
     expect(switches, findsNWidgets(3));

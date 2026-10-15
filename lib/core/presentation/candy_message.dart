@@ -24,8 +24,6 @@ class CandyBrandImage extends StatelessWidget {
                   'assets/kingdom/brand-sheet.png',
                   fit: BoxFit.fill,
                   gaplessPlayback: true,
-                  cacheWidth: icon ? 768 : 1536,
-                  errorBuilder: (_, _, _) => const SizedBox.shrink(),
                 ),
               ),
             ],
