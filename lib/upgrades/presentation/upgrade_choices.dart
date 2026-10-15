@@ -1,3 +1,5 @@
+import '../../core/localization/app_strings.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
@@ -27,7 +29,8 @@ class UpgradeChoices extends StatelessWidget {
           children: [
             Semantics(
               liveRegion: true,
-              child: Text(
+              child: appText(
+                context,
                 'Wybierz ulepszenie',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -38,7 +41,8 @@ class UpgradeChoices extends StatelessWidget {
               ),
             ),
             if (pending > 1)
-              Text(
+              appText(
+                context,
                 'Pozostałe wybory: $pending',
                 style: TextStyle(color: theme.color('creamWhite')),
               ),
@@ -76,7 +80,8 @@ class UpgradeChoices extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                appText(
+                                  context,
                                   upgrade.title,
                                   style: const TextStyle(
                                     fontSize: 20,
@@ -84,7 +89,7 @@ class UpgradeChoices extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text(upgrade.description),
+                                appText(context, upgrade.description),
                               ],
                             ),
                           ),

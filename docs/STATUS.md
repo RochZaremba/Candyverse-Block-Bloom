@@ -1,10 +1,10 @@
 # STATUS — aktualizuj na końcu każdej sesji
 
 **Data aktualizacji:** 2026-10-15
-**Stan:** T-001–T-008 zaimplementowane i przetestowane. T-008 ma ekonomię, zapis/resume i obsługę błędów; CI poprzednich headów SUCCESS (`38644250421`, `38645088319`); pełne maski dodatkowo sprawdzone lokalnie, najnowszy CI/merge odczytaj narzędziowo.
-**Potwierdzone commity:** T-008 `78c5565`, `6469890`, `99511f8`, `2b9b74c`, `c037836`, `c53d853`; merge T-007 `24ba7c3`, T-006 `ab53641`, T-005 `1f2d92c`.
-**PR:** #1–#7 MERGED; [#7 — T-007](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/7), CI `38641631667` SUCCESS. [#8 — T-008](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/8): CI kodu `2b9b74c` SUCCESS; najnowszy head i merge odczytaj przez `gh pr view 8` / `git log`.
-**Repo/remote:** `RochZaremba/Candyverse-Block-Bloom`, fetch HTTPS/push SSH. Root pracuje sam; T-007 worker odmówił startu przez brak kredytów, więc jego zadanie wykonał root.
+**Stan:** T-001–T-008 scalone; T-009 zaimplementowane i sprawdzone lokalnie, PR/CI w przygotowaniu. T-010 harness i T-011 konfiguracja przygotowywane równolegle, niezaliczone bez integracji/testów.
+**Potwierdzone commity:** merge T-008 `b4cb8b4`, head `5d081ff`; T-009 `c34eced`, `bef81e1`, `3263632`, `085e97a`, `60316b5`, `a2a1f26`, `2eba311`, `ccbd433`.
+**PR:** #1–#8 MERGED; [#8](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/8), finalne CI `38646672217` SUCCESS. T-009 PR jeszcze nieutworzony.
+**Repo/remote:** `RochZaremba/Candyverse-Block-Bloom`, fetch HTTPS/push SSH. Root integruje; workerzy mają rozdzielone moduły/worktree.
 
 ## Task tracker
 
@@ -18,21 +18,19 @@
 | T-006 Upgrades | DONE | `c3cd0e2`, `7e4cf6c`, `eec3e6c`, `91ed2a7`, `3b6712b`; 90 Flutter/54 Dart/native APK OK; PR #6 |
 | T-007 Island | DONE | `b1945e7`, `f632c57`, `daad0e1`;101 Flutter/56 Dart/native APK OK; PR #7, merge `24ba7c3` |
 | T-008 Save/economy | DONE | `78c5565`, `6469890`, `ba3e6fd`, `99511f8`;125 Flutter/62 Dart/format/analyze/docs/APK OK; PR #8; CI kodu `2b9b74c` SUCCESS |
-| T-009 Settings/i18n | TODO | — |
-| T-010 QA/performance | TODO | — |
-| T-011 Play Store prep | TODO | — |
+| T-009 Settings/i18n | IN_PROGRESS | `2eba311`;151 Flutter/62 Dart/analyze/APK OK; finalny review i PR/CI |
+| T-010 QA/performance | IN_PROGRESS | osobny harness Android; rzeczywisty smoke jeszcze niewykonany |
+| T-011 Play Store prep | IN_PROGRESS | konfiguracja/ikony/audyt osobno; brak konta Play Console i klucza |
 
 Dopuszczalne statusy: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE` (po kryteriach akceptacji, nie po napisaniu kodu bez testów).
 
 ## Aktualna sesja / handoff
 
-- **T-008 zaimplementowane:** pure Dart AppSaveV1/economy, walidowany wersjonowany JSON, exact resume board/tray masks+skins/RNG/kolejki/kart/eraser; monotonic ID przed runem/retry; nagroda i rekord w jednej idempotentnej finalizacji; ceny GDD, kolejne poziomy, brak pasywnych monet. SharedPreferencesAsync/DataStore Android; serializowane operacje gry/zakupów/ustawień. Home saldo/rekord/WZNÓW; realne zakupy i informacje cenowe wyspy.
-- **Obsługa błędów:** bramka wejścia na czas zapisu; wynik po zapisaniu finalizacji, retry tej samej operacji (także restart); saldo i poziom zmieniają się po sukcesie. Uszkodzony/nowszy JSON zachowany i kopiowany do lokalnej kwarantanny; UI retry/jawne potwierdzenie odzyskania. Nie obiecujemy pełnej durability awarii systemu (ADR-0003/0011).
-- **Testy dotychczas:** baseline101/101; pełny Flutter125/125, Dart62/62. Testy realnej nawigacji, pause/relaunch, zakup+restore, save-failure/retry, opóźniona finalizacja, repeat reward, przerwane potwierdzenie po zapisie na dysku, snapshot użycia gumki, równoczesne ustawienia/zakup, phase/counter/schema validation, odrzucenie niejednoznacznej kolejki w fazie eraser przed ewentualnym ponownym losowaniem. Nowe Home i island_purchase_412 goldens; zakupowa wyspa obejrzana. Końcowy format/analyze bez problemów, docs32 poprawne; ponowny pełny Flutter125/125 i Dart62/62 OK. Native debug APK OK132.7s (finalny incremental11.1s po walidacji pełnych masek i fazy), zainstalowany na API36; Częściowy smoke: rzeczywisty Home z wyspą/saldem obejrzany (`t008-home-rendered.png`); utworzony run1, umieszczona figura Z w0,0, DataStore odczytany przez run-as potwierdza score40,4 zajęte pola, zużyty slot0 oraz niezmieniony RNG1786627809. Po force-stop/start cały JSON jest identyczny (`t008-native-move.json`, `t008-native-restart.pb`); wizualne WZNÓW po restart jeszcze do sprawdzenia. Emulator zgłasza pierwszy fully drawn dopiero po3m12s, początkowe zrzuty czarne; brak reprezentatywnego pomiaru startup/performance.
-- **Commity/branch/PR:** `feat/progression-save`, worktree `/home/roch/programing/Renvo/candyverse-workers/t008`; domena `78c5565`, integracja `6469890`. PR #8; CI `38644250421` SUCCESS dla `2b9b74c`; ostatnie uzupełnienie pełnych masek zgodnie z ADR-0008 także przechodzi workflow przed merge. Najnowszy head/merge odczytaj narzędziowo.
-- **T-007:** PR#7 MERGED `24ba7c3`; finalne CI `38641631667` SUCCESS;101 Flutter/56 Dart/APK oraz scene levels0–3,4 postacie i accessibility/lifecycle potwierdzone.
-- **Android smoke poprzedni:** Home→Game→placement0,0, score10 potwierdzone na wcześniejszym T-005 APK. Emulator AOSP ATD/no-KVM/no-audio nie potwierdza odsłuchu/haptyki ani reprezentatywnego FPS. Pełne20min QA w T-010.
-- **Release dane właściciela:** docelowy `com.renvo.candyverse`, wydawca Renvo, kontakt rochzaremba@gmail.com. Zapisano w RELEASE_GOOGLE_PLAY; migracja konfiguracji i weryfikacja finalnego manifestu w T-011. Brak publicznego URL polityki i klucza upload blokuje publikację, nie rozwój gry.
-- **Artefakty/logi:** `/home/roch/.cache/candyverse/t008-*.log`, APK/screenshoty w `/home/roch/.cache/candyverse/artifacts`, goldens w repo. Workerzy niedostępni przez quota kredytów; root realizuje etap samodzielnie. Ostateczny snapshot wymaga pełnych masek zgodnie z ADR-0008; wcześniejsze lokalne APK development ze skróconymi wpisami ID+skin mogą wymagać potwierdzonego odzyskania profilu (V1 nie została jeszcze wydana).
-- **Niedokończone:** pełny Android smoke oraz bieżący stan finalnego merge PR#8 do odczytania narzędziowo; komplet ustawień/reset/PL-EN T-009, QA T-010 i release T-011.
-- **Następne jedno zadanie:** **T-009 — komplet Settings, PL/EN i potwierdzony reset lokalnych danych**, po zamknięciu PR T-008.
+- **T-009:** sześć ekranów z prawdziwą nawigacją, pełne Settings, PL/EN zapisane w profilu i aktualizowane na otwartych ekranach, przywracane po restarcie. Reset wymaga potwierdzenia, usuwa profil i lokalną kwarantannę, przywraca ustawienia; przerywa callbacki poprzedniej generacji sesji. Przejście z wyniku na wyspę oraz prawdziwe zakupy. Centralne tłumaczenia także dynamicznych komunikatów i semantyki, SDK flutter_localizations.
+- **Naprawione błędy zapisu:** ustawienia nie nadpisują nagrody, jeśli zapis runu utrwalił się, lecz odpowiedź z magazynu zgłosiła błąd. Po retry zachowują najnowszą rewizję. Reset po utracie potwierdzenia sprawdza odczyt; niepewny stan wymaga ponowienia resetu, blokuje inne mutacje i nie udaje sukcesu (ADR-0013).
+- **Weryfikacja T-009:** pełny `flutter test`151/151; `dart test test/game`62/62; `flutter analyze` bez problemów; debug APK zbudowany33.5s. Goldeny PL Settings oraz EN Home/Upgrade; flow EN Settings→Home→Game/Island, wynik→wyspa/replay;320/412dp tekst2×; reset/cancel/failure/ack/retry. Recovery EN korzysta z języka urządzenia, gdy profil jest nieczytelny; poprawny profil zachowuje zapisany PL/EN. Cztery dodatkowe testy recovery6/6 i analyze OK. Logi `/home/roch/.cache/candyverse/t009-*.log`. Native smoke zmian T-009 jeszcze nie wykonany, należy do T-010.
+- **T-008:** exact resume pełnych masek/skina/RNG/kolejek/faz, idempotentna nagroda, serializowany zapis, ceny GDD.125 Flutter/62 Dart i native debug APK OK. Częściowy native smoke na API36: run1, placement Z0,0, score40 i4 pola; JSON byte-identical po force-stop/start. Wcześniejszy emulator bez KVM zgłasza fully drawn dopiero po3m12s; brak reprezentatywnego FPS/odsłuchu/haptyki.
+- **Workerzy:** `t009_settings` przygotowuje T-011 w `/home/roch/programing/Renvo/candyverse-workers/t011`, `release_audit` T-010 w `.../t010`, root T-009 w `.../t009`. Przygotowane T-011 commity `0dd901c`, `733ceb9`, `cbe60bd`, `ad1cdb0` nie są jeszcze zintegrowanym wydaniem. T-010 harness `d18991c` wymaga poprawionych fixture i uruchomienia.
+- **Release właściciel:** `com.renvo.candyverse`, Renvo, rochzaremba@gmail.com. Właściciel potwierdził brak konta Play Console i klucza. Publiczny URL polityki jeszcze nieutworzony. Można przygotować klucz poza repo, podpisane APK/AAB i materiały; nie można oznaczyć publikacji Google Play jako wykonanej bez konta/dostępu i obowiązkowych etapów właściciela.
+- **Niedokończone:** review i PR/CI T-009, rzeczywisty20min smoke/profile T-010, finalny podpisany build/audyt, hosting polityki i materiały T-011, publikacja sklepu.
+- **Następne jedno zadanie:** zamknąć PR T-009 po zielonym CI, następnie uruchomić harness T-010 na Androidzie.

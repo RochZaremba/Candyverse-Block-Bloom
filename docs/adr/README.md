@@ -31,3 +31,5 @@ Istniejące ADR-y:
 - [0010 Upgrade queue](0010-upgrade-queue.md)
 
 - [0011 Save write gate and recovery](0011-save-write-gate-and-recovery.md)
+
+- [0013 Settings, localization and reset](0013-settings-localization-and-reset.md)
