@@ -1,6 +1,6 @@
 # Google Play — checklista pierwszego wydania
 
-**Stan weryfikacji wymagań:** 2026-10-14. Polityki podlegają zmianom: odczytaj na nowo przed wysłaniem aplikacji. Nie myl **gotowości technicznej** z gwarancją akceptacji przez Google.
+**Stan weryfikacji wymagań:** 2026-10-15. Polityki podlegają zmianom: odczytaj na nowo przed wysłaniem aplikacji. Nie myl **gotowości technicznej** z gwarancją akceptacji przez Google.
 
 ## Wymagania bieżące
 
@@ -13,7 +13,7 @@
 ## Do uzupełnienia przez właściciela
 
 - [ ] Ostateczna nazwa po sprawdzeniu kolizji marki / znaków towarowych.
-- [x] Docelowy `applicationId`: **`com.renvo.candyverse`**, zatwierdzony przez właściciela 2026-10-14. Konfiguracja developerska zostanie zmieniona i zweryfikowana w T-011; nie sprawdzono jeszcze dostępności identyfikatora w Play Console.
+- [x] Docelowy `applicationId`: **`com.renvo.candyverse`**, zatwierdzony przez właściciela 2026-10-14. Konfiguracja i podpisany APK mają zatwierdzony identyfikator; nie sprawdzono jeszcze dostępności identyfikatora w Play Console.
 - [x] Wydawca: **Renvo**, kontakt: **rochzaremba@gmail.com** (dane podane przez właściciela 2026-10-14).
 - [ ] Publiczny, aktywny link do privacy policy bez placeholderów (może być statyczna strona GitHub Pages, nawet gdy repo z kodem jest prywatne).
 - [ ] Klucz upload do podpisu `.aab`, przechowywany poza repo, backup klucza i haseł.
@@ -39,3 +39,25 @@
 **Czy `flutter build appbundle` wystarczy?** Nie: do publikacji potrzebny jest prawidłowo podpisany AAB, konfiguracja aplikacji, materiały, polityka, deklaracje i wymagane testy.
 
 **Czy 12 testerów wystarczy?** Wymóg dotyczy minimum opt-in; po testach wymagana może być ocena gotowości i osobny wniosek o dostęp produkcyjny. Zweryfikuj status w swoim Play Console.
+
+## Bieżące przygotowanie2026-10-15
+
+Konto właściciela **8799678699020536617**, osobiste, weryfikacja w toku.
+Identyfikator nie stanowi dostępu API. Nie przesłano AAB do Play ani nie
+zaakceptowano deklaracji/warunków w imieniu wydawcy.
+
+- Kandydat1.0.0+1 ma podpisane APK/AAB. Audyt APK potwierdza SDK24/36,
+  wyłączony backup/transfer, brak INTERNET i sześć bibliotek ELF64 z16KB alignment.
+- Polityka PL/EN: [publiczny adres](https://rochzaremba.github.io/Candyverse-Block-Bloom/),
+  źródło `public_pages/`; ta sama treść dostępna offline w Settings. Aktywność URL
+  należy potwierdzić HTTP przed submission.
+- Teksty PL/EN i autorskie grafiki: `assets/store/`; launcher/store512 w `assets/brand/`.
+- Prywatny klucz: `/home/roch/.candyverse-signing/v1/`, poza Git; wymagany bezpieczny
+  backup poza komputerem. Zachowaj certyfikat przy przejściu APK→Play (ADR-0014).
+- Formularze: [Store declarations](STORE_DECLARATIONS.md). Nie zostały wysłane.
+- Testy20min i smoke podpisanego entrypointu są w toku, bez deklaracji sukcesu.
+
+Po weryfikacji konta: utworzyć wpis gry, zachować tożsamość podpisu, przesłać
+zweryfikowany AAB na test internal/closed i wykonać wymagane etapy nowego konta
+osobistego. Zakończenie testu12 osób/14 dni i dostęp produkcyjny wymagają
+zewnętrznego czasu oraz rzeczywistego udziału testerów.

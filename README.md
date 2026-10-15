@@ -1,6 +1,6 @@
 # Candyverse: Block & Bloom — pakiet startowy dla Codexa
 
-> **Status: grywalna plansza i sterowanie dotykiem (T-001–T-008), nie gotowa gra.** Flutter stable 3.47.2, Android API 36, podstawowy Home. Silnik Dart ma 14 figur, placement, clear, punktację/combo oraz seedowany, uczciwy refill z kolorowymi skinami. Home → Game → Game Over/Replay działa; dostępne są drag z ghostem i wybór figury + dotknięcie pola. Działają też board-local VFX, lokalne SFX, mute/haptyka/reduced-motion z zapisem ustawień. Działają Sugar Rush/Lucky Jelly/Rainbow Eraser, kolejka wyborów co5 linii i potwierdzane wymazywanie pola. Wyspa ma trzy obiekty z poziomami0–3 i czterech animowanych mieszkańców. Działają portfel, zakupy kolejnych poziomów i trwały zapis/odczyt z resume oraz idempotentną nagrodą. Pełne Settings/reset i PL/EN zaimplementowano w T-009; testy Android i przygotowanie wydania są w toku. Aktualizacja: 2026-10-15.
+> **Stan: T-001–T-009 scalone i przetestowane.** Gra V1 ma sześć ekranów, zapis offline, wyspę, ulepszenia oraz Settings/reset/PL-EN. Trwają QA Android i przygotowanie podpisanego wydania1.0.0; nie oznacza to publikacji w Google Play. Szczegóły i ograniczenia w [STATUS](docs/STATUS.md). Aktualizacja:2026-10-15.
 
 Kolorowa gra mobilna 2D na Androida: **block puzzle 8×8 + lekkie ulepszenia roguelite + rozwijanie cukierkowej wyspy**. Pierwsze wydanie ma być dopracowane wizualnie, offline, bez reklam, zakupów, kont i backendu. Odbiorcy: głównie 10–16 lat, także starsi.
 
@@ -13,7 +13,7 @@ flutter pub get
 flutter run
 ```
 
-Podłącz telefon Android lub uruchom emulator przed `flutter run`. Projekt zawiera wyłącznie platformę Android, `minSdk 24`, `compileSdk/targetSdk 36`. `com.example.candyverse` to tymczasowy identyfikator developerski; release używa na razie podpisu debug i nie nadaje się do publikacji.
+Podłącz telefon Android lub uruchom emulator przed `flutter run`. Projekt zawiera wyłącznie platformę Android, `minSdk 24`, `compileSdk/targetSdk 36`. Docelowy identyfikator to `com.renvo.candyverse`. Release wymaga zewnętrznego klucza i nie ma podpisu debug jako fallbacku. Instrukcja: [Android release setup](docs/ANDROID_RELEASE_SETUP.md).
 
 Kontrole przed PR:
 
