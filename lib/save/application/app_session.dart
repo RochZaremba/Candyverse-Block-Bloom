@@ -75,6 +75,13 @@ class AppSession extends ChangeNotifier with WidgetsBindingObserver {
       final value = change(_save).copyWith(settings: settings.snapshot);
       await repository.save(value);
       _save = value;
+      // Release the economic transaction inside the serialized write. A game
+      // checkpoint accepted during this I/O must see the confirmed new balance,
+      // rather than an obsolete retry guard in a later async continuation.
+      if (economy) {
+        _pendingEconomy = null;
+        _pendingEconomyOperation = null;
+      }
       _savedSettingsRevision = revision;
       error = null;
       _notify();
@@ -122,6 +129,9 @@ class AppSession extends ChangeNotifier with WidgetsBindingObserver {
     if (_resetting || resetNeedsRetry || generation != _generation) {
       throw StateError('This run belongs to a reset profile.');
     }
+    // A failed background income acknowledgement must be retryable from the
+    // game's save overlay; leaving that overlay is intentionally blocked.
+    if (incomeNeedsRetry) await retryIncomeSave();
     await _settingsTail;
     if (generation != _generation) throw StateError('Profile reset.');
     final run = _save.activeRun;
@@ -136,6 +146,9 @@ class AppSession extends ChangeNotifier with WidgetsBindingObserver {
     if (_resetting || resetNeedsRetry || generation != _generation) {
       throw StateError('This run belongs to a reset profile.');
     }
+    // A failed background income acknowledgement must be retryable from the
+    // game's save overlay; leaving that overlay is intentionally blocked.
+    if (incomeNeedsRetry) await retryIncomeSave();
     await _settingsTail;
     if (generation != _generation) throw StateError('Profile reset.');
     if (_save.activeRun != null) {
@@ -201,8 +214,6 @@ class AppSession extends ChangeNotifier with WidgetsBindingObserver {
       // acknowledgement was lost retries the same economic target, never recalculated.
       await _commit((_) => _pendingEconomy!, economy: true);
       final result = _pendingEconomyResult;
-      _pendingEconomy = null;
-      _pendingEconomyOperation = null;
       if (_settingsRevision != _savedSettingsRevision) _queueSettingsSave();
       return result;
     } catch (_) {

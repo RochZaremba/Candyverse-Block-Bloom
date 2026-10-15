@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:candyverse/island/domain/island_state.dart';
 import 'package:candyverse/save/application/app_session.dart';
 import 'package:candyverse/save/data/save_repository.dart';
@@ -7,10 +9,12 @@ import 'package:flutter/widgets.dart';
 
 class InterruptedStorage extends MemoryStorage {
   bool interrupt = false;
+  Completer<void>? writeGate;
   bool failBeforeWrite = false;
   @override
   Future<void> write(String key, String value) async {
     if (failBeforeWrite) throw StateError('disk unavailable');
+    if (writeGate != null) await writeGate!.future;
     await super.write(key, value);
     if (interrupt) throw StateError('lost acknowledgement');
   }
@@ -209,6 +213,81 @@ void main() {
       expect(game.state.rngState, session.save.activeRun!.game.rngState);
       expect((await repo.load()).wallet, 101);
       expect((await repo.load()).settings.sound, isFalse);
+    },
+  );
+  test('a move during a delayed income write queues safely behind the income snapshot', () async {
+    var time = DateTime.fromMillisecondsSinceEpoch(0);
+    final storage = InterruptedStorage();
+    final repo = SaveRepository(storage);
+    final session = AppSession(
+      repo,
+      AppSaveV1(island: levels(1)).accrueIncome(0),
+      clock: () => time,
+    );
+    addTearDown(session.dispose);
+    final controller = await session.openRun();
+    time = DateTime.fromMillisecondsSinceEpoch(60000);
+    storage.writeGate = Completer<void>();
+    final income = session.collectIncome();
+    await Future<void>.delayed(Duration.zero);
+    final piece = controller.state.tray.first!;
+    final origin = controller.engine
+        .getLegalPlacements(controller.state.board, piece)
+        .first;
+    expect(controller.place(0, origin).accepted, isTrue);
+    storage.writeGate!.complete();
+    await income;
+    await Future<void>.delayed(Duration.zero);
+    expect(controller.saveError, isNull);
+    expect(controller.saving, isFalse);
+    expect(session.save.wallet, 1);
+    expect(session.save.activeRun!.game.score, piece.cells.length * 10);
+    expect((await repo.load()).activeRun!.game.score, piece.cells.length * 10);
+    expect((await repo.load()).wallet, 1);
+  });
+  test(
+    'game save retry also resolves a failed background income acknowledgement',
+    () async {
+      var time = DateTime.fromMillisecondsSinceEpoch(0);
+      final storage = InterruptedStorage();
+      final repo = SaveRepository(storage);
+      final session = AppSession(
+        repo,
+        AppSaveV1(island: levels(1)).accrueIncome(0),
+        clock: () => time,
+      );
+      addTearDown(session.dispose);
+      final controller = await session.openRun();
+      time = DateTime.fromMillisecondsSinceEpoch(60000);
+      storage.writeGate = Completer<void>();
+      storage.interrupt = true;
+      final incomeFailure = expectLater(
+        session.collectIncome(),
+        throwsStateError,
+      );
+      await Future<void>.delayed(Duration.zero);
+      final piece = controller.state.tray.first!;
+      final origin = controller.engine
+          .getLegalPlacements(controller.state.board, piece)
+          .first;
+      expect(controller.place(0, origin).accepted, isTrue);
+      storage.writeGate!.complete();
+      await incomeFailure;
+      await Future<void>.delayed(Duration.zero);
+      expect(controller.saveError, isNotNull);
+      expect(session.incomeNeedsRetry, isTrue);
+      storage.interrupt = false;
+      controller.retrySave();
+      await Future<void>.delayed(Duration.zero);
+      expect(controller.saveError, isNull);
+      expect(controller.saving, isFalse);
+      expect(session.incomeNeedsRetry, isFalse);
+      expect(session.save.wallet, 1);
+      expect(
+        (await repo.load()).activeRun!.game.score,
+        piece.cells.length * 10,
+      );
+      expect((await repo.load()).wallet, 1);
     },
   );
 }
