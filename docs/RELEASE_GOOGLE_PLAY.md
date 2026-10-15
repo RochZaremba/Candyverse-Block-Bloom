@@ -15,10 +15,12 @@
 - [ ] Ostateczna nazwa po sprawdzeniu kolizji marki / znaków towarowych.
 - [x] Docelowy `applicationId`: **`com.renvo.candyverse`**, zatwierdzony przez właściciela 2026-10-14. Konfiguracja i podpisany APK mają zatwierdzony identyfikator; nie sprawdzono jeszcze dostępności identyfikatora w Play Console.
 - [x] Wydawca: **Renvo**, kontakt: **rochzaremba@gmail.com** (dane podane przez właściciela 2026-10-14).
-- [ ] Publiczny, aktywny link do privacy policy bez placeholderów (może być statyczna strona GitHub Pages, nawet gdy repo z kodem jest prywatne).
-- [ ] Klucz upload do podpisu `.aab`, przechowywany poza repo, backup klucza i haseł.
+- [x] Publiczna polityka PL/EN: https://rochzaremba.github.io/Candyverse-Block-Bloom/ — HTTP200 i zgodność źródła potwierdzone.
+- [x] Klucz do podpisu APK/AAB utworzony poza repo; artefakty podpisane.
+- [ ] Backup klucza i haseł poza komputerem, do wykonania przez właściciela.
 - [ ] Realne grafiki sklepu (ikona, feature graphic, screenshoty) zgodne z rzeczywistą grą i licencjami.
-- [ ] Test account type / status oraz organizacja grupy testerów, jeśli zamknięte testy są wymagane.
+- [x] Typ/status konta: osobiste, weryfikacja w toku.
+- [ ] Zakończenie weryfikacji i organizacja rzeczywistej grupy testerów.
 
 ## Release-gates dla agenta
 

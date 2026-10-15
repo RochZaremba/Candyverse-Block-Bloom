@@ -27,8 +27,9 @@ hostingu strony. Nie należy mylić tych oddzielnych usług z transmisją danych
 przez aplikację. Reset usuwa profil i lokalną kwarantannę, nie gwarantuje
 usunięcia kopii utworzonych przez uprzywilejowane narzędzia systemowe.
 
-Nie utworzono konta Play Console ani aplikacji w sklepie. Dla nowego konta
-osobistego Google wymaga co najmniej12 testerów opt-in nieprzerwanie14 dni,
+Konto Play Console8799678699020536617 jest osobiste i pozostaje w trakcie
+weryfikacji (potwierdzenie właściciela). Nie potwierdzono utworzenia wpisu aplikacji
+ani nie przesłano wydania. Dla nowego konta osobistego Google wymaga co najmniej12 testerów opt-in nieprzerwanie14 dni,
 następnie wniosku o dostęp produkcyjny. Konto organizacji wymaga rzeczywistych
 danych organizacji; wybór nie służy obchodzeniu testów. Nie można wykonać
 tych etapów samym buildem AAB.
