@@ -51,3 +51,5 @@
 - **`e1c5922`:** native test zgłosił rzeczywisty błąd swojej sekwencji wyboru figury po illegal drag. Poprawiono reselection i dodano regresję;159/159 Flutter/analyze PASS. Brak zaliczonego20min, nowy run do odczytu.
 
 - **Harness sprawdzony przed urządzeniem:** scalono `000259d`;160/160 Flutter, wspólny scenariusz hostowy obejmuje jeden pełny cykl. Host/MemoryStorage nie zalicza Android QA. Telefon właściciela2412DPC0AG/Android16/API36/arm64/4KB połączony; uruchamiany20min profile z domyślnym GPU w odrębnym com.example.candyverse. Produkcyjne com.renvo.candyverse i dane pozostają zachowane. Wynik PENDING.
+
+- **Diagnostyka zgodności:** Lavapipe run38717253364 utracił nowoczesne emulatory już przy launch;API24 PASS. Dodano ciągły logcat oraz osobny jawnie oznaczony wariant Skia na API36, porównywany z domyślnym rendererem identycznego APK. Wynik diagnostyczny nie zastępuje testu domyślnego renderera; konfiguracja aplikacji produkcyjnej pozostaje bez zmian.

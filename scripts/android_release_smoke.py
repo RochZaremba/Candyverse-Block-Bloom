@@ -54,6 +54,8 @@ def main():
     parser.add_argument('--device', default='emulator-5554')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--expected-page-size', type=int, choices=(4096, 16384))
+    parser.add_argument('--renderer', choices=('default', 'skia-diagnostic'), default='default',
+                        help='Diagnostic override is never evidence for the default release renderer.')
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
 
@@ -61,6 +63,22 @@ def main():
         result = subprocess.run(['adb', '-s', args.device, *command],
                                 check=True, capture_output=True, timeout=90)
         return result.stdout if binary else result.stdout.decode().strip()
+
+    live_log = (args.output/'live-android.log').open('wb')
+    live_process = subprocess.Popen(['adb', '-s', args.device, 'logcat', '-v', 'threadtime',
+                                    'AndroidRuntime:E', 'libc:F', 'DEBUG:F', 'flutter:I',
+                                    'ActivityManager:I', 'lmkd:I', '*:S'],
+                                   stdout=live_log, stderr=subprocess.STDOUT)
+
+    @atexit.register
+    def stop_live_log():
+        live_process.terminate()
+        try:
+            live_process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            live_process.kill()
+            live_process.wait()
+        live_log.close()
 
     @atexit.register
     def diagnostics():
@@ -134,7 +152,8 @@ def main():
         (args.output/f'{name}-memory.txt').write_text(adb('shell', 'dumpsys', 'meminfo', APP))
 
     def launch():
-        result = adb('shell', 'am', 'start', '-W', '-n', APP+'/.MainActivity')
+        extras = ('--ez', 'enable-impeller', 'false') if args.renderer == 'skia-diagnostic' else ()
+        result = adb('shell', 'am', 'start', '-W', '-n', APP+'/.MainActivity', *extras)
         with (args.output/'launch-results.txt').open('a') as log:
             log.write(result+'\n')
 
@@ -193,6 +212,7 @@ def main():
               'api': adb('shell', 'getprop', 'ro.build.version.sdk'),
               'pageSize': page_size, 'deviceMemTotalKiB': total_memory,
               'entrypoint': 'production', 'nativeInput': True,
+              'renderer': args.renderer, 'defaultRendererValidated': args.renderer == 'default',
               'backgroundResume': True, 'forceStopRestore': True,
               'fullBoardRestored': True, 'occupiedCells': sum(placed_board),
               'representativeHardware': False}

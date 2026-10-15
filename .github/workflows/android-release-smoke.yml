@@ -17,7 +17,7 @@ jobs:
     # Only the download step receives GH_TOKEN; signing material stays local.
     permissions:
       contents: write
-    name: production-entrypoint (API${{ matrix.api }}, pages${{ matrix.page-size }}, ${{ matrix.kind }})
+    name: production-entrypoint (API${{ matrix.api }}, pages${{ matrix.page-size }}, ${{ matrix.kind }}, ${{ matrix.renderer }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
@@ -30,6 +30,7 @@ jobs:
             ram: 2048
             gpu: swiftshader
             features: -feature -Vulkan
+            renderer: default
             kind: apk
             candidate: candyverse-1.0.0-1.apk
             sha256: 8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975
@@ -37,8 +38,9 @@ jobs:
             target: google_apis
             page-size: 4096
             ram: 2048
-            gpu: lavapipe
-            features: ''
+            gpu: swiftshader
+            features: -feature -Vulkan
+            renderer: default
             kind: apk
             candidate: candyverse-1.0.0-1.apk
             sha256: 8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975
@@ -46,8 +48,9 @@ jobs:
             target: google_apis_ps16k
             page-size: 16384
             ram: 4096
-            gpu: lavapipe
-            features: ''
+            gpu: swiftshader
+            features: -feature -Vulkan
+            renderer: default
             kind: apk
             candidate: candyverse-1.0.0-1.apk
             sha256: 8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975
@@ -55,11 +58,22 @@ jobs:
             target: google_apis
             page-size: 4096
             ram: 2048
-            gpu: lavapipe
-            features: ''
+            gpu: swiftshader
+            features: -feature -Vulkan
+            renderer: default
             kind: aab
             candidate: candyverse-1.0.0-from-aab.apk
             sha256: cc9523e95b6af5135776d43730c6df0068c1ea255569a840107f0342a1582771
+          - api: 36
+            target: google_apis
+            page-size: 4096
+            ram: 2048
+            gpu: swiftshader
+            features: -feature -Vulkan
+            renderer: skia-diagnostic
+            kind: apk
+            candidate: candyverse-1.0.0-1.apk
+            sha256: 8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -95,7 +109,7 @@ jobs:
             adb shell input keyevent WAKEUP
             adb shell input keyevent 82
             sleep 5
-            python3 scripts/android_release_smoke.py build/release-qa/${{ matrix.candidate }} --output build/release-qa/results --expected-page-size ${{ matrix.page-size }}
+            python3 scripts/android_release_smoke.py build/release-qa/${{ matrix.candidate }} --output build/release-qa/results --expected-page-size ${{ matrix.page-size }} --renderer ${{ matrix.renderer }}
       - name: Record runner diagnostics
         if: always()
         run: |
@@ -105,7 +119,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: signed-api${{ matrix.api }}-pages${{ matrix.page-size }}-${{ matrix.kind }}
+          name: signed-api${{ matrix.api }}-pages${{ matrix.page-size }}-${{ matrix.kind }}-${{ matrix.renderer }}
           path: build/release-qa/results/
           if-no-files-found: warn
           retention-days: 14
