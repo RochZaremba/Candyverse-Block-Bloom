@@ -54,12 +54,14 @@ void main() {
       tester.platformDispatcher.clearAccessibilityFeaturesTestValue();
     });
     await tester.pumpWidget(CandyverseApp(theme: theme, session: session));
-    await tester.runAsync(
-      () => precacheImage(
-        const AssetImage('assets/kingdom/brand-sheet.png'),
-        tester.element(find.byType(Scaffold).first),
-      ),
-    );
+    await tester.runAsync(() async {
+      for (final asset in ['brand-sheet.png', 'mascots.png']) {
+        await precacheImage(
+          AssetImage('assets/kingdom/$asset'),
+          tester.element(find.byType(Scaffold).first),
+        );
+      }
+    });
     await tester.pumpAndSettle();
   }
 

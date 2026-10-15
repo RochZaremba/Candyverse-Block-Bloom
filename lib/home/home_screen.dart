@@ -15,6 +15,7 @@ import 'candy_backdrop.dart';
 import '../island/domain/island_state.dart';
 import '../save/application/app_session.dart';
 import '../island/presentation/island_screen.dart';
+import '../island/presentation/kingdom_sprite.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({required this.theme, this.island, this.session, super.key});
@@ -120,7 +121,57 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
                           ),
                         ),
-                        const SizedBox(height: 22),
+                        const SizedBox(height: 8),
+                        ExcludeSemantics(
+                          child: SizedBox(
+                            height: MediaQuery.sizeOf(context).height < 700
+                                ? 72
+                                : 104,
+                            child: AnimatedBuilder(
+                              animation: motion,
+                              builder: (context, _) => Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  for (var i = 0; i < 2; i++)
+                                    Transform.translate(
+                                      offset: Offset(
+                                        0,
+                                        math.sin(
+                                              motion.value * math.pi * 2 +
+                                                  i * math.pi,
+                                            ) *
+                                            4,
+                                      ),
+                                      child: Transform.rotate(
+                                        angle:
+                                            math.sin(
+                                              motion.value * math.pi * 2 +
+                                                  i * math.pi,
+                                            ) *
+                                            .035,
+                                        child: SizedBox(
+                                          width:
+                                              MediaQuery.sizeOf(context)
+                                                      .height <
+                                                  700
+                                              ? 76
+                                              : 108,
+                                          child: KingdomSprite(
+                                            asset: 'assets/kingdom/mascots.png',
+                                            row: 0,
+                                            column: i,
+                                            rows: 2,
+                                            columns: 2,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
                         Text(
                           strings.text(
                             'Twoja mała kraina szczęścia',
