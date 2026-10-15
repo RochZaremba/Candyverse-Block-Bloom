@@ -31,8 +31,8 @@ jobs:
             features: -feature -Vulkan
             renderer: default
             kind: apk
-            candidate: candyverse-1.1.0-2.apk
-            sha256: cb84b22b4422bc88f6cb5cd84a6d514e5e5f37e2200e2041df6f77a12ec1bfda
+            candidate: candyverse-1.1.0-3.apk
+            sha256: 3af487f4105810001d293af7e460ee41d51eda003376f10576d1d7799909be75
           - api: 36
             target: google_apis
             page-size: 4096
@@ -41,8 +41,8 @@ jobs:
             features: -feature -Vulkan
             renderer: default
             kind: apk
-            candidate: candyverse-1.1.0-2.apk
-            sha256: cb84b22b4422bc88f6cb5cd84a6d514e5e5f37e2200e2041df6f77a12ec1bfda
+            candidate: candyverse-1.1.0-3.apk
+            sha256: 3af487f4105810001d293af7e460ee41d51eda003376f10576d1d7799909be75
           - api: 35
             target: google_apis_ps16k
             page-size: 16384
@@ -51,8 +51,8 @@ jobs:
             features: -feature -Vulkan,GLDirectMem
             renderer: default
             kind: apk
-            candidate: candyverse-1.1.0-2.apk
-            sha256: cb84b22b4422bc88f6cb5cd84a6d514e5e5f37e2200e2041df6f77a12ec1bfda
+            candidate: candyverse-1.1.0-3.apk
+            sha256: 3af487f4105810001d293af7e460ee41d51eda003376f10576d1d7799909be75
           - api: 36
             target: google_apis
             page-size: 4096
@@ -61,8 +61,8 @@ jobs:
             features: -feature -Vulkan
             renderer: default
             kind: aab
-            candidate: candyverse-1.1.0-from-aab.apk
-            sha256: 20f3ee18aa8b3ec07c07d9aba284485f98345a2b4edb9877f251af7afeb34730
+            candidate: candyverse-1.1.0-3-from-aab.apk
+            sha256: 32e552b82cf81425eeb1e5369d218f1833e6f619a2ab848f990a3f53ea2c453c
     steps:
       - uses: actions/checkout@v4
         with:
@@ -76,7 +76,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p build/release-qa
-          gh release download v1.1.0-rc.1 --repo "$GITHUB_REPOSITORY" --pattern "${{ matrix.candidate }}" --dir build/release-qa
+          gh release download v1.1.0-rc.2 --repo "$GITHUB_REPOSITORY" --pattern "${{ matrix.candidate }}" --dir build/release-qa
           echo '${{ matrix.sha256 }}  build/release-qa/${{ matrix.candidate }}' | sha256sum --check
       - name: Enable KVM on disposable runner
         run: |

@@ -27,7 +27,7 @@ Repo `RochZaremba/Candyverse-Block-Bloom`; fetch HTTPS, push SSH.
 | T-015 Rendered assets | IN_REVIEW |29d96db, provenance/PROMPTS, goldeny; czeka native/CI/merge |
 | T-016 Menu / English default | IN_REVIEW |2 przyciski i gear, stare języki zachowane; czeka native/CI/merge |
 | T-017 Transitions / notices | IN_REVIEW | candy UI, opaque transitions i reduced-motion tests; czeka native/CI/merge |
-| T-018 Celebrations / release QA | IN_PROGRESS | podpisane1.1.0+2, lokalne193 testy PASS; native i CI jeszcze niezaliczone |
+| T-018 Celebrations / release QA | IN_PROGRESS | poprawka flash30fa7b0; podpisane1.1.0+3/61c34a4, lokalne194 testy PASS; nowe native/CI/telefon oczekują |
 
 ## Historyczne potwierdzone testy1.0.0+1
 
@@ -157,5 +157,22 @@ commityab14489/62fdc2f/e69ed04. Draftv1.1.0-rc.1 pozostaje nieopublikowany.
 Nowa wersja z poprawką będzie1.1.0+3 / v1.1.0-rc.2; wymaga nowych binariów,
 audytu, hashy workflow, testów i potwierdzenia placement na telefonie.
 
-Jedno następne zadanie: zbudować i przetestować nowego kandydata z poprawką
-migania placement, bez scalania/publikowania poprzedniego APK.
+Poprawka `30fa7b0`; źródło podpisanych binariów1.1.0+3: `61c34a4`.
+Pełne `flutter test --concurrency=2`194/194 PASS, `flutter analyze` PASS,
+format65 plików bez zmian, Python19/19 i docs/linki PASS. APK i universal APK
+przechodzą audyt manifest/uprawnień/backup/ELF64/ZIP16KB. Potwierdzono aapt2
+versionCode3, dotychczasowy certyfikat, AAB validate/config16KB i jarsigner.
+Pliki: `/home/roch/.cache/candyverse/artifacts/kingdom-1.1.0-3/`:
+
+- APK `3af487f4105810001d293af7e460ee41d51eda003376f10576d1d7799909be75`.
+- AAB `fcb152da8df7fe66939ce8c93c038289fcc75a5c6057197af10453b9becf3262`.
+- Universal `32e552b82cf81425eeb1e5369d218f1833e6f619a2ab848f990a3f53ea2c453c`.
+
+Telefon odłączony przy próbie aktualizacji code3: adb device not found, niczego
+nie zainstalowano. Poproszono właściciela o krótkie podłączenie i sprawdzenie
+placement. Na telefonie nadal jest poprzednie1.1.0+2. Agenci zakończyli przeglądy;
+przy dodatkowej delegacji narzędzie zgłosiło brak kredytów, poprawkę i regresję
+dokończył koordynator. Nie oznaczać nowego code3 jako przetestowanego wynikami code2.
+
+Jedno następne zadanie: uruchomić macierz i native20min dla nowego draftu
+v1.1.0-rc.2/code3 oraz potwierdzić brak migania po aktualizacji telefonu.
