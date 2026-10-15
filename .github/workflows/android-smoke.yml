@@ -6,6 +6,9 @@ on:
       - 'scripts/android_smoke.sh'
       - '.github/workflows/android-smoke.yml'
   workflow_dispatch:
+concurrency:
+  group: android-smoke-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

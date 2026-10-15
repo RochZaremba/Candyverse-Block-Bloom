@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:candyverse/app/app.dart';
@@ -54,11 +54,17 @@ void main() {
     await repo.reset();
     final theme = await AppTheme.load();
     AppSession? session;
+    final captureBoundary = GlobalKey();
     Future<void> mount(AppSaveV1 save) async {
       await tester.pumpWidget(const SizedBox());
       await repo.save(save);
       session = AppSession(repo, await repo.load(), seedSource: () => 8);
-      await tester.pumpWidget(CandyverseApp(theme: theme, session: session!));
+      await tester.pumpWidget(
+        RepaintBoundary(
+          key: captureBoundary,
+          child: CandyverseApp(theme: theme, session: session!),
+        ),
+      );
       await tester.pump(const Duration(milliseconds: 400));
     }
 
@@ -82,26 +88,31 @@ void main() {
     }
 
     Future<void> capture(String name) async {
-      debugPrint('QA screenshot: $name');
-      // Surface conversion may precede the first native buffer on software GPU.
-      // Retry only Android PixelCopy startup errors, never hide test failures.
-      for (var attempt = 0; attempt < 15; attempt++) {
-        await tester.pump(const Duration(milliseconds: 300));
-        await tester.runAsync(
-          () => Future<void>.delayed(const Duration(seconds: 1)),
+      debugPrint('QA Flutter UI capture: $name');
+      await tester.pump(const Duration(milliseconds: 300));
+      // Keep the production SurfaceView intact. Native PixelCopy conversion
+      // changes rendering for the entire performance run and crashes this
+      // emulator renderer. Separate signed-APK smoke uses actual adb captures.
+      final boundary =
+          captureBoundary.currentContext!.findRenderObject()
+              as RenderRepaintBoundary;
+      await tester.runAsync(() async {
+        final image = await boundary.toImage(
+          pixelRatio: binding.platformDispatcher.views.first.devicePixelRatio,
         );
         try {
-          await binding
-              .takeScreenshot(name)
-              .timeout(const Duration(seconds: 30));
-          return;
-        } on PlatformException catch (error) {
-          if (!error.code.contains('Could not copy the pixels') ||
-              attempt == 14) {
-            rethrow;
-          }
+          final png = await image.toByteData(format: ui.ImageByteFormat.png);
+          expect(png, isNotNull);
+          binding.reportData ??= <String, dynamic>{};
+          binding.reportData!['screenshots'] ??= <dynamic>[];
+          (binding.reportData!['screenshots'] as List<dynamic>).add({
+            'screenshotName': name,
+            'bytes': png!.buffer.asUint8List().toList(),
+          });
+        } finally {
+          image.dispose();
         }
-      }
+      });
     }
 
     Future<void> checkpoint() async {
@@ -134,7 +145,6 @@ void main() {
       eraserUses: 1,
     );
     await mount(AppSaveV1(nextRunId: 2, activeRun: SavedRun(1, 2, milestone)));
-    await binding.convertFlutterSurfaceToImage();
     await capture('home-pl');
     await tap(find.text('Ustawienia'));
     await tap(find.text('English'));
@@ -195,7 +205,12 @@ void main() {
     await leaveGame();
     await tester.pumpWidget(const SizedBox());
     session = AppSession(repo, await repo.load(), seedSource: () => 8);
-    await tester.pumpWidget(CandyverseApp(theme: theme, session: session!));
+    await tester.pumpWidget(
+      RepaintBoundary(
+        key: captureBoundary,
+        child: CandyverseApp(theme: theme, session: session!),
+      ),
+    );
     await tap(find.text('RESUME'));
     await checkpoint();
     expect(session!.save.encode(), snapshot);
@@ -361,6 +376,7 @@ void main() {
       'buildOver16667': builds.where((v) => v > 16667).length,
       'rasterOver16667': rasters.where((v) => v > 16667).length,
       'fixtureProgression': true,
+      'captureMethod': 'flutter-repaint-boundary',
       'representativeHardware': false,
     };
     await tester.pumpWidget(const SizedBox());

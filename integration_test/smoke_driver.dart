@@ -8,6 +8,7 @@ Future<void> main() async {
     Platform.environment['CANDYVERSE_QA_OUTPUT'] ?? 'build/qa-smoke',
   )..createSync(recursive: true);
   await integrationDriver(
+    writeResponseOnFailure: true,
     onScreenshot: (name, bytes, [args]) async {
       final safeName = name.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '_');
       await File('${directory.path}/$safeName.png').writeAsBytes(bytes);
