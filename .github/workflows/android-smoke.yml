@@ -40,7 +40,7 @@ jobs:
           arch: x86_64
           ram-size: 1536
           profile: pixel_2
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          emulator-options: -no-window -gpu swiftshader -feature -Vulkan -noaudio -no-boot-anim -no-snapshot
           disable-animations: true
           script: scripts/android_smoke.sh
       - name: Record runner diagnostics
