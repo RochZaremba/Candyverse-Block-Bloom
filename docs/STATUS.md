@@ -1,7 +1,8 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
 **Aktualizacja:**2026-10-15. **Google Play: nieopublikowane.**
-Main: `67f4ae5`, merge [PR#11](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/11); wcześniej PR#10/`41800a6`.
+Main: `85c7a91`, merge [PR#13](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/13) — kontrakt Candy Kingdom.
+Implementacja rozszerzenia jest na `feat/kingdom-integration`; szczegóły poniżej.
 T-001–T-011 scalone. Publiczny prerelease GitHub gotowy. Publikacja Google Play **BLOCKED** etapami konta właściciela, nieukończona.
 Repo `RochZaremba/Candyverse-Block-Bloom`; fetch HTTPS, push SSH.
 
@@ -20,8 +21,15 @@ Repo `RochZaremba/Candyverse-Block-Bloom`; fetch HTTPS, push SSH.
 | T-009 Settings/i18n | DONE | PR#9, merge `d50e612`, CI38651090829 SUCCESS |
 | T-010 QA/performance | DONE | PR#10, head `000259d`, merge `41800a6`; CI i telefon20min PASS |
 | T-011 Store/release | DONE | PR#11, head `16f3db4`, merge `67f4ae5`; podpisane APK/AAB i publiczny prerelease; Play nieopublikowane |
+| T-012 Kingdom contract | DONE | PR#13, head4add259, merge85c7a91, CI38727224494 SUCCESS |
+| T-01330 levels / passive income | IN_REVIEW | implementacja i lokalne testy w integracji; czeka native/CI/merge |
+| T-014 Prestige / stars | IN_REVIEW | schema2 i potwierdzany reset; czeka native/CI/merge |
+| T-015 Rendered assets | IN_REVIEW |29d96db, provenance/PROMPTS, goldeny; czeka native/CI/merge |
+| T-016 Menu / English default | IN_REVIEW |2 przyciski i gear, stare języki zachowane; czeka native/CI/merge |
+| T-017 Transitions / notices | IN_REVIEW | candy UI, opaque transitions i reduced-motion tests; czeka native/CI/merge |
+| T-018 Celebrations / release QA | IN_PROGRESS | podpisane1.1.0+2, lokalne193 testy PASS; native i CI jeszcze niezaliczone |
 
-## Potwierdzone testy
+## Historyczne potwierdzone testy1.0.0+1
 
 -160/160 Flutter na T-010 i zintegrowanym T-011;62/62 Dart silnika. Format/analyze/docs PASS.16/16 Python narzędzi release. CI Flutter T-01038718430226 oraz T-01138721355323 SUCCESS.
 - **Telefon2412DPC0AG, Android16/API36, arm64,4KB:** profile Impeller/Vulkan,1202s aktywnej gry,699 ruchów,744 reakcje,38 cykli.7338 próbek FrameTiming; build p95=10,893ms, raster p95=8,550ms. Gradle SUCCESS, JUnit1/0 failures/0 errors. [Raport](qa/phone-api36-profile.json).
@@ -73,7 +81,7 @@ Logi telefonu lokalnie `/home/roch/.cache/candyverse/qa-phone-final/`; nie publi
 
 ## Nowa sesja — Candy Kingdom2026-10-15
 
-Właściciel jawnie rozszerzył V1; plan wszystkich zmian zapisany w KINGDOM_EXPANSION, PRD/GDD/Visual i ADR-0016. Baseline flutter test160/160 PASS; main349684e czysty przed pracą. Branch feat/candy-kingdom-expansion. T-012 IN_PROGRESS; T-013–T-018 TODO. Nowe assety i funkcje nie są jeszcze ukończone. Następne zadanie: implementacja schema2 i30 poziomów z testami migracji.
+Właściciel jawnie rozszerzył V1; plan wszystkich zmian zapisany w KINGDOM_EXPANSION, PRD/GDD/Visual i ADR-0016. Baseline flutter test160/160 PASS; main349684e czysty przed pracą. Plan wykonano na feat/candy-kingdom-expansion; aktualny stan integracji poniżej.
 
 ### Integracja Candy Kingdom — aktualny stan
 
@@ -86,7 +94,7 @@ Zintegrowano T-013–T-017:30 poziomów, schema2/migrację, dokładny pasywny do
 prestiż/gwiazdki i3 krajobrazy, renderowane zwierzaki/budynki, menu2 przyciski,
 gear, EN dla nowych profili, candy komunikaty i opaque przejścia. Wspólny zapis
 serializuje dochód razem z ruchami gry; testy obejmują utratę potwierdzenia i retry.
-Asssety/provenance/prompty: `assets/kingdom/`. Fanfara prestiżu i nowy launcher
+Assety/provenance/prompty: `assets/kingdom/`. Fanfara prestiżu i nowy launcher
 w `29d96db`; izolacja aplikacji QA i rozszerzony smoke w `ac02b16`.
 
 Potwierdzone lokalnie: `flutter test --concurrency=2`193/193 PASS,
@@ -97,13 +105,25 @@ wyspy poziomu0/1/5/6/15/30 i różne światy; testy małych ekranów/200% tekstu
 i reduced-motion przechodzą. Hostowy scenariusz nowych zakupów, dochodu
 i anulowania/potwierdzenia prestiżu PASS, ale nie zastępuje Android DataStore.
 
-T-018 IN_PROGRESS: fizyczny test20min uruchomiony na podłączonym telefonie,
+T-018 IN_PROGRESS: pierwszą próbę przerwano przed instalacją; ponowny fizyczny test20min uruchomiony na podłączonym telefonie,
 osobny applicationId `com.renvo.candyverse.qa` / „Candyverse QA”, bez kasowania
 zwykłej aplikacji. Wynik jeszcze nieznany. Logi lokalne:
-`/home/roch/.cache/candyverse/qa-kingdom-phone/`. Podpisane buildy1.1.0+2
-powstają w osobnym worktree `.../candyverse-workers/kingdom-release`,
-ze źródła6e0780f i dotychczasowego zewnętrznego klucza.
-Nowy PR integracyjny i kandydat wydania jeszcze nieutworzone.
+`/home/roch/.cache/candyverse/qa-kingdom-phone-retry/`. Podpisane buildy1.1.0+2
+zbudowano w osobnym worktree `.../candyverse-workers/kingdom-release`,
+ze źródła6e0780f i dotychczasowego zewnętrznego klucza. APK i universal APK
+przechodzą audit manifest/permissions/backup/ELF64/ZIP16KB i mają certyfikat
+`2064a303250785a1ef85029a03a543dc759ab6d715f1fb2f05dccdca04e70506`.
+Wersja/APK potwierdzona aapt2:1.1.0/code2. AAB bundletool validate/config16KB,
+jarsigner PASS (self-signed/time/JarInputStream warnings zapisane w logu).
+Nowe pliki lokalne `/home/roch/.cache/candyverse/artifacts/kingdom-1.1.0/`:
+
+- APK `cb84b22b4422bc88f6cb5cd84a6d514e5e5f37e2200e2041df6f77a12ec1bfda`.
+- AAB `f3ae85ca7bf187395e6c32d2c3e91d6b4b35cb365f6fe3a989e79f49753ada7a`.
+- Universal `20f3ee18aa8b3ec07c07d9aba284485f98345a2b4edb9877f251af7afeb34730`.
+
+Przeglądy agentów ekonomii i release nie wykryły blokera; poprawiono dokumentację
+pochodzenia grafiki52c08a8 i listing PL/EN12718e5. Poprzednie materiały1.0.0 są
+historyczne. Nowy PR integracyjny jeszcze nieutworzony; draft kandydata przygotowywany.
 
 Niedokończone: rzeczywisty smoke nowej wersji na telefonie, audyt APK/AAB,
 cztery przypadki zgodności nowego podpisanego kandydata, CI i merge integracji.
