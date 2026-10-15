@@ -50,12 +50,14 @@ def main():
         try:
             result = subprocess.run(
                 ['adb', '-s', args.device, 'logcat', '-d', '-t', '2000',
-                 'AndroidRuntime:E', 'libc:F', 'flutter:E', '*:S'],
+                 'AndroidRuntime:E', 'libc:F', 'flutter:E', 'ActivityManager:I', 'lmkd:I', '*:S'],
                 capture_output=True, timeout=20,
             )
             (args.output/'errors.log').write_bytes(result.stdout+result.stderr)
             state = subprocess.run(['adb', '-s', args.device, 'shell', 'dumpsys', 'activity', 'activities'], capture_output=True, timeout=20)
             (args.output/'activity-state.txt').write_bytes(state.stdout+state.stderr)
+            exits = subprocess.run(['adb', '-s', args.device, 'shell', 'dumpsys', 'activity', 'exit-info', APP], capture_output=True, timeout=20)
+            (args.output/'process-exits.txt').write_bytes(exits.stdout+exits.stderr)
         except (OSError, subprocess.TimeoutExpired) as error:
             (args.output/'diagnostics-error.txt').write_text(str(error))
 
