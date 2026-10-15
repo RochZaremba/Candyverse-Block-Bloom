@@ -76,3 +76,11 @@ podejrzenie OOM w tej próbie. Zmieniono emulator na SwiftShader GLES z wyłącz
 emulacją Vulkan (`-feature -Vulkan`), bez zmiany produkcyjnych ustawień silnika.
 Dalsze wyniki dotyczą tej konfiguracji; Vulkan i60FPS na fizycznym telefonie
 pozostają niepotwierdzone. Timeout screenshotu ogranicza blokadę testu.
+
+Zrzuty tego harnessu wykonuje Flutter RepaintBoundary w rzeczywistym rendererze
+urządzenia, w jego pixelRatio. To obrazy UI Fluttera, bez systemowych pasków;
+pełne natywne screenshoty finalnego APK wykonuje osobny smoke `adb screencap`.
+Nie konwertujemy SurfaceView na ImageView: komentarz Flutter SDK ostrzega,
+że taka konwersja zmienia renderowanie całego pomiaru. PNG są wysyłane przez
+reportData i zapisuje je driver również przy niepowodzeniu testu. Systemowe
+reduced-motion jest raportowane oddzielnie; CI pozostawia animacje włączone.
