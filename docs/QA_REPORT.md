@@ -39,3 +39,5 @@ Artefakty `build/qa-smoke`: report.json, profilowy build, instrumentacja/JUnit, 
 | Podpisany finalny APK/AAB / bundletool | Raport wydania T-011 po przebudowie układu |
 
 CI korzysta z KVM, API35 google_apis x86_64, Pixel2, SwiftShader GLES, wyłączonej emulacji Vulkan/GLDirectMem i włączonych animacji. Domyślny renderer produkcyjny pozostaje bez zmian. Poprzednie próby FlutterDriver traciły połączenie; jeden kernel log potwierdził segfault hostowego RenderThread, lecz nie ustalono jednej przyczyny wszystkich awarii. Żadna z nieudanych prób nie zalicza20 minut. Zastąpiono hostowe RPC natywnym runnerem SDK, bez obniżania czasu lub trybu profile.
+
+Aktualizacja runnera: natywny run38708821882 także utracił emulator przed pełną rozgrywką. CI wybiera jawnie software rendering przez testowy Intent, bez hostowego VMService i bez zmiany konfiguracji release. Raport softwareRendering=true dotyczy CPU; GPU potwierdza osobny smoke produkcyjnego APK. Wynik20min nadal PENDING.

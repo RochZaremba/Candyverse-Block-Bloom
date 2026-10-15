@@ -45,3 +45,5 @@ Dopuszczalne statusy: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE` (po kryteriach ak
 - **Konto właściciela:** Play Console8799678699020536617 osobiste, weryfikacja w toku.
 
 - **Poprawka QA układu:** kompaktowy Game dla krótkich ekranów, wszystkie figury widoczne bez scrolla przy zwykłym tekście.157/157 Flutter,62/62 Dart, analyze i golden PASS. Nowa referencja `game_phone_compact.png`; finalny APK/AAB trzeba przebudować i ponownie sprawdzić. Native20min nowego runnera nadal PENDING.
+
+- **CI38708821882:** native instrumentation uruchomiło Home/Settings, lecz emulator zniknął przy przejściu do Game. Brak zaliczenia20min. Dodano jawny CPU renderer wyłącznie do testowej ActivityTestRule; profile AOT, czas i raport pozostają wymagane. Produkcyjny renderer bez zmian. Kolejny krok: odczytać nową próbę.

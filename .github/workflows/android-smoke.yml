@@ -36,13 +36,13 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         env:
           CANDYVERSE_SMOKE_MINUTES: '20'
-          CANDYVERSE_SOFTWARE_RENDERING: '0'
+          CANDYVERSE_SOFTWARE_RENDERING: '1'
           CANDYVERSE_QA_OUTPUT: build/qa-smoke
         with:
           api-level: 35
           target: google_apis
           arch: x86_64
-          ram-size: 1536
+          ram-size: 2048
           profile: pixel_2
           emulator-options: -no-window -gpu swiftshader -feature -Vulkan,GLDirectMem -noaudio -no-boot-anim -no-snapshot
           disable-animations: false
