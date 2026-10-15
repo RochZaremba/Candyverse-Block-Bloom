@@ -1,51 +1,69 @@
 # T-010 — raport QA
 
-**2026-10-15: testy lokalne PASS; pełny20min native smoke oczekuje na wynik CI.**
-Nie oznaczamy testu stabilności jako zakończonego przed odczytem raportu.
+Stan2026-10-15:160/160 testów Flutter i62/62 testów silnika PASS.
+Pełny20min natywny scenariusz na fizycznym telefonie i w CI jest w toku;
+nie zaliczamy go przed końcowym raportem i JUnit.
 
-## Wyniki potwierdzone
+## Zakres i potwierdzone kontrole
 
-- `flutter test`:160/160, w tym goldeny, PL/EN,320/412dp, tekst200%, reset i odzyskiwanie zapisu.
-- `dart test test/game`:62/62; `flutter analyze`, format i kontrola dokumentacji PASS.
-- JDK21 `assembleProfile assembleProfileAndroidTest`: PASS na branchach T-010 i T-011; testAPK zawiera natywny FlutterTestRunner.
-- Poprawiono układ Game na krótkich telefonach: plansza dopasowuje rozmiar, panele są bardziej zwarte, wszystkie trzy figury mieszczą się bez scrolla przy zwykłym tekście. Testy393×650 i320×592 sprawdzają pełne granice figur oraz wykonują placement. Zwiększony tekst zachowuje przewijanie. Referencja: `test/goldens/game_phone_compact.png`.
-- Podpisany produkcyjny APK z PR#11 przeszedł niezależny smoke API24, API36 i API35/16KB: [CI38703558729](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38703558729). Prawdziwe input/PNG, tło/powrót, force-stop/wznowienie stanu. To wcześniejszy kandydat przed poprawką układu; finalny build musi powtórzyć te testy.
+- Format/analyze/docs PASS. Goldeny, PL/EN,320/412dp, tekst200%, reset i odzyskiwanie zapisu.
+- Game na krótkich ekranach mieści wszystkie trzy figury bez scrolla przy zwykłym tekście. Test wszystkich14 masek ×3 sloty ×2 rozmiary320×592/393×650 sprawdza granice każdego CandyTile; nowy golden `game_phone_compact.png`. Duży tekst zachowuje przewijanie. Poprawki dotyczą układu i skali podglądu, bez zmian GDD.
+- Wspólny `runSmokeScenario` przechodzi lokalnie wszystkie fixture oraz jeden cykl19 ruchów/20 reakcji/Replay/reset. MemoryStorage, minimumDwellCycles i storageKind jawnie odróżniają ten test od natywnego QA; kilka sekund hosta nie zalicza20min.
+- CI Flutter38718430226 SUCCESS. Profile APK i profile androidTest zbudowane na JDK21; SDK Flutter3.47.2/Dart3.13.2.
+- Finalny podpisany produkcyjny APK przeszedł API24/36 i API35/16KB. Universal APK z finalnego AAB przeszedł API36. Dokładne hashe, runy oraz ograniczenia środowiska: [raport wydania](RELEASE_REPORT.md).
 
-## Odtworzenie pełnego scenariusza
+## Natywny scenariusz i dowody
+
+Home PL → Settings EN/mute/haptyka/reduced motion → Game; nielegalny drag/tap;
+clear9→10 i Sugar Rush; Eraser cancel/confirm; identyczny snapshot po odtworzeniu
+sesji; Game Over i jednokrotna nagroda; Replay; wszystkie trzy obiekty do poziomu3,
+ceny/saldo i ponowny odczyt; cztery reakcje;20 minut aktywnych ruchów/reakcji/przejść;
+reset cancel/confirm i natywny odczyt świeżego profilu.
+
+Fixture portfela/progresji są wyłącznie w testowym entrypoincie; nie potwierdzają
+tempa zarabiania przez nowego gracza. Pętla dwell wykonuje prawdziwe ruchy przez
+widgety UI i natywny DataStore. Stopwatch nie liczy builda, instalacji ani końcowego
+resetu. Wrapper wymaga zgodnego UUID, storageKind=native-data-store, czasu≥1200s,
+dodatnich liczników ruchów/reakcji/cykli, FrameTiming oraz Gradle/JUnit SUCCESS.
+
+| Środowisko | Stan |
+| --- | --- |
+| Telefon2412DPC0AG, Android16/API36, arm64,4KB | IN_PROGRESS; profile Impeller/Vulkan, softwareRendering=false |
+| CI API35, x86_64, Pixel2/KVM | IN_PROGRESS; jawne softwareRendering=true, run38718430099 |
+| Odsłuch / odczuwalna haptyka | Wymagany wynik ręczny właściciela |
+|60FPS na reprezentatywnym średnim telefonie | Niepotwierdzone; cel, nie deklaracja |
+| Tempo ekonomii bez fixture | Nie wykonano długiej ręcznej oceny |
+
+FrameTiming build/raster p95 to czas części klatki, a nie liczba FPS. Wyniku
+CPU emulatora nie przedstawiamy jako wydajności GPU. Telefon jest rzeczywistym
+urządzeniem właściciela; nie uznajemy go automatycznie za reprezentatywny benchmark.
+
+## Odtworzenie i ochrona danych
 
 ```sh
 CANDYVERSE_QA_DEVICE=emulator-5554 CANDYVERSE_SMOKE_MINUTES=20 scripts/android_smoke.sh
 ```
 
-Wybierz wyłącznie jednorazowy emulator QA. Domyślnie AOT profile i natywna instrumentacja Androida (ADR-0015), bez hostowego FlutterDriver. Skrypt wymaga jednego jawnie wybranego urządzenia; preferencje mają prefiks `candyverse.qa.smoke.*`. Nie czyści profilu gracza ani globalnego logcat. Instalacja testAPK zastępuje aplikację na urządzeniu QA.
+Wybierz jawnie urządzenie QA i sprawdź applicationId przed instalacją.
+T-010 używa osobnej aplikacji com.example.candyverse, natywnych preferencji
+`candyverse.qa.smoke.*`; wariant T-011 ma docelowe ID, dlatego nie uruchamiaj go
+na istniejącej instalacji gracza. Wrapper nigdy nie czyści produkcyjnych danych ani
+globalnego logcat. Może instalować/odinstalować swój target i androidTest.
+Domyślnie AOT profile i natywny SDK FlutterTestRunner (ADR-0015). Opcja CPU jest
+jawna, wyłącznie przez Intent testowej ActivityTestRule. Produkcyjny renderer bez zmian.
 
-Scenariusz: Home PL → Settings EN/mute/haptyka/reduced motion → Game; nielegalny drag/tap; clear9→10 i Sugar Rush; Eraser cancel/confirm; identyczny snapshot po odtworzeniu sesji; Game Over i jednokrotna nagroda; Replay; wszystkie trzy obiekty do poziomu3, ceny/saldo i ponowny odczyt; cztery reakcje;20 minut aktywnych ruchów/reakcji/przejść; reset cancel/confirm i natywny odczyt świeżego profilu.
+Artefakty: report.json, profile-build.log, instrumentation.log, JUnit,
+android-lifecycle.log, API/model/page size i wersja Fluttera. Telefon: lokalny
+`/home/roch/.cache/candyverse/qa-phone-final/`. Capture Flutter UI opcjonalny;
+produkcyjne PNG pochodzą z osobnego smoke przez adb screencap.
 
-Progi i saldo w części testu są jawnymi fixture wyłącznie w `integration_test/`; nie dowodzą tempa zarabiania przez nowego gracza. W pętli dwell ruchy są wykonywane przez UI. Stopwatch mierzy aktywny czas, bez builda/instalacji i końcowego resetu. Raport jest skorelowany unikalnym tokenem; wrapper wymaga ≥1200 sekund, dodatnich liczników aktywności i FrameTiming oraz powodzenia Gradle/JUnit.
+## Naprawione problemy samego harnessu
 
-Artefakty `build/qa-smoke`: report.json, profilowy build, instrumentacja/JUnit, lifecycle logcat, API/model/page size i wersja Fluttera. Capture Flutter UI jest opcjonalny; domyślnie bez GPU readback. Natywne screenshoty produkcyjnego entrypointu pochodzą z osobnego smoke T-011.
+- AndroidX1.2.0 zwraca null z getActivityIntent; jawny Intent i fail-fast AssertionError zapobiegają ukryciu błędu launch przez SDK.
+- Nielegalny drag zachowuje zaznaczenie. Scenariusz jawnie ponownie wybiera figurę; powtórny tap tego samego slotu wcześniej ją odznaczał.
+- Scenariusz czeka na widoczność/hitTestable widgetów oraz GameScreen przed odczytem kontrolera i przewija do resetu. Hostowy test obejmuje całą sekwencję przed kosztowną instrumentacją.
+- Smoke produkcyjnego APK po HOME czeka na dowód rzeczywistego tła. Bez tego am start mógł trafić do Activity przed zakończeniem przejścia launchera.
 
-## Matryca i ograniczenia
-
-| Kontrola | Wynik |
-| --- | --- |
-| Unit/widget/golden/layout/format/analyze | PASS lokalnie; finalne CI do odczytu |
-| API24/36/16KB, produkcyjny entrypoint i lifecycle | PASS wcześniejszego kandydata, CI wyżej; finalny build do powtórzenia |
-| Pełny native20min, ulepszenia/ekonomia/reset | PENDING CI nowego runnera |
-| FrameTiming AOT | PENDING raport; emulator nie dowodzi FPS telefonu |
-| Odsłuch / haptyka | NOT RUN na fizycznym telefonie |
-|60FPS / startup reprezentatywnego telefonu | NOT RUN; cel, nie potwierdzony wynik |
-| Tempo ekonomii bez fixture | NOT RUN jako długi ręczny playthrough |
-| Podpisany finalny APK/AAB / bundletool | Raport wydania T-011 po przebudowie układu |
-
-CI korzysta z KVM, API35 google_apis x86_64, Pixel2, SwiftShader GLES, wyłączonej emulacji Vulkan/GLDirectMem i włączonych animacji. Domyślny renderer produkcyjny pozostaje bez zmian. Poprzednie próby FlutterDriver traciły połączenie; jeden kernel log potwierdził segfault hostowego RenderThread, lecz nie ustalono jednej przyczyny wszystkich awarii. Żadna z nieudanych prób nie zalicza20 minut. Zastąpiono hostowe RPC natywnym runnerem SDK, bez obniżania czasu lub trybu profile.
-
-Aktualizacja runnera: natywny run38708821882 także utracił emulator przed pełną rozgrywką. CI wybiera jawnie software rendering przez testowy Intent, bez hostowego VMService i bez zmiany konfiguracji release. Raport softwareRendering=true dotyczy CPU; GPU potwierdza osobny smoke produkcyjnego APK. Wynik20min nadal PENDING.
-
-Dodatkowy przegląd PNG wykrył ucięcie4-polowej pionowej figury wewnątrz kompaktowego tray. FittedBox skaluje wyłącznie podgląd figury, bez zmiany jej maski lub reguł placement. Test wszystkich14 masek w trzech slotach przy320×592 i393×650 potwierdza granice każdego renderowanego CandyTile;158 Flutter tests, analyze i format PASS. Finalny podpisany build wymaga przebudowy i powtórzenia smoke.
-
-Naprawa startu native CPU: `ActivityTestRule.getActivityIntent()` w AndroidX1.2.0 zwraca null (potwierdzone bytecode); dodany wariant dopisywał extras do null. FlutterTestRunner przechwytuje RuntimeException i czeka na Dart results, więc job pozostawał w oczekiwaniu bez rozgrywki. Obecnie tworzymy jawny Intent i propagujemy błąd launch jako AssertionError, aby nie trafił do tego catch. Oczekiwanie nie jest pomiarem aktywnej gry; finalny20min nadal wymaga nowego raportu.
-
-Native run38714825323 dotarł do Game i poprawnie zgłosił nieudaną asercję scenariusza, bez utraty emulatora: nielegalny drag zachowuje zaznaczenie, więc ponowny tap tego samego slotu je wyłączał. Harness jawnie wybiera inny slot i wraca do0 przed próbą tap placement. Dodano widget regression invalid drag→reselection→invalid tap→line clear;160/160 Flutter i analyze PASS.20min nadal niezaliczone przed finalnym wynikiem.
-
-Scenariusz wyodrębniono do `runSmokeScenario`. Test hosta korzysta z MemoryStorage i jawnego storageKind=memory-host-validation; sprawdza cały ciąg fixture oraz jeden cykl19 legalnych ruchów/20 reakcji/Replay i reset. Ujawnił i naprawił oczekiwanie na GameScreen, przewinięcie resetu w leniwej liście oraz klikanie dopiero po zakończeniu przejścia/hit-testable.160/160 Flutter, analyze/format/bash PASS. Hostowe6s nie zaliczają20min ani DataStore; wrapper odrzuca raporty bez storageKind=native-data-store. Natywny entrypoint nadal używa prawdziwych preferencji i domyślnych20 minut z CI.
+Wcześniejsze nieudane próby i oczekiwanie runnera nie zaliczają aktywnego20min.
+Problemy emulatorów są opisane w raporcie wydania; nie ustalono jednej przyczyny
+wszystkich awarii. Zmiana testowego renderera nie zmieniła aplikacji produkcyjnej.

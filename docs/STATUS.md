@@ -18,7 +18,7 @@ Repozytorium: `RochZaremba/Candyverse-Block-Bloom`; fetch HTTPS, push SSH.
 | T-008 Save/economy | DONE | PR#8, merge `b4cb8b4` |
 | T-009 Settings/i18n | DONE | PR#9, merge `d50e612`, CI38651090829 SUCCESS |
 | T-010 QA/performance | IN_PROGRESS | PR#10, `000259d`; native20min w toku |
-| T-011 Store/release | IN_PROGRESS | PR#11 draft, `b260340`; końcowe QA i materiały |
+| T-011 Store/release | IN_PROGRESS | PR#11 draft, `6b0f2c5`; końcowe QA i materiały |
 
 ## Potwierdzone wyniki
 
@@ -51,3 +51,5 @@ Worktree T-011: `/home/roch/programing/Renvo/candyverse-workers/t011`, branch `c
 Root `main` pozostaje stabilny. Nie używać starych branchy workerów jako aktualnej wersji.
 
 **Jedno następne zadanie:** odebrać raport końcowy20min na fizycznym telefonie i wynik CI T-010, następnie scalić PR#10 wyłącznie po zielonych kontrolach.
+
+Kontrola16KB6b0f2c5 nie przeszła dwóch prób przez utratę całego emulatora; API24/API36/APK-z-AAB PASS. Kolejna konfiguracja wyłącza GLDirectMem wyłącznie na16KB. Nie zmieniono APK ani jego renderera. Telefon nadal testuje domyślny Vulkan.
