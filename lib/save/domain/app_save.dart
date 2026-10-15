@@ -25,7 +25,7 @@ class SavedSettings {
     this.sound = true,
     this.haptics = true,
     this.reduceMotion = false,
-    this.language = 'pl',
+    this.language = 'en',
   });
   final bool sound, haptics, reduceMotion;
   final String language;
@@ -42,8 +42,13 @@ class AppSaveV1 {
     this.settings = const SavedSettings(),
     this.activeRun,
     this.lastResult,
+    this.incomeTimestampMs,
+    this.incomeRemainder = 0,
   }) : island = island ?? IslandState() {
-    if (nextRunId < 1 ||
+    if ((incomeTimestampMs != null && incomeTimestampMs! < 0) ||
+        incomeRemainder < 0 ||
+        incomeRemainder >= incomeDenominator ||
+        nextRunId < 1 ||
         lastAwardedRunId < 0 ||
         lastAwardedRunId >= nextRunId ||
         wallet < 0 ||
@@ -61,6 +66,9 @@ class AppSaveV1 {
     }
   }
   final int nextRunId, lastAwardedRunId, wallet, bestScore;
+  static const incomeDenominator = 600000;
+  final int? incomeTimestampMs;
+  final int incomeRemainder;
   final IslandState island;
   final SavedSettings settings;
   final SavedRun? activeRun;
@@ -76,6 +84,8 @@ class AppSaveV1 {
     SavedRun? activeRun,
     bool clearRun = false,
     RunResult? lastResult,
+    int? incomeTimestampMs,
+    int? incomeRemainder,
   }) => AppSaveV1(
     nextRunId: nextRunId ?? this.nextRunId,
     lastAwardedRunId: lastAwardedRunId ?? this.lastAwardedRunId,
@@ -85,6 +95,8 @@ class AppSaveV1 {
     settings: settings ?? this.settings,
     activeRun: clearRun ? null : activeRun ?? this.activeRun,
     lastResult: lastResult ?? this.lastResult,
+    incomeTimestampMs: incomeTimestampMs ?? this.incomeTimestampMs,
+    incomeRemainder: incomeRemainder ?? this.incomeRemainder,
   );
 
   AppSaveV1 startRun(int seed) {
@@ -130,15 +142,35 @@ class AppSaveV1 {
     );
   }
 
+  /// Whole coins with a carried fractional numerator; never rewinds the clock.
+  AppSaveV1 accrueIncome(int nowMs) {
+    if (nowMs < 0) throw ArgumentError.value(nowMs, 'nowMs');
+    final previous = incomeTimestampMs;
+    if (previous == null) return copyWith(incomeTimestampMs: nowMs);
+    if (nowMs <= previous) return this;
+    final amount =
+        incomeRemainder + (nowMs - previous) * island.incomeTenthsPerMinute;
+    return copyWith(
+      wallet: wallet + amount ~/ incomeDenominator,
+      incomeRemainder: amount % incomeDenominator,
+      incomeTimestampMs: nowMs,
+    );
+  }
+
+  AppSaveV1 prestige() =>
+      island.canPrestige ? copyWith(island: island.prestige()) : this;
+
   int? price(BuildingKind kind) {
     final level = island.level(kind);
-    return level == 3
-        ? null
-        : switch (kind) {
-            BuildingKind.candyTree => [10, 25, 45][level],
-            BuildingKind.jellyHouse => [15, 30, 50][level],
-            BuildingKind.rainbowFountain => [20, 35, 55][level],
-          };
+    if (level == IslandState.maxLevel) return null;
+    final initial = switch (kind) {
+      BuildingKind.candyTree => [10, 25, 45],
+      BuildingKind.jellyHouse => [15, 30, 50],
+      BuildingKind.rainbowFountain => [20, 35, 55],
+    };
+    if (level < 3) return initial[level];
+    final growth = level - 2;
+    return initial.last + (20 + kind.index * 5) * growth * growth;
   }
 
   AppSaveV1 purchase(BuildingKind kind) {
@@ -151,7 +183,10 @@ class AppSaveV1 {
   }
 
   String encode() => jsonEncode({
-    'schemaVersion': 1,
+    'schemaVersion': 2,
+    'incomeTimestampMs': incomeTimestampMs,
+    'incomeRemainder': incomeRemainder,
+    'stars': island.stars,
     'nextRunId': nextRunId,
     'lastAwardedRunId': lastAwardedRunId,
     'wallet': wallet,
@@ -184,7 +219,8 @@ class AppSaveV1 {
   static AppSaveV1 decode(String raw) {
     try {
       final data = _map(jsonDecode(raw));
-      if (data['schemaVersion'] != 1) {
+      final version = data['schemaVersion'];
+      if (version != 1 && version != 2) {
         throw const FormatException('Unsupported save version.');
       }
       final island = _map(data['island']);
@@ -210,14 +246,25 @@ class AppSaveV1 {
         );
       }
       return AppSaveV1(
+        incomeTimestampMs: version == 1 || data['incomeTimestampMs'] == null
+            ? null
+            : _int(data, 'incomeTimestampMs'),
+        incomeRemainder: version == 1
+            ? 0
+            : _int(data, 'incomeRemainder', max: incomeDenominator - 1),
         nextRunId: _int(data, 'nextRunId', min: 1),
         lastAwardedRunId: _int(data, 'lastAwardedRunId'),
         wallet: _int(data, 'wallet'),
         bestScore: _int(data, 'bestScore'),
         island: IslandState(
+          stars: version == 1 ? 0 : _int(data, 'stars'),
           levels: {
             for (final k in BuildingKind.values)
-              k: _int(island, k.name, max: 3),
+              k: _int(
+                island,
+                k.name,
+                max: version == 1 ? 3 : IslandState.maxLevel,
+              ),
           },
         ),
         settings: SavedSettings(

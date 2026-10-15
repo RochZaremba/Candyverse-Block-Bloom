@@ -4,18 +4,27 @@ enum CandyCharacter { pinkMochi, blueJelly, lemonBlob, mintyMonster }
 
 /// Pure local visual progression; purchasing belongs to the economy reducer.
 class IslandState {
-  IslandState({Map<BuildingKind, int>? levels})
+  IslandState({Map<BuildingKind, int>? levels, this.stars = 0})
     : levels = Map.unmodifiable(
         levels ?? {for (final kind in BuildingKind.values) kind: 0},
       ) {
-    if (this.levels.length != BuildingKind.values.length ||
+    if (stars < 0 ||
+        this.levels.length != BuildingKind.values.length ||
         BuildingKind.values.any((kind) => !this.levels.containsKey(kind)) ||
-        this.levels.values.any((level) => level < 0 || level > 3)) {
-      throw ArgumentError('Island requires all three building levels in 0..3.');
+        this.levels.values.any((level) => level < 0 || level > maxLevel)) {
+      throw ArgumentError(
+        'Island requires all three building levels in 0..30 and non-negative stars.',
+      );
     }
   }
+  static const maxLevel = 30;
+  final int stars;
   final Map<BuildingKind, int> levels;
+  int get totalLevels => levels.values.fold(0, (sum, level) => sum + level);
+  bool get canPrestige => levels.values.every((level) => level == maxLevel);
+  int get incomeTenthsPerMinute => ((totalLevels + 2) ~/ 3) * (10 + stars);
+  IslandState prestige() => canPrestige ? IslandState(stars: stars + 1) : this;
   int level(BuildingKind kind) => levels[kind]!;
   IslandState withLevel(BuildingKind kind, int level) =>
-      IslandState(levels: {...levels, kind: level});
+      IslandState(levels: {...levels, kind: level}, stars: stars);
 }

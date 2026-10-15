@@ -23,7 +23,7 @@ void main() {
       throwsArgumentError,
     );
     expect(
-      () => state.withLevel(BuildingKind.candyTree, 4),
+      () => state.withLevel(BuildingKind.candyTree, 31),
       throwsArgumentError,
     );
   });

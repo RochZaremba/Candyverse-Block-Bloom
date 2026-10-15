@@ -83,7 +83,7 @@ void main() {
         save = AppSaveV1.decode(save.purchase(kind).encode());
         expect(save.island.level(kind), level + 1);
       }
-      expect(identical(save.purchase(kind), save), isTrue);
+      expect(save.price(kind), greaterThan(prices[kind.index].last));
     }
     expect(save.wallet, 115);
     final poor = AppSaveV1(wallet: 9);
@@ -110,7 +110,7 @@ void main() {
     final raw =
         jsonDecode(AppSaveV1().startRun(1).encode()) as Map<String, dynamic>;
     for (final mutation in <void Function(Map<String, dynamic>)>[
-      (d) => d['schemaVersion'] = 2,
+      (d) => d['schemaVersion'] = 3,
       (d) => d['wallet'] = -1,
       (d) => d['nextRunId'] = 1,
       (d) => d['activeRun']['game']['rng'] = 0,
