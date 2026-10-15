@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "applicationId": "com.renvo.candyverse",
+  "apkSha256": "32e552b82cf81425eeb1e5369d218f1833e6f619a2ab848f990a3f53ea2c453c",
+  "api": "36",
+  "pageSize": 4096,
+  "deviceMemTotalKiB": 2532300,
+  "entrypoint": "production",
+  "nativeInput": true,
+  "language": "en",
+  "qaEmulator": true,
+  "renderer": "default",
+  "defaultRendererValidated": true,
+  "backgroundResume": true,
+  "forceStopRestore": true,
+  "fullBoardRestored": true,
+  "occupiedCells": 3,
+  "representativeHardware": false
+}
