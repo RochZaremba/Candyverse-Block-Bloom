@@ -2,7 +2,7 @@
 
 The first paragraph of each `listing_*.txt` is the title, the second is the short
 description, and the remaining paragraphs are the full description. These are
-Candy Kingdom1.1.0+2 candidate features from PRD/GDD and
+Candy Kingdom1.1.0+3 candidate features from PRD/GDD and
 [KINGDOM_EXPANSION](../../docs/KINGDOM_EXPANSION.md), without pricing, ranking
 or unverifiable quality claims. Candidate QA and publication status are tracked
 in [STATUS](../../docs/STATUS.md). Language: `pl-PL` and `en-US`. Publisher: Renvo; support contact:

@@ -169,10 +169,16 @@ Pliki: `/home/roch/.cache/candyverse/artifacts/kingdom-1.1.0-3/`:
 - Universal `32e552b82cf81425eeb1e5369d218f1833e6f619a2ab848f990a3f53ea2c453c`.
 
 Telefon odłączony przy próbie aktualizacji code3: adb device not found, niczego
-nie zainstalowano. Poproszono właściciela o krótkie podłączenie i sprawdzenie
-placement. Na telefonie nadal jest poprzednie1.1.0+2. Agenci zakończyli przeglądy;
+nie zainstalowano. Właściciel następnie jawnie polecił pominąć ponowny test telefonu; nie czekać
+na podłączenie ani ponawiać tej prośby. Na telefonie nadal jest poprzednie1.1.0+2. Agenci zakończyli przeglądy;
 przy dodatkowej delegacji narzędzie zgłosiło brak kredytów, poprawkę i regresję
 dokończył koordynator. Nie oznaczać nowego code3 jako przetestowanego wynikami code2.
 
 Jedno następne zadanie: uruchomić macierz i native20min dla nowego draftu
-v1.1.0-rc.2/code3 oraz potwierdzić brak migania po aktualizacji telefonu.
+v1.1.0-rc.2/code3; ponowny test telefonu pominięty na polecenie właściciela.
+
+
+CI zamrożonego head231258a: Flutter38734971516 SUCCESS (194/71/19);
+signed38734971548 ma3PASS, API24 ponowiono po oknie awarii systemowego Messengera
+(udokumentowany screenshot, bez zmian APK); native20min38734971558 w toku.
+Nie publikować code2 ani nie przypisywać code3 ręcznego PASS telefonu.
