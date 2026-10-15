@@ -32,17 +32,28 @@ def read_page_size(adb):
     return size
 
 
+def require_qa_emulator(adb):
+    """This scenario must never install or operate on a player's physical phone."""
+    if adb('shell', 'getprop', 'ro.kernel.qemu').strip() != '1':
+        raise RuntimeError('Release smoke requires a fresh disposable Android emulator.')
+
+
 def board_snapshot(ui_nodes):
-    """Read all 64 cells; S pieces legitimately leave the chosen origin empty."""
+    """Read the full EN/PL board; a placed S can leave its origin empty."""
     cells = {}
+    patterns = (
+        (r'Wiersz ([1-8]), kolumna ([1-8]), (puste|zajęte)', 'zajęte'),
+        (r'Row ([1-8]), column ([1-8]), (empty|occupied)', 'occupied'),
+    )
     for node in ui_nodes:
         label = node.get('text', '')+'\n'+node.get('content-desc', '')
-        for match in re.finditer(r'Wiersz ([1-8]), kolumna ([1-8]), (puste|zajęte)', label):
-            key = (int(match[1]), int(match[2]))
-            occupied = match[3] == 'zajęte'
-            if key in cells and cells[key] != occupied:
-                raise ValueError('Conflicting accessibility cell state.')
-            cells[key] = occupied
+        for pattern, occupied_word in patterns:
+            for match in re.finditer(pattern, label):
+                key = (int(match[1]), int(match[2]))
+                occupied = match[3] == occupied_word
+                if key in cells and cells[key] != occupied:
+                    raise ValueError('Conflicting accessibility cell state.')
+                cells[key] = occupied
     if len(cells) != 64:
         raise ValueError('A complete board accessibility snapshot is required.')
     return tuple(cells[(row, col)] for row in range(1, 9) for col in range(1, 9))
@@ -72,6 +83,8 @@ def main():
         result = subprocess.run(['adb', '-s', args.device, *command],
                                 check=True, capture_output=True, timeout=90)
         return result.stdout if binary else result.stdout.decode().strip()
+
+    require_qa_emulator(adb)
 
     live_log = (args.output/'live-android.log').open('wb')
     live_process = subprocess.Popen(['adb', '-s', args.device, 'logcat', '-v', 'threadtime',
@@ -173,31 +186,34 @@ def main():
         raise RuntimeError(f'Expected page size {args.expected_page_size}, got {page_size}')
     adb('install', '-r', str(args.apk.resolve()))
     launch()
-    locate(r'^GRAJ$')
-    capture('release-home-pl')
-    tap(r'^Ustawienia$')
+    locate(r'^PLAY$')
+    capture('release-home-en')
+    # Home exposes Settings as the gear's accessible tooltip, not a third button.
+    tap(r'^Settings$')
     try:
-        locate(r'^Prywatność$', seconds=8)
+        locate(r'^Privacy$', seconds=8)
     except RuntimeError:
         adb('shell', 'input', 'swipe', '540', '1550', '540', '650', '400')
     # Android7 merges the actionable tile and non-actionable footer semantics.
     # Tap the visible title region rather than the combined panel's midpoint.
-    tap(r'^Prywatność$', vertical=.2)
+    tap(r'^Privacy$', vertical=.2)
     locate(r'rochzaremba@gmail\.com')
-    capture('release-privacy-pl')
+    capture('release-privacy-en')
     adb('shell', 'input', 'keyevent', '4')
     time.sleep(1)
     adb('shell', 'input', 'keyevent', '4')
-    tap(r'^GRAJ$')
-    locate(r'Wiersz 1, kolumna 1, puste')
-    tap(r'^Klocek 1,')
-    tap(r'Wiersz 1, kolumna 1, puste')
-    locate(r'Wiersz [1-8], kolumna [1-8], zajęte')
-    locate(r'Klocek 1 zużyty')
+    tap(r'^PLAY$')
+    locate(r'Row 1, column 1, empty')
+    if any(board_snapshot(nodes())):
+        raise RuntimeError('Release smoke requires a fresh disposable emulator profile.')
+    tap(r'^Piece 1,')
+    tap(r'Row 1, column 1, empty')
+    locate(r'Row [1-8], column [1-8], occupied')
+    locate(r'Piece 1 used')
     placed_board = board_snapshot(nodes())
     if not any(placed_board):
         raise RuntimeError('Placement did not occupy any board cell.')
-    capture('release-game-pl')
+    capture('release-game-en')
     # Real background/resume, followed by real process death and disk restore.
     adb('shell', 'input', 'keyevent', 'KEYCODE_HOME')
     background_deadline = time.monotonic()+15
@@ -213,19 +229,20 @@ def main():
             raise RuntimeError('Android never moved the app into the background.')
         time.sleep(.2)
     launch()
-    locate(r'Wiersz [1-8], kolumna [1-8], zajęte')
+    locate(r'Row [1-8], column [1-8], occupied')
     if board_snapshot(nodes()) != placed_board:
         raise RuntimeError('Board occupancy changed across Android lifecycle.')
     adb('shell', 'am', 'force-stop', APP)
     launch()
-    locate(r'^WZNÓW$')
-    capture('release-home-resume-pl')
-    tap(r'^WZNÓW$')
-    locate(r'Wiersz [1-8], kolumna [1-8], zajęte')
+    # PLAY resumes the persisted run; the new menu always has exactly two actions.
+    locate(r'^PLAY$')
+    capture('release-home-resume-en')
+    tap(r'^PLAY$')
+    locate(r'Row [1-8], column [1-8], occupied')
     if board_snapshot(nodes()) != placed_board:
         raise RuntimeError('Board occupancy changed across Android lifecycle.')
-    locate(r'Klocek 1 zużyty')
-    capture('release-game-restored-pl')
+    locate(r'Piece 1 used')
+    capture('release-game-restored-en')
     if not adb('shell', 'pidof', APP):
         raise RuntimeError('Production process exited.')
     report = {'status': 'PASS', 'applicationId': APP,
@@ -233,6 +250,7 @@ def main():
               'api': adb('shell', 'getprop', 'ro.build.version.sdk'),
               'pageSize': page_size, 'deviceMemTotalKiB': total_memory,
               'entrypoint': 'production', 'nativeInput': True,
+              'language': 'en', 'qaEmulator': True,
               'renderer': args.renderer, 'defaultRendererValidated': args.renderer == 'default',
               'backgroundResume': True, 'forceStopRestore': True,
               'fullBoardRestored': True, 'occupiedCells': sum(placed_board),
