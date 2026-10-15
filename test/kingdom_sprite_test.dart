@@ -36,7 +36,7 @@ void main() {
     image.dispose();
     picture.dispose();
     const boundary = ValueKey('atlas-boundary');
-    for (var index = 0; index < 4; index++) {
+    for (var index = 0; index < 5; index++) {
       await tester.pumpWidget(
         DefaultAssetBundle(
           bundle: bundle,
@@ -50,8 +50,11 @@ void main() {
                   height: 40,
                   child: KingdomSprite(
                     asset: 'test-atlas.png',
-                    row: index ~/ 2,
-                    column: index % 2,
+                    row: index == 4 ? 0 : index ~/ 2,
+                    column: index == 4 ? 0 : index % 2,
+                    sourceRect: index == 4
+                        ? const Rect.fromLTRB(16, 16, 32, 32)
+                        : null,
                     rows: 2,
                     columns: 2,
                   ),
@@ -81,7 +84,7 @@ void main() {
         bytes[offset + 1],
         bytes[offset + 2],
       );
-      expect(actual.toARGB32(), colors[index].toARGB32());
+      expect(actual.toARGB32(), colors[index == 4 ? 3 : index].toARGB32());
       captured.dispose();
     }
     expect(tester.takeException(), isNull);

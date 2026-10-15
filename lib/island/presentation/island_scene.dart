@@ -104,84 +104,131 @@ class _IslandSceneState extends State<IslandScene>
   }
 
   @override
-  Widget build(BuildContext context) => AspectRatio(
-    aspectRatio: 400 / 350,
-    child: LayoutBuilder(
-      builder: (context, constraints) {
-        final scale = constraints.maxWidth / 400;
-        const buildings = [
-          Offset(105, 150),
-          Offset(288, 150),
-          Offset(204, 218),
-        ];
-        const characters = [
-          Offset(78, 249),
-          Offset(320, 249),
-          Offset(156, 285),
-          Offset(254, 286),
-        ];
-        return Stack(
-          children: [
-            Positioned.fill(
-              child: RepaintBoundary(
-                child: KingdomSprite(
-                  key: ValueKey('world-${widget.worldIndex % 3}'),
-                  asset: 'assets/kingdom/worlds.png',
-                  row: widget.worldIndex % 3,
-                  column: 0,
-                  rows: 3,
-                  columns: 1,
+  Widget build(BuildContext context) => RepaintBoundary(
+    child: AspectRatio(
+      aspectRatio: 400 / 350,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final scale = constraints.maxWidth / 400;
+          const buildings = [Offset(105, 88), Offset(200, 88), Offset(295, 88)];
+          const characters = [
+            Offset(78, 249),
+            Offset(320, 249),
+            Offset(156, 285),
+            Offset(254, 286),
+          ];
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(22),
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: RepaintBoundary(
+                    child: KingdomSprite(
+                      key: ValueKey('world-${widget.worldIndex % 3}'),
+                      asset: 'assets/kingdom/worlds.png',
+                      row: widget.worldIndex % 3,
+                      column: 0,
+                      rows: 3,
+                      columns: 1,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            for (var i = 0; i < 3; i++)
-              Positioned(
-                left: (buildings[i].dx - 57) * scale,
-                top: (buildings[i].dy - 69) * scale,
-                width: math.max(48.0, 114 * scale),
-                height: math.max(48.0, 116 * scale),
-                child: _BuildingSprite(
-                  theme: widget.theme,
-                  kind: BuildingKind.values[i],
-                  level: widget.island.level(BuildingKind.values[i]),
-                  onTap: widget.onBuildingTap == null
-                      ? null
-                      : () => widget.onBuildingTap!(BuildingKind.values[i]),
-                ),
-              ),
-            for (var i = 0; i < widget.characterCount.clamp(0, 4); i++)
-              Positioned(
-                left: characters[i].dx * scale - math.max(48.0, 75 * scale) / 2,
-                top: characters[i].dy * scale - math.max(48.0, 80 * scale) / 2,
-                width: math.max(48.0, 75 * scale),
-                height: math.max(48.0, 80 * scale),
-                child: _CharacterSprite(
-                  kind: CandyCharacter.values[i],
-                  idle: idle,
-                  phase: i * .17,
-                ),
-              ),
-            Positioned.fill(
-              child: IgnorePointer(
-                child: RepaintBoundary(
-                  child: AnimatedBuilder(
-                    animation: celebration,
-                    builder: (_, _) => CustomPaint(
-                      painter: _CandyFireworks(
-                        widget.theme,
-                        animate ? celebration.value : 0,
+                for (var i = 0; i < 3; i++)
+                  Positioned(
+                    left: (buildings[i].dx - 48) * scale,
+                    top:
+                        (buildings[i].dy -
+                            52 +
+                            (widget.worldIndex % 3 == 2 ? 14 : 0)) *
+                        scale,
+                    width: math.max(48.0, 96 * scale),
+                    height: math.max(48.0, 104 * scale),
+                    child: _BuildingSprite(
+                      theme: widget.theme,
+                      kind: BuildingKind.values[i],
+                      level: widget.island.level(BuildingKind.values[i]),
+                      onTap: widget.onBuildingTap == null
+                          ? null
+                          : () => widget.onBuildingTap!(BuildingKind.values[i]),
+                    ),
+                  ),
+                for (var i = 0; i < widget.characterCount.clamp(0, 4); i++)
+                  Positioned(
+                    left:
+                        characters[i].dx * scale -
+                        math.max(48.0, 75 * scale) / 2,
+                    top:
+                        characters[i].dy * scale -
+                        math.max(48.0, 80 * scale) / 2,
+                    width: math.max(48.0, 75 * scale),
+                    height: math.max(48.0, 80 * scale),
+                    child: _CharacterSprite(
+                      kind: CandyCharacter.values[i],
+                      idle: idle,
+                      phase: i * .17,
+                    ),
+                  ),
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: RepaintBoundary(
+                      child: AnimatedBuilder(
+                        animation: celebration,
+                        builder: (_, _) => CustomPaint(
+                          painter: _CandyFireworks(
+                            widget.theme,
+                            animate ? celebration.value : 0,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
-        );
-      },
+          );
+        },
+      ),
     ),
   );
 }
+
+// Inspected alpha bounds in the immutable 1024×1536 generated atlas. Its
+// evolution rows are unequal and early sprites have wider transparent margins.
+const _buildingSources = [
+  [
+    Rect.fromLTRB(110, 44, 247, 181),
+    Rect.fromLTRB(407, 28, 608, 186),
+    Rect.fromLTRB(740, 35, 952, 180),
+  ],
+  [
+    Rect.fromLTRB(83, 207, 283, 401),
+    Rect.fromLTRB(391, 212, 634, 401),
+    Rect.fromLTRB(734, 222, 958, 398),
+  ],
+  [
+    Rect.fromLTRB(56, 416, 297, 636),
+    Rect.fromLTRB(377, 412, 647, 638),
+    Rect.fromLTRB(710, 432, 987, 639),
+  ],
+  [
+    Rect.fromLTRB(28, 647, 333, 902),
+    Rect.fromLTRB(363, 649, 664, 901),
+    Rect.fromLTRB(703, 651, 994, 905),
+  ],
+  [
+    Rect.fromLTRB(8, 910, 341, 1194),
+    Rect.fromLTRB(341, 909, 671, 1190),
+    Rect.fromLTRB(684, 912, 1013, 1194),
+  ],
+  [
+    Rect.fromLTRB(14, 1199, 341, 1509),
+    Rect.fromLTRB(341, 1194, 683, 1506),
+    Rect.fromLTRB(683, 1201, 1015, 1517),
+  ],
+];
+Rect _buildingSource(BuildingKind kind, int level) =>
+    _buildingSources[((level - 1) ~/ 5).clamp(0, 5)][kind.index];
 
 class _BuildingSprite extends StatelessWidget {
   const _BuildingSprite({
@@ -237,7 +284,11 @@ class _BuildingSprite extends StatelessWidget {
                       ),
                     )
                   : Transform.scale(
-                      scale: .88 + ((level - 1) % 5) * .03,
+                      alignment: Alignment.bottomCenter,
+                      scale:
+                          .72 +
+                          ((level - 1) ~/ 5).clamp(0, 5) * .04 +
+                          ((level - 1) % 5) * .02,
                       child: KingdomSprite(
                         key: ValueKey('building-art-${kind.name}-$level'),
                         asset: 'assets/kingdom/buildings.png',
@@ -245,6 +296,8 @@ class _BuildingSprite extends StatelessWidget {
                         column: kind.index,
                         rows: 6,
                         columns: 3,
+                        sourceRect: _buildingSource(kind, level),
+                        alignment: Alignment.bottomCenter,
                       ),
                     ),
             ),

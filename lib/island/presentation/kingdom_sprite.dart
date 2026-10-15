@@ -12,6 +12,8 @@ class KingdomSprite extends StatefulWidget {
     required this.rows,
     required this.columns,
     this.fit = BoxFit.contain,
+    this.sourceRect,
+    this.alignment = Alignment.center,
     super.key,
   }) : assert(rows > 0),
        assert(columns > 0),
@@ -21,6 +23,10 @@ class KingdomSprite extends StatefulWidget {
   final String asset;
   final int row, column, rows, columns;
   final BoxFit fit;
+
+  /// Optional source pixels for generated atlases with unequal cell heights.
+  final Rect? sourceRect;
+  final Alignment alignment;
 
   @override
   State<KingdomSprite> createState() => _KingdomSpriteState();
@@ -75,6 +81,8 @@ class _KingdomSpriteState extends State<KingdomSprite> {
       widget.rows,
       widget.columns,
       widget.fit,
+      widget.sourceRect,
+      widget.alignment,
     ),
     isComplex: true,
     child: const SizedBox.expand(),
@@ -89,25 +97,35 @@ class _AtlasPainter extends CustomPainter {
     this.rows,
     this.columns,
     this.fit,
+    this.sourceRect,
+    this.alignment,
   );
   final ui.Image? image;
   final int row, column, rows, columns;
   final BoxFit fit;
+  final Rect? sourceRect;
+  final Alignment alignment;
 
   @override
   void paint(Canvas canvas, Size size) {
     final bitmap = image;
     if (bitmap == null || size.isEmpty) return;
-    final cellSize = Size(bitmap.width / columns, bitmap.height / rows);
+    final cell =
+        sourceRect ??
+        Rect.fromLTWH(
+          column * bitmap.width / columns,
+          row * bitmap.height / rows,
+          bitmap.width / columns,
+          bitmap.height / rows,
+        );
+    final cellSize = cell.size;
     final fitted = applyBoxFit(fit, cellSize, size);
     final crop = Alignment.center.inscribe(
       fitted.source,
       Offset.zero & cellSize,
     );
-    final source = crop.shift(
-      Offset(column * cellSize.width, row * cellSize.height),
-    );
-    final destination = Alignment.center.inscribe(
+    final source = crop.shift(cell.topLeft);
+    final destination = alignment.inscribe(
       fitted.destination,
       Offset.zero & size,
     );
@@ -126,5 +144,7 @@ class _AtlasPainter extends CustomPainter {
       column != old.column ||
       rows != old.rows ||
       columns != old.columns ||
-      fit != old.fit;
+      fit != old.fit ||
+      sourceRect != old.sourceRect ||
+      alignment != old.alignment;
 }
