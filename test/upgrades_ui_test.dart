@@ -1,3 +1,6 @@
+import 'package:candyverse/settings/settings_model.dart';
+import 'package:candyverse/save/domain/app_save.dart';
+
 import 'dart:io';
 
 import 'package:candyverse/core/theme/app_theme.dart';
@@ -69,10 +72,17 @@ void main() {
     tester.platformDispatcher.accessibilityFeaturesTestValue =
         FakeAccessibilityFeatures(disableAnimations: reduced);
     addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    final settings = SettingsModel(
+      initial: const SavedSettings(language: 'pl'),
+    );
+    addTearDown(settings.dispose);
     await tester.pumpWidget(
-      MaterialApp(
-        theme: theme.material,
-        home: GameScreen(theme: theme, controller: controller),
+      SettingsScope(
+        settings: settings,
+        child: MaterialApp(
+          theme: theme.material,
+          home: GameScreen(theme: theme, controller: controller),
+        ),
       ),
     );
     await tester.pumpAndSettle();

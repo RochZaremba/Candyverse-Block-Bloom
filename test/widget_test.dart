@@ -28,14 +28,31 @@ void main() {
     )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
     theme = await AppTheme.load();
   });
-  testWidgets('Home starts using the checked-in candy palette', (tester) async {
-    expect(theme.color('ink'), const Color(0xFF372858));
+  Future<VoidCallback> showHome(WidgetTester tester) async {
+    final semantics = tester.ensureSemantics();
     await tester.pumpWidget(
       CandyverseApp(theme: theme, session: AppSession.memory()),
     );
-    expect(find.text('Candyverse'), findsOneWidget);
-    expect(find.text('BLOCK & BLOOM'), findsOneWidget);
+    await tester.runAsync(() async {
+      for (final asset in ['brand-sheet.png', 'mascots.png']) {
+        await precacheImage(
+          AssetImage('assets/kingdom/$asset'),
+          tester.element(find.byType(Scaffold).first),
+        );
+      }
+    });
+    await tester.pump();
+    return semantics.dispose;
+  }
+
+  testWidgets('Home starts using the checked-in candy palette', (tester) async {
+    expect(theme.color('ink'), const Color(0xFF372858));
+    final disposeSemantics = await showHome(tester);
+    expect(find.bySemanticsLabel('Candyverse: Block & Bloom'), findsOneWidget);
+    expect(find.text('PLAY'), findsOneWidget);
+    expect(find.text('ISLAND'), findsOneWidget);
     expect(tester.takeException(), isNull);
+    disposeSemantics();
   });
 
   for (final width in [320.0, 412.0]) {
@@ -47,11 +64,13 @@ void main() {
         addTearDown(tester.view.resetDevicePixelRatio);
         tester.platformDispatcher.textScaleFactorTestValue = scale;
         addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-        await tester.pumpWidget(
-          CandyverseApp(theme: theme, session: AppSession.memory()),
-        );
+        final disposeSemantics = await showHome(tester);
         expect(tester.takeException(), isNull);
-        expect(find.text('Candyverse'), findsOneWidget);
+        expect(
+          find.bySemanticsLabel('Candyverse: Block & Bloom'),
+          findsOneWidget,
+        );
+        disposeSemantics();
       });
     }
   }
@@ -64,13 +83,12 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    await tester.pumpWidget(
-      CandyverseApp(theme: theme, session: AppSession.memory()),
-    );
+    final disposeSemantics = await showHome(tester);
     await tester.pumpAndSettle();
     await expectLater(
       find.byType(Scaffold),
       matchesGoldenFile('goldens/home_320.png'),
     );
+    disposeSemantics();
   });
 }
