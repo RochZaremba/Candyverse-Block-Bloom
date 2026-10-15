@@ -1,4 +1,5 @@
 import '../../core/localization/app_strings.dart';
+import '../../core/presentation/candy_message.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -29,11 +30,7 @@ class _SaveBootstrapState extends State<SaveBootstrap> {
     super.initState();
     // Unreadable profiles cannot supply a saved language. Valid profiles use
     // their own settings inside CandyverseApp instead of this fallback.
-    recoverySettings.setLanguage(
-      WidgetsBinding.instance.platformDispatcher.locale.languageCode == 'en'
-          ? 'en'
-          : 'pl',
-    );
+    recoverySettings.setLanguage('en');
     _load();
   }
 
@@ -50,6 +47,11 @@ class _SaveBootstrapState extends State<SaveBootstrap> {
     });
     try {
       var save = await repository.load();
+      final accrued = save.accrueIncome(DateTime.now().millisecondsSinceEpoch);
+      if (!identical(accrued, save)) {
+        await repository.save(accrued);
+        save = accrued;
+      }
       // A valid terminal checkpoint from an interrupted prior version is
       // finalized before it can be exposed as a playable run.
       if (save.activeRun != null) {
@@ -59,7 +61,11 @@ class _SaveBootstrapState extends State<SaveBootstrap> {
           save = next;
         }
       }
-      if (mounted) setState(() => session = AppSession(repository, save));
+      if (mounted) {
+        setState(
+          () => session = AppSession(repository, save)..startIncomeTracking(),
+        );
+      }
     } catch (e) {
       if (mounted) setState(() => failure = e);
     } finally {
@@ -129,7 +135,7 @@ class _SaveBootstrapState extends State<SaveBootstrap> {
     // The dialog must use the context below MaterialApp's Navigator.
     final yes = await showDialog<bool>(
       context: dialogContext,
-      builder: (context) => AlertDialog(
+      builder: (context) => CandyDialog(
         title: appText(context, 'Zastąpić uszkodzony zapis?'),
         content: appText(
           context,

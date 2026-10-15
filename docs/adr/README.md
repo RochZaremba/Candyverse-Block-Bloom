@@ -39,3 +39,4 @@ Istniejące ADR-y:
 - [0015 Native profile instrumentation](0015-native-profile-instrumentation.md)
 
 - [ADR-0016 — Kingdom progression and art](0016-kingdom-progression-and-art.md)
+- [0017 Isolated Android QA](0017-isolated-android-qa.md)

@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../settings/settings_model.dart';
 
-enum CandyCue { place, clear, upgrade }
+enum CandyCue { place, clear, upgrade, fanfare }
 
 /// Offline Android SoundPool bridge. Missing audio never interrupts a move.
 class FeedbackService with WidgetsBindingObserver {

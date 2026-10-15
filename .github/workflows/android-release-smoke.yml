@@ -13,7 +13,9 @@ permissions:
   contents: read
 jobs:
   production-entrypoint:
-    # The verified candidate is public; read-only access is sufficient.
+    # Download the frozen draft candidate without exposing signing credentials.
+    permissions:
+      contents: write
     name: production-entrypoint (API${{ matrix.api }}, pages${{ matrix.page-size }}, ${{ matrix.kind }}, ${{ matrix.renderer }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -29,8 +31,8 @@ jobs:
             features: -feature -Vulkan
             renderer: default
             kind: apk
-            candidate: candyverse-1.0.0-1.apk
-            sha256: 8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975
+            candidate: candyverse-1.1.0-3.apk
+            sha256: 3af487f4105810001d293af7e460ee41d51eda003376f10576d1d7799909be75
           - api: 36
             target: google_apis
             page-size: 4096
@@ -39,8 +41,8 @@ jobs:
             features: -feature -Vulkan
             renderer: default
             kind: apk
-            candidate: candyverse-1.0.0-1.apk
-            sha256: 8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975
+            candidate: candyverse-1.1.0-3.apk
+            sha256: 3af487f4105810001d293af7e460ee41d51eda003376f10576d1d7799909be75
           - api: 35
             target: google_apis_ps16k
             page-size: 16384
@@ -49,8 +51,8 @@ jobs:
             features: -feature -Vulkan,GLDirectMem
             renderer: default
             kind: apk
-            candidate: candyverse-1.0.0-1.apk
-            sha256: 8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975
+            candidate: candyverse-1.1.0-3.apk
+            sha256: 3af487f4105810001d293af7e460ee41d51eda003376f10576d1d7799909be75
           - api: 36
             target: google_apis
             page-size: 4096
@@ -59,8 +61,8 @@ jobs:
             features: -feature -Vulkan
             renderer: default
             kind: aab
-            candidate: candyverse-1.0.0-from-aab.apk
-            sha256: cc9523e95b6af5135776d43730c6df0068c1ea255569a840107f0342a1582771
+            candidate: candyverse-1.1.0-3-from-aab.apk
+            sha256: 32e552b82cf81425eeb1e5369d218f1833e6f619a2ab848f990a3f53ea2c453c
     steps:
       - uses: actions/checkout@v4
         with:
@@ -74,7 +76,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p build/release-qa
-          gh release download v1.0.0-rc.1 --repo "$GITHUB_REPOSITORY" --pattern "${{ matrix.candidate }}" --dir build/release-qa
+          gh release download v1.1.0-rc.2 --repo "$GITHUB_REPOSITORY" --pattern "${{ matrix.candidate }}" --dir build/release-qa
           echo '${{ matrix.sha256 }}  build/release-qa/${{ matrix.candidate }}' | sha256sum --check
       - name: Enable KVM on disposable runner
         run: |
@@ -97,7 +99,7 @@ jobs:
             adb shell wm density 440
             adb shell input keyevent WAKEUP
             adb shell input keyevent 82
-            sleep 5
+            sleep 20
             python3 scripts/android_release_smoke.py build/release-qa/${{ matrix.candidate }} --output build/release-qa/results --expected-page-size ${{ matrix.page-size }} --renderer ${{ matrix.renderer }}
       - name: Record runner diagnostics
         if: always()

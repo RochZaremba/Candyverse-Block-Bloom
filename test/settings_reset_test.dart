@@ -54,7 +54,10 @@ void main() {
   });
   test('language restores and persists with full snapshot', () async {
     final repository = SaveRepository(MemoryStorage());
-    final session = AppSession(repository, AppSaveV1(wallet: 45));
+    final session = AppSession(
+      repository,
+      AppSaveV1(wallet: 45, settings: const SavedSettings(language: 'pl')),
+    );
     session.settings.setLanguage('en');
     await session.flushSettings();
     expect((await repository.load()).settings.language, 'en');
@@ -68,7 +71,10 @@ void main() {
     () async {
       final storage = ResetStorage();
       final repository = SaveRepository(storage);
-      final session = AppSession(repository, AppSaveV1(wallet: 45));
+      final session = AppSession(
+        repository,
+        AppSaveV1(wallet: 45, settings: const SavedSettings(language: 'pl')),
+      );
       await repository.save(session.save);
       storage.failWrite = true;
       session.settings.setLanguage('en');
@@ -87,7 +93,10 @@ void main() {
   test('reset waits for writes and clears profile plus diagnostics', () async {
     final storage = ResetStorage();
     final repository = SaveRepository(storage);
-    final session = AppSession(repository, AppSaveV1(wallet: 45));
+    final session = AppSession(
+      repository,
+      AppSaveV1(wallet: 45, settings: const SavedSettings(language: 'pl')),
+    );
     final old = await session.openRun();
     storage.values[SaveRepository.quarantineKey] = '{bad';
     storage.gate = Completer<void>();
@@ -102,7 +111,7 @@ void main() {
     expect(storage.values, isEmpty);
     expect(session.save.wallet, 0);
     expect(session.save.activeRun, isNull);
-    expect(session.settings.language, 'pl');
+    expect(session.settings.language, 'en');
     // A retained callback from a popped screen cannot resurrect the old profile.
     await expectLater(old.onSnapshot!(old.state), throwsStateError);
     final next = await session.openRun();
@@ -138,7 +147,10 @@ void main() {
     test('reset failure at $key retains profile and live controller', () async {
       final storage = ResetStorage();
       final repository = SaveRepository(storage);
-      final session = AppSession(repository, AppSaveV1(wallet: 45));
+      final session = AppSession(
+        repository,
+        AppSaveV1(wallet: 45, settings: const SavedSettings(language: 'pl')),
+      );
       final old = await session.openRun();
       final raw = session.save.encode();
       storage.values[SaveRepository.quarantineKey] = '{bad';
@@ -216,6 +228,7 @@ void main() {
         await tester.tap(find.byKey(const Key('confirm-reset')));
         await tester.pumpAndSettle();
         expect(session.save.wallet, 0);
+        expect(session.settings.language, 'en');
         expect(tester.takeException(), isNull);
       });
     }
@@ -225,7 +238,10 @@ void main() {
   ) async {
     final storage = ResetStorage();
     final repository = SaveRepository(storage);
-    final value = AppSaveV1(wallet: 40);
+    final value = AppSaveV1(
+      wallet: 40,
+      settings: const SavedSettings(language: 'pl'),
+    );
     await repository.save(value);
     final session = AppSession(repository, value);
     storage.failRemove = SaveRepository.key;

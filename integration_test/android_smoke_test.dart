@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:candyverse/app/app.dart';
 import 'package:candyverse/core/theme/app_theme.dart';
+import 'package:candyverse/core/presentation/kingdom_assets.dart';
 import 'package:candyverse/settings/settings_screen.dart';
 import 'package:candyverse/game/domain/board.dart';
 import 'package:candyverse/game/domain/game_state.dart';
@@ -69,7 +70,9 @@ Future<void> runSmokeScenario(
   bool captureUi = false,
   Duration uiTimeout = const Duration(minutes: 5),
 }) async {
+  await tester.runAsync(warmKingdomAssets);
   final elapsed = Stopwatch()..start();
+  var qaClock = DateTime.utc(2026, 10, 15);
   final builds = <int>[];
   final rasters = <int>[];
   void timings(List<FrameTiming> frames) {
@@ -88,7 +91,12 @@ Future<void> runSmokeScenario(
   Future<void> mount(AppSaveV1 save) async {
     await tester.pumpWidget(const SizedBox());
     await repo.save(save);
-    session = AppSession(repo, await repo.load(), seedSource: () => 8);
+    session = AppSession(
+      repo,
+      await repo.load(),
+      seedSource: () => 8,
+      clock: () => qaClock,
+    );
     await tester.pumpWidget(
       RepaintBoundary(
         key: captureBoundary,
@@ -177,9 +185,15 @@ Future<void> runSmokeScenario(
     eraserAcquired: 1,
     eraserUses: 1,
   );
-  await mount(AppSaveV1(nextRunId: 2, activeRun: SavedRun(1, 2, milestone)));
+  await mount(
+    AppSaveV1(
+      nextRunId: 2,
+      activeRun: SavedRun(1, 2, milestone),
+      settings: const SavedSettings(language: 'pl'),
+    ),
+  );
   await capture('home-pl');
-  await tap(find.text('Ustawienia'));
+  await tap(find.byKey(const Key('home-settings')));
   await tap(find.text('English'));
   await until(() => find.text('Settings').evaluate().isNotEmpty);
   await tap(find.text('Sound'));
@@ -192,7 +206,7 @@ Future<void> runSmokeScenario(
   expect(session!.settings.reduceMotion, isTrue);
   await capture('settings-en');
   await tap(find.byTooltip('Back'));
-  await tap(find.text('RESUME'));
+  await tap(find.text('PLAY'));
   await until(() => find.byType(GameScreen).evaluate().isNotEmpty);
   final controller = tester
       .widget<GameScreen>(find.byType(GameScreen))
@@ -240,14 +254,19 @@ Future<void> runSmokeScenario(
   final snapshot = session!.save.encode();
   await leaveGame();
   await tester.pumpWidget(const SizedBox());
-  session = AppSession(repo, await repo.load(), seedSource: () => 8);
+  session = AppSession(
+    repo,
+    await repo.load(),
+    seedSource: () => 8,
+    clock: () => qaClock,
+  );
   await tester.pumpWidget(
     RepaintBoundary(
       key: captureBoundary,
       child: CandyverseApp(theme: theme, session: session!),
     ),
   );
-  await tap(find.text('RESUME'));
+  await tap(find.text('PLAY'));
   await checkpoint();
   expect(session!.save.encode(), snapshot);
 
@@ -274,7 +293,7 @@ Future<void> runSmokeScenario(
       settings: session!.settings.snapshot,
     ),
   );
-  await tap(find.text('RESUME'));
+  await tap(find.text('PLAY'));
   await tap(find.text('Finish run'));
   await checkpoint();
   expect(session!.save.wallet, 375);
@@ -285,7 +304,7 @@ Future<void> runSmokeScenario(
   expect(session!.save.activeRun!.id, 2);
   expect(session!.save.wallet, 375);
   await leaveGame();
-  await tap(find.text('Visit island'));
+  await tap(find.byKey(const Key('home-island')));
   final names = ['Candy Tree', 'Jelly House', 'Rainbow Fountain'];
   for (final kind in BuildingKind.values) {
     for (var level = 1; level <= 3; level++) {
@@ -305,6 +324,41 @@ Future<void> runSmokeScenario(
     await tap(find.byKey(ValueKey('character-${character.name}')));
   }
   await capture('island-en');
+  // Test-only controlled clock verifies native persisted passive income.
+  qaClock = qaClock.add(const Duration(minutes: 2));
+  expect(await session!.collectIncome(), 6);
+  expect(session!.save.wallet, 96);
+  expect((await repo.load()).wallet, 96);
+  expect(await session!.collectIncome(), 0);
+  // High-level fixture avoids weeks of earning without adding a production cheat.
+  await mount(
+    session!.save.copyWith(
+      wallet: 60000,
+      island: IslandState(
+        levels: {for (final kind in BuildingKind.values) kind: 29},
+      ),
+    ),
+  );
+  await tap(find.byKey(const Key('home-island')));
+  for (final kind in BuildingKind.values) {
+    final cost = session!.save.price(kind)!;
+    await tap(find.text(names[kind.index]));
+    await tap(find.text('Upgrade • $cost Candy Coins'));
+    await until(() => !session!.busy && session!.save.island.level(kind) == 30);
+  }
+  final beforePrestige = session!.save;
+  await tap(find.byKey(const Key('island-prestige')));
+  await tap(find.text('Cancel'));
+  expect(session!.save.island.canPrestige, isTrue);
+  expect(session!.save.island.stars, 0);
+  await tap(find.byKey(const Key('island-prestige')));
+  await tap(find.text('Discover island'));
+  await until(() => !session!.busy && session!.save.island.stars == 1);
+  expect(session!.save.island.totalLevels, 0);
+  expect(session!.save.wallet, beforePrestige.wallet);
+  expect(session!.save.activeRun!.id, beforePrestige.activeRun!.id);
+  expect((await repo.load()).island.stars, 1);
+  await capture('prestige-world-en');
   // Animation profiling uses true motion, still with muted optional feedback.
   session!.settings.setReduceMotion(false);
   await session!.flushSettings();
@@ -328,7 +382,7 @@ Future<void> runSmokeScenario(
       );
     }
     await tap(find.byTooltip('Back to menu'));
-    await tap(find.text(session!.save.activeRun == null ? 'PLAY' : 'RESUME'));
+    await tap(find.text('PLAY'));
     for (var i = 0; i < 20 && dwelling(); i++) {
       await checkpoint();
       final game = tester
@@ -367,12 +421,12 @@ Future<void> runSmokeScenario(
     } else {
       await leaveGame();
     }
-    await tap(find.text('Visit island'));
+    await tap(find.byKey(const Key('home-island')));
     cycles++;
   }
   final activeDwellSeconds = active.elapsed.inSeconds;
   await tap(find.byTooltip('Back to menu'));
-  await tap(find.text('Settings'));
+  await tap(find.byKey(const Key('home-settings')));
   await until(() => find.byType(SettingsScreen).evaluate().isNotEmpty);
   await tester.scrollUntilVisible(
     find.byKey(const Key('reset-data')),
@@ -386,14 +440,15 @@ Future<void> runSmokeScenario(
   );
   await tap(find.byKey(const Key('reset-data')));
   await tap(find.text('Cancel'));
-  expect(session!.save.island.level(BuildingKind.candyTree), 3);
+  expect(session!.save.island.stars, 1);
   await tap(find.byKey(const Key('reset-data')));
   await tap(find.byKey(const Key('confirm-reset')));
-  await until(() => find.text('GRAJ').evaluate().isNotEmpty);
+  await until(() => find.text('PLAY').evaluate().isNotEmpty);
   expect(session!.save.wallet, 0);
   expect(session!.save.activeRun, isNull);
   expect((await repo.load()).wallet, 0);
-  await capture('home-reset-pl');
+  await capture('home-reset-en');
+  expect((await repo.load()).settings.language, 'en');
   int percentile(List<int> samples, double p) {
     if (samples.isEmpty) return 0;
     final sorted = samples.toList()..sort();
@@ -414,6 +469,9 @@ Future<void> runSmokeScenario(
     'buildOver16667': builds.where((v) => v > 16667).length,
     'rasterOver16667': rasters.where((v) => v > 16667).length,
     'fixtureProgression': true,
+    'passiveIncomeVerified': true,
+    'level30Verified': true,
+    'prestigeVerified': true,
     'storageKind': storageKind,
     'runToken': const String.fromEnvironment('CANDYVERSE_QA_RUN_TOKEN'),
     'captureMethod': captureUi ? 'flutter-repaint-boundary' : 'disabled',

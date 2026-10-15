@@ -7,7 +7,7 @@ from pathlib import Path
 
 from audit_android_artifact import validate_elf, packaged_xml
 from create_upload_key import outside_repository, properties_escape
-from android_release_smoke import read_page_size, board_snapshot, resumed_package
+from android_release_smoke import read_page_size, board_snapshot, resumed_package, require_qa_emulator
 
 
 def native_library(segments):
@@ -39,6 +39,36 @@ class ReleaseToolsTests(unittest.TestCase):
         self.assertEqual(snapshot, board_snapshot(list(reversed(nodes))))
         nodes[0].set('content-desc', 'Wiersz 1, kolumna 1, zajęte')
         self.assertNotEqual(snapshot, board_snapshot(nodes))
+
+    def test_english_and_polish_snapshots_identify_the_same_board(self):
+        import xml.etree.ElementTree as ET
+        occupied = {(1, 2), (1, 3), (2, 1), (2, 2)}
+        english = [ET.Element('node', {'content-desc': f'Row {r}, column {c}, '+('occupied' if (r, c) in occupied else 'empty')})
+                   for r in range(1, 9) for c in range(1, 9)]
+        polish = [ET.Element('node', {'text': f'Wiersz {r}, kolumna {c}, '+('zajęte' if (r, c) in occupied else 'puste')})
+                  for r in range(1, 9) for c in range(1, 9)]
+        expected = board_snapshot(polish)
+        self.assertEqual(board_snapshot(english), expected)
+        # Android can merge child semantics or repeat text as content-desc.
+        merged = ET.Element('node', {'content-desc': '\n'.join(node.get('content-desc') for node in english)})
+        self.assertEqual(board_snapshot([merged, *polish]), expected)
+        self.assertFalse(expected[0])
+        self.assertEqual(sum(expected), 4)
+
+    def test_conflicting_cell_states_in_any_language_are_rejected(self):
+        import xml.etree.ElementTree as ET
+        for conflicting in ('Row 1, column 1, occupied', 'Wiersz 1, kolumna 1, zajęte'):
+            with self.subTest(conflicting=conflicting):
+                nodes = [ET.Element('node', {'text': 'Row 1, column 1, empty', 'content-desc': conflicting})]
+                with self.assertRaisesRegex(ValueError, 'Conflicting'):
+                    board_snapshot(nodes)
+
+    def test_physical_phone_is_rejected_before_release_scenario(self):
+        require_qa_emulator(lambda *args: '1')
+        for value in ('0', '', 'true'):
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(RuntimeError, 'disposable Android emulator'):
+                    require_qa_emulator(lambda *args: value)
 
     def test_partial_board_is_not_accepted_as_restore_evidence(self):
         import xml.etree.ElementTree as ET

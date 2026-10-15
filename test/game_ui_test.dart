@@ -1,3 +1,5 @@
+import 'package:candyverse/settings/settings_model.dart';
+import 'package:candyverse/save/domain/app_save.dart';
 import 'package:candyverse/save/application/app_session.dart';
 
 import 'dart:io';
@@ -68,10 +70,17 @@ void main() {
     tester.platformDispatcher.accessibilityFeaturesTestValue =
         FakeAccessibilityFeatures(disableAnimations: reduced);
     addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    final settings = SettingsModel(
+      initial: const SavedSettings(language: 'pl'),
+    );
+    addTearDown(settings.dispose);
     await tester.pumpWidget(
-      MaterialApp(
-        theme: theme.material,
-        home: GameScreen(theme: theme, controller: controller),
+      SettingsScope(
+        settings: settings,
+        child: MaterialApp(
+          theme: theme.material,
+          home: GameScreen(theme: theme, controller: controller),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -185,7 +194,12 @@ void main() {
         tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
       );
       await tester.pumpWidget(
-        CandyverseApp(theme: theme, session: AppSession.memory()),
+        CandyverseApp(
+          theme: theme,
+          session: AppSession.memory(
+            save: AppSaveV1(settings: const SavedSettings(language: 'pl')),
+          ),
+        ),
       );
       await tester.tap(find.text('GRAJ'));
       await tester.pumpAndSettle();
@@ -200,7 +214,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Wróć do menu').last);
       await tester.pumpAndSettle();
-      expect(find.text('WZNÓW'), findsOneWidget);
+      expect(find.text('GRAJ'), findsOneWidget);
     },
   );
 

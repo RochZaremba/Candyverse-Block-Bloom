@@ -7,7 +7,7 @@ class AppStrings {
   const AppStrings.forLanguage(this.language);
   final String language;
   static AppStrings of(BuildContext context) =>
-      AppStrings.forLanguage(SettingsScope.maybeOf(context)?.language ?? 'pl');
+      AppStrings.forLanguage(SettingsScope.maybeOf(context)?.language ?? 'en');
   String text(String pl, String en) => language == 'en' ? en : pl;
   String translate(String value) {
     if (language != 'en') return value;

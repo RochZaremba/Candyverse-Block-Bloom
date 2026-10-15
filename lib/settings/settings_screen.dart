@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../core/localization/app_strings.dart';
 import '../core/theme/app_theme.dart';
+import '../core/presentation/candy_message.dart';
 import '../home/candy_backdrop.dart';
 import '../save/application/app_session.dart';
 
@@ -180,7 +181,7 @@ class SettingsScreen extends StatelessWidget {
     if (!context.mounted) return;
     await showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => CandyDialog(
         title: Text(strings.text('Prywatność', 'Privacy')),
         content: SingleChildScrollView(
           child: Column(
@@ -210,7 +211,7 @@ class SettingsScreen extends StatelessWidget {
     final strings = AppStrings.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => CandyDialog(
         title: Text(strings.text('Usunąć lokalne dane?', 'Delete local data?')),
         content: SingleChildScrollView(
           child: Text(
@@ -241,14 +242,11 @@ class SettingsScreen extends StatelessWidget {
       }
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              strings.text(
-                'Nie udało się usunąć danych. Spróbuj ponownie.',
-                'Could not delete data. Try again.',
-              ),
-            ),
+        showCandyMessage(
+          context,
+          strings.text(
+            'Nie udało się usunąć danych. Spróbuj ponownie.',
+            'Could not delete data. Try again.',
           ),
         );
       }

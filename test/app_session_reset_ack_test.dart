@@ -39,7 +39,9 @@ void main() {
     () async {
       final storage = ResetAckStorage();
       final repo = SaveRepository(storage);
-      await repo.save(AppSaveV1(wallet: 80));
+      await repo.save(
+        AppSaveV1(wallet: 80, settings: const SavedSettings(language: 'pl')),
+      );
       final session = AppSession(repo, await repo.load());
       storage.deleteThenThrow = true;
       await session.resetData();
@@ -53,7 +55,9 @@ void main() {
   test('known failed deletion retains profile and reports failure', () async {
     final storage = ResetAckStorage();
     final repo = SaveRepository(storage);
-    await repo.save(AppSaveV1(wallet: 80));
+    await repo.save(
+      AppSaveV1(wallet: 80, settings: const SavedSettings(language: 'pl')),
+    );
     final session = AppSession(repo, await repo.load());
     storage.retainThenThrow = true;
     await expectLater(session.resetData(), throwsStateError);
@@ -67,7 +71,9 @@ void main() {
     () async {
       final storage = ResetAckStorage();
       final repo = SaveRepository(storage);
-      await repo.save(AppSaveV1(wallet: 80));
+      await repo.save(
+        AppSaveV1(wallet: 80, settings: const SavedSettings(language: 'pl')),
+      );
       final session = AppSession(repo, await repo.load(), seedSource: () => 8);
       final stale = await session.openRun();
       storage.deleteThenThrow = true;

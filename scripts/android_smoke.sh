@@ -33,6 +33,12 @@ export CANDYVERSE_QA_OUTPUT="$qa_output"
 # Release the single-use build JVM before the active emulator scenario.
 export GRADLE_OPTS="${GRADLE_OPTS:-} -Dorg.gradle.daemon=false"
 adb -s "$qa_device" get-state
+# Flutter drive does not pass the Gradle QA applicationId property. Keep this
+# diagnostic path on disposable emulators; physical devices use instrumentation.
+if [[ "$qa_runner" == drive && "$(adb -s "$qa_device" shell getprop ro.kernel.qemu | tr -d '\r')" != 1 ]]; then
+  printf 'Flutter drive requires a disposable emulator; use instrumentation on a physical QA device.\n' >&2
+  exit 2
+fi
 # adb may connect before Android's package service is ready, especially without KVM.
 qa_boot_deadline=$((SECONDS + 600))
 until [[ "$(adb -s "$qa_device" shell getprop sys.boot_completed | tr -d '\r')" == 1 ]]; do
