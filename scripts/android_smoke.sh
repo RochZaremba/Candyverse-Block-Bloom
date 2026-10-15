@@ -47,7 +47,7 @@ adb -s "$qa_device" shell getprop ro.product.model > "$qa_output/device-model.tx
 adb -s "$qa_device" shell getconf PAGE_SIZE > "$qa_output/page-size.txt"
 flutter --version > "$qa_output/flutter-version.txt"
 # Do not clear global logcat: retain other workers' diagnostic history.
-adb -s "$qa_device" logcat -v threadtime AndroidRuntime:E libc:F DEBUG:F ActivityTaskManager:I ActivityManager:I flutter:I '*:S' > "$qa_output/android-lifecycle.log" 2>&1 &
+adb -s "$qa_device" logcat -v threadtime AndroidRuntime:E libc:F DEBUG:F ActivityTaskManager:I ActivityManager:I flutter:I FlutterTestRunner:V '*:S' > "$qa_output/android-lifecycle.log" 2>&1 &
 qa_logcat_pid=$!
 trap 'kill "$qa_logcat_pid" 2>/dev/null || true' EXIT
 if [[ "$qa_runner" == drive ]]; then

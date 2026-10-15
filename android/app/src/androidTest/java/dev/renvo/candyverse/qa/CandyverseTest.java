@@ -27,13 +27,24 @@ public class CandyverseTest {
         return new ActivityTestRule<T>(type, true, false) {
                 @Override
                 protected Intent getActivityIntent() {
-                    Intent intent = super.getActivityIntent();
+                    Intent intent = new Intent(Intent.ACTION_MAIN).setClass(
+                            InstrumentationRegistry.getInstrumentation().getTargetContext(), type);
                     if ("true".equals(InstrumentationRegistry.getArguments()
                             .getString("candyverseSoftwareRendering"))) {
                         intent.putExtra(FlutterShellArgs.ARG_KEY_ENABLE_SOFTWARE_RENDERING, true);
                         intent.putExtra(FlutterShellArgs.ARG_KEY_TOGGLE_IMPELLER, false);
                     }
                     return intent;
+                }
+                @Override
+                public T launchActivity(Intent startIntent) {
+                    try {
+                        return super.launchActivity(startIntent);
+                    } catch (RuntimeException error) {
+                        // FlutterTestRunner swallows RuntimeException and then waits
+                        // forever for Dart results, even when no activity started.
+                        throw new AssertionError("Unable to launch Candyverse QA activity", error);
+                    }
                 }
             };
     }

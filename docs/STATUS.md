@@ -49,3 +49,5 @@ Dopuszczalne statusy: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE` (po kryteriach ak
 - **CI38708821882:** native instrumentation uruchomiło Home/Settings, lecz emulator zniknął przy przejściu do Game. Brak zaliczenia20min. Dodano jawny CPU renderer wyłącznie do testowej ActivityTestRule; profile AOT, czas i raport pozostają wymagane. Produkcyjny renderer bez zmian. Kolejny krok: odczytać nową próbę.
 
 - **Pełne podglądy figur:** skalowanie preview w tray zapobiega ucinaniu vertical4/horizontal4 w małych panelach. Test wszystkich14 masek ×3 sloty ×2 rozmiary,158/158 Flutter, analyze/format PASS. Finalny APK/AAB do przebudowy; następne zadanie pozostaje pełnym native QA aktualnego head.
+
+- **Naprawa samego runnera CPU:** wykryto null Intent w AndroidX1.2.0 i przechwytywanie RuntimeException przez SDKFlutterTestRunner. Dodano jawny Intent i fail-fast AssertionError przy błędzie launch. Poprzednie oczekujące joby nie rozpoczęły aktywnej gry, nie zaliczają20min. Następne zadanie: pełny native smoke poprawionego runnera.
