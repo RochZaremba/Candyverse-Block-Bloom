@@ -53,3 +53,5 @@ Dopuszczalne statusy: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE` (po kryteriach ak
 - **Naprawa samego runnera CPU:** wykryto null Intent w AndroidX1.2.0 i przechwytywanie RuntimeException przez SDKFlutterTestRunner. Dodano jawny Intent i fail-fast AssertionError przy błędzie launch. Poprzednie oczekujące joby nie rozpoczęły aktywnej gry, nie zaliczają20min. Następne zadanie: pełny native smoke poprawionego runnera.
 
 - **Scenariusz native:** po naprawie Intent runner rzeczywiście uruchomił grę, zgłosił błąd9→10 linii w samym teście (tap odznaczał figurę zachowaną po illegal drag). Poprawiono jawny reselection;159/159 Flutter/analyze PASS, regresja odtwarza tę sekwencję. Następny krok: uruchomić pełny native20min aktualnego head.
+
+- **Kontrola harnessu przed Androidem:** współdzielony scenariusz hostowy przechodzi wszystkie fixture +jeden cykl19 ruchów/20 reakcji/Replay/reset.160/160 Flutter i analyze/format/bash PASS. Naprawiono findery przy przejściach i scroll resetu. Hostowe6s/MemoryStorage nie zaliczają native20min; storageKind zabezpiecza raport. Następny krok: finalny native smoke poprawionego scenariusza.
