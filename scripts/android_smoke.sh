@@ -19,6 +19,15 @@ fi
 mkdir -p "$qa_output"
 export CANDYVERSE_QA_OUTPUT="$qa_output"
 adb -s "$qa_device" get-state
+# adb may connect before Android's package service is ready, especially without KVM.
+qa_boot_deadline=$((SECONDS + 600))
+until [[ "$(adb -s "$qa_device" shell getprop sys.boot_completed | tr -d '\r')" == 1 ]]; do
+  if ((SECONDS >= qa_boot_deadline)); then
+    printf 'Android boot did not complete within 600 seconds.\n' >&2
+    exit 1
+  fi
+  sleep 2
+done
 adb -s "$qa_device" shell getprop ro.build.version.sdk > "$qa_output/android-api.txt"
 adb -s "$qa_device" shell getprop ro.product.model > "$qa_output/device-model.txt"
 adb -s "$qa_device" shell getconf PAGE_SIZE > "$qa_output/page-size.txt"
