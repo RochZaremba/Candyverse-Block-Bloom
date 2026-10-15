@@ -59,13 +59,14 @@ Hosting branch `docs/privacy-site`, commit `efe5f2a`.
 
 Root `main` stabilny. T-010 worktree `.../candyverse-workers/t010`, branch `test/qa-hardening`, PR#10 MERGED.
 T-011 worktree `/home/roch/programing/Renvo/candyverse-workers/t011`, branch `chore/playstore-release`, PR#11 MERGED.
-Handoff po publikacji: branch `chore/public-release-handoff` w root; aktualizacja dokumentacji i zmniejszenie CI contents write→read dla publicznych plików.
+Handoff po publikacji: branch `chore/public-release-handoff` w root, commit `d6c712c`; aktualizacja dokumentacji i zmniejszenie CI contents write→read dla publicznych plików.
 Logi telefonu lokalnie `/home/roch/.cache/candyverse/qa-phone-final/`; nie publikować identyfikatora USB i logów pozostałych aplikacji.
 
 ## Zamknięcie sesji wydania
 
 - PR#10 i#11 MERGED po wszystkich zielonych kontrolach. Finalny head wydania16f3db4: Flutter38722227574 SUCCESS i wszystkie cztery przypadki zgodności38722227448 SUCCESS. Tag `v1.0.0-rc.1` wskazuje `67f4ae5`.
 - Prerelease opublikowano2026-10-15 o10:48:29 UTC. Załączniki: APK/AAB/universal APK, SHA256SUMS, build-info.json i store-kit ZIP. Brak kluczy prywatnych w załącznikach.
+- Publiczne pobieranie bez uwierzytelnienia: APK HTTP200/50988653B i zgodny SHA256; store-kit HTTP200/614878B i zgodny SHA256; AAB HEAD HTTP200/50197815B. Tag wskazuje merge67f4ae5.
 - Podpisane binaria pozostają niezmienione. Store-kit jest snapshotem przygotowania kandydata; aktualny stan sesji jest w tym pliku. Nie mylić publicznego APK z zaliczeniem testu Google Play.
 
 **Jedno następne zadanie:** po zakończeniu weryfikacji konta właściciela utworzyć wpis Candyverse w Play Console i przesłać zweryfikowany AAB1.0.0+1 do testu wewnętrznego, zgodnie z RELEASE_GOOGLE_PLAY. Nie podawać haseł ani klucza w czacie.

@@ -53,3 +53,5 @@ Próba universal APK38719106009 nie przeszła wznowienia: log am start pokazał 
 Dwie próby16KB na head6b0f2c5 utraciły całe urządzenie (przy Game, następnie po force-stop/resume), bez potwierdzonego OOM/segfault w logu hosta. Wyłączono eksperymentalne GLDirectMem wyłącznie dla tego emulatora; APK i domyślny renderer bez zmian. Konfiguracja38721355212 PASS na wszystkich czterech wariantach. Dodatkowy job Skia usunięto po zakończeniu porównania — oba wariantyAPI36 przeszły, brak podstaw do zmiany renderera produkcyjnego.
 
 Kontrole finalnego head16f3db4 przed merge: Flutter38722227574 SUCCESS i wszystkie4 joby zgodności38722227448 SUCCESS. Dokumenty QA wskazują również wcześniejsze pozytywne runy dokładnie tych samych niezmienionych binariów. Publiczny store-kit jest snapshotem dokumentacji z chwili pakowania; bieżący STATUS i raport w repo zawierają późniejsze potwierdzenie publikacji.
+
+Weryfikacja po publikacji bez tokenu/cookies: pełne pobranie APK i store-kit HTTP200, rozmiary i SHA256 zgodne z manifestem; AAB HEAD HTTP200/50197815B. To rzeczywiście dostępne publiczne pliki, a nie sam szkic release.
