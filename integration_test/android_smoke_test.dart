@@ -257,6 +257,8 @@ void main() {
     // Animation profiling uses true motion, still with muted optional feedback.
     session!.settings.setReduceMotion(false);
     await session!.flushSettings();
+    final systemReducedMotion =
+        binding.platformDispatcher.accessibilityFeatures.disableAnimations;
     var moves = 0;
     var reactions = 0;
     var cycles = 0;
@@ -353,6 +355,7 @@ void main() {
       'dwellReactions': reactions,
       'dwellCycles': cycles,
       'frameCount': builds.length,
+      'systemReducedMotion': systemReducedMotion,
       'buildP95Micros': percentile(builds, .95),
       'rasterP95Micros': percentile(rasters, .95),
       'buildOver16667': builds.where((v) => v > 16667).length,
