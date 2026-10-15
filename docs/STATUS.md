@@ -21,7 +21,7 @@
 ## Testy i poprawki
 
 - T-010: natywny AOT profile/JUnit runner zamiast zrywającego się FlutterDriver, ADR-0015. Rzeczywisty DataStore pod testowym prefiksem, sześć ekranów, upgrade/eraser, jednokrotna nagroda, wszystkie zakupy, reset i20 minut UI gry/wyspy. UUID, Stopwatch i hostowy pomiar wymagane w raporcie; nie zaliczamy builda jako aktywnej gry. Poprzednie nieudane próby nie są wynikiem pozytywnym.
-- JDK21 `assembleProfile assembleProfileAndroidTest` PASS na obu branchach.158/158 Flutter,62/62 Dart, format/analyze/docs i13/13 Python release tools PASS lokalnie. Finalne CI trzeba odczytać.
+- JDK21 `assembleProfile assembleProfileAndroidTest` PASS na obu branchach.158/158 Flutter,62/62 Dart, format/analyze/docs i15/15 Python release tools PASS lokalnie. Finalne CI trzeba odczytać.
 - Przegląd prawdziwego PNG wykrył ucinanie dolnej części tray na krótkim ekranie. `f191325` dopasowuje planszę/panele; testy393×650 i320×592 potwierdzają widoczność trzech figur i placement, nowy golden `game_phone_compact.png`. Tekst200% zachowuje scroll.
 - Poprzedni podpisany APK przeszedł API24/36/35-16KB w CI[38703558729](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38703558729). Powtórzenie na nowym buildzie pozostaje wymagane. Kolejny wcześniejszy run38708234422: API24/36 PASS,16KB brak świeżej hierarchii UI przy starcie — diagnostyka w toku, bez zaliczania tej próby.
 - Emulator nie potwierdza60FPS średniego telefonu, odsłuchu ani wibracji. Te kontrole nadal NOT RUN na urządzeniu fizycznym. Szczegóły: [QA_REPORT](QA_REPORT.md).
@@ -29,7 +29,7 @@
 ## Kandydat wydania
 
 - `com.renvo.candyverse`, wersja1.0.0+1, Renvo, rochzaremba@gmail.com. Release wymaga zewnętrznego podpisu; wyłączony backup/transfer i minimalne permissions; brak INTERNET w release. TestSDK jest wykluczony z release przez Flutter Gradle.
-- APK po poprawce układu: SHA256 `50623133b59a7aa68544c0bef6df13d060ce8c721e088296d255bdb34d911825`,50923117B. AAB: `e25d0b3bf9724b60420c09c0d94b11d816f116c8baa7d574dfad867549c82b39`,50182055B. Pliki lokalnie `/home/roch/.cache/candyverse/artifacts/candyverse-1.0.0-1.apk` i `.aab`; szkic GitHub `v1.0.0-rc.1` pozostaje DRAFT do zielonego QA.
+- APK po poprawce układu: SHA256 `8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975`,50988653B. AAB: `a07af0a46f36cfcd3cbde96a582b7ad8541140aa4045f91be203bdefe428efd3`,50197815B. Pliki lokalnie `/home/roch/.cache/candyverse/artifacts/candyverse-1.0.0-1.apk` i `.aab`; szkic GitHub `v1.0.0-rc.1` pozostaje DRAFT do zielonego QA.
 - APK i universal APK z finalnego AAB: audit SDK24/36, manifest/permissions/backup,6 ELF64/ZIP16KB i podpis PASS. Bundletool1.18.3 validate, JAR verification i PAGE_ALIGNMENT_16K PASS. Nie jest to przyjęcie przez Google Play.
 - Certyfikat SHA256 `2064a303250785a1ef85029a03a543dc759ab6d715f1fb2f05dccdca04e70506`. Prywatny klucz i konfiguracja są poza Git w `/home/roch/.candyverse-signing/v1/`, katalog0700/pliki0600. Właściciel musi wykonać backup poza komputerem i zachować ciągłość certyfikatu przy Play App Signing (ADR-0014). Hasła nie są w dokumentacji/logach.
 - Autorski launcher/splash, store icon512 i feature graphics1024×500 PL/EN gotowe. Prawdziwe finalne screenshoty do dołączenia po CI. Pełna polityka offline w Settings oraz publiczna: https://rochzaremba.github.io/Candyverse-Block-Bloom/ (HTTP200 i zgodność źródła potwierdzone). Hosting branch `docs/privacy-site`, commit `efe5f2a906d8e036a718ff1fe0af51fe32548460`; źródło `public_pages/` w PR#11.

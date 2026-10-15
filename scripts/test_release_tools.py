@@ -7,7 +7,7 @@ from pathlib import Path
 
 from audit_android_artifact import validate_elf, packaged_xml
 from create_upload_key import outside_repository, properties_escape
-from android_release_smoke import read_page_size
+from android_release_smoke import read_page_size, board_snapshot
 
 
 def native_library(segments):
@@ -22,6 +22,23 @@ def native_library(segments):
 
 
 class ReleaseToolsTests(unittest.TestCase):
+    def test_s_piece_placement_does_not_require_occupied_origin(self):
+        import xml.etree.ElementTree as ET
+        occupied = {(1, 2), (1, 3), (2, 1), (2, 2)}
+        nodes = [ET.Element('node', {'content-desc': f'Wiersz {r}, kolumna {c}, '+('zajęte' if (r, c) in occupied else 'puste')})
+                 for r in range(1, 9) for c in range(1, 9)]
+        snapshot = board_snapshot(nodes)
+        self.assertFalse(snapshot[0])
+        self.assertEqual(sum(snapshot), 4)
+        self.assertEqual(snapshot, board_snapshot(list(reversed(nodes))))
+        nodes[0].set('content-desc', 'Wiersz 1, kolumna 1, zajęte')
+        self.assertNotEqual(snapshot, board_snapshot(nodes))
+
+    def test_partial_board_is_not_accepted_as_restore_evidence(self):
+        import xml.etree.ElementTree as ET
+        with self.assertRaisesRegex(ValueError, 'complete board'):
+            board_snapshot([ET.Element('node', {'text': 'Wiersz 1, kolumna 1, zajęte'})])
+
     def test_android7_page_size_falls_back_to_own_process_mapping(self):
         def old_android(*args):
             if args[1] == 'getconf':

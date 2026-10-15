@@ -31,6 +31,22 @@ def read_page_size(adb):
     return size
 
 
+def board_snapshot(ui_nodes):
+    """Read all 64 cells; S pieces legitimately leave the chosen origin empty."""
+    cells = {}
+    for node in ui_nodes:
+        label = node.get('text', '')+'\n'+node.get('content-desc', '')
+        for match in re.finditer(r'Wiersz ([1-8]), kolumna ([1-8]), (puste|zajęte)', label):
+            key = (int(match[1]), int(match[2]))
+            occupied = match[3] == 'zajęte'
+            if key in cells and cells[key] != occupied:
+                raise ValueError('Conflicting accessibility cell state.')
+            cells[key] = occupied
+    if len(cells) != 64:
+        raise ValueError('A complete board accessibility snapshot is required.')
+    return tuple(cells[(row, col)] for row in range(1, 9) for col in range(1, 9))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('apk', type=Path)
@@ -147,19 +163,26 @@ def main():
     locate(r'Wiersz 1, kolumna 1, puste')
     tap(r'^Klocek 1,')
     tap(r'Wiersz 1, kolumna 1, puste')
-    locate(r'Wiersz 1, kolumna 1, zajęte')
+    locate(r'Wiersz [1-8], kolumna [1-8], zajęte')
     locate(r'Klocek 1 zużyty')
+    placed_board = board_snapshot(nodes())
+    if not any(placed_board):
+        raise RuntimeError('Placement did not occupy any board cell.')
     capture('release-game-pl')
     # Real background/resume, followed by real process death and disk restore.
     adb('shell', 'input', 'keyevent', 'KEYCODE_HOME')
     launch()
-    locate(r'Wiersz 1, kolumna 1, zajęte')
+    locate(r'Wiersz [1-8], kolumna [1-8], zajęte')
+    if board_snapshot(nodes()) != placed_board:
+        raise RuntimeError('Board occupancy changed across Android lifecycle.')
     adb('shell', 'am', 'force-stop', APP)
     launch()
     locate(r'^WZNÓW$')
     capture('release-home-resume-pl')
     tap(r'^WZNÓW$')
-    locate(r'Wiersz 1, kolumna 1, zajęte')
+    locate(r'Wiersz [1-8], kolumna [1-8], zajęte')
+    if board_snapshot(nodes()) != placed_board:
+        raise RuntimeError('Board occupancy changed across Android lifecycle.')
     locate(r'Klocek 1 zużyty')
     capture('release-game-restored-pl')
     if not adb('shell', 'pidof', APP):
@@ -169,6 +192,7 @@ def main():
               'pageSize': page_size, 'deviceMemTotalKiB': total_memory,
               'entrypoint': 'production', 'nativeInput': True,
               'backgroundResume': True, 'forceStopRestore': True,
+              'fullBoardRestored': True, 'occupiedCells': sum(placed_board),
               'representativeHardware': False}
     (args.output/'report.json').write_text(json.dumps(report, indent=2)+'\n')
     print(json.dumps(report))

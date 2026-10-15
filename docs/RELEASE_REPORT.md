@@ -10,10 +10,10 @@ Data:2026-10-15. Stan: **kandydat, końcowe QA w toku**. Nie przesłano aplikacj
 | Wydawca / kontakt | Renvo / rochzaremba@gmail.com |
 | Wersja |1.0.0+1 |
 | min/target/compile SDK |24/36/36 |
-| APK SHA256 | `50623133b59a7aa68544c0bef6df13d060ce8c721e088296d255bdb34d911825` |
-| APK rozmiar |50923117 bajtów |
-| AAB SHA256 | `e25d0b3bf9724b60420c09c0d94b11d816f116c8baa7d574dfad867549c82b39` |
-| AAB rozmiar |50182055 bajtów |
+| APK SHA256 | `8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975` |
+| APK rozmiar |50988653 bajtów |
+| AAB SHA256 | `a07af0a46f36cfcd3cbde96a582b7ad8541140aa4045f91be203bdefe428efd3` |
+| AAB rozmiar |50197815 bajtów |
 | Certyfikat SHA256 | `2064a303250785a1ef85029a03a543dc759ab6d715f1fb2f05dccdca04e70506` |
 
 Podpisany APK/AAB są w lokalnym `/home/roch/.cache/candyverse/artifacts/`, a kopie o zgodnych digestach są załącznikami szkicu GitHub `v1.0.0-rc.1`. Publikacja prerelease dopiero po zielonych kontrolach. To nie jest wydanie w Play.
@@ -21,7 +21,7 @@ Podpisany APK/AAB są w lokalnym `/home/roch/.cache/candyverse/artifacts/`, a ko
 ## Potwierdzone kontrole
 
 - Flutter stable3.47.2 / Dart3.13.2, enginea804b26164; `flutter --version` i `flutter doctor -v` uruchomione. Doctor zgłasza niezaakceptowane niektóre licencje SDK i brak Chrome. Buildy Android platform36 przechodzą; nie zmieniano globalnych ustawień SDK/JDK właściciela. CI używa JDK21; lokalny Flutter korzysta z JBR25, lokalny Gradle do androidTest z JDK21.
-- `dart format --output=none --set-exit-if-changed .`, `flutter analyze`, `flutter test`157/157, `dart test test/game`62/62 i `python3 scripts/test_release_tools.py`13/13 PASS. Goldeny/layout obejmują320/412dp, tekst200% i nowy kompaktowy telefon.
+- `dart format --output=none --set-exit-if-changed .`, `flutter analyze`, `flutter test`158/158, `dart test test/game`62/62 i `python3 scripts/test_release_tools.py`15/15 PASS. Goldeny/layout obejmują320/412dp, tekst200% i nowy kompaktowy telefon.
 - `flutter build apk --release` i `flutter build appbundle --release` PASS z zewnętrzną konfiguracją podpisu. Nie ma debug fallbacku. Sekrety pozostają poza Git i CI.
 - `scripts/audit_android_artifact.py` PASS finalnego APK i universal APK wygenerowanego z finalnego AAB: SDK24/36, release bez debuggable/testOnly, brak INTERNET i nieoczekiwanych permissions, allowBackup=false i pełne wykluczenia dziewięciu domen cloud/device transfer. Jedyna własna permission: `com.renvo.candyverse.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`.
 - Sześć64-bitowych bibliotek ELF arm64/x86_64: LOAD/RELRO i APK ZIP16KB alignment PASS. Certyfikat release poprawny. Wersje zależności wynikają z `pubspec.lock`; nie wymuszano arbitralnej wersji DataStore.
@@ -43,3 +43,5 @@ Pełny20min scenariusz profile opisuje [QA_REPORT](QA_REPORT.md); wynik aktualne
 - [Instrukcja wydania](RELEASE_GOOGLE_PLAY.md), [konfiguracja Android](ANDROID_RELEASE_SETUP.md), [materiały deklaracji](STORE_DECLARATIONS.md). Nie zaakceptowano warunków ani ocen prawnych za wydawcę.
 
 Diagnostyka CI38710814859: finalny APK API24/API36 PASS, środowisko16KB z RAM2048 zakończyło aplikację z `ApplicationExitInfo reason=3 LOW_MEMORY` podczas startu. To odrębny dowód presji pamięci wewnątrz gościa, nie awarii hostowego RenderThread. Dla obrazu16KB przydzielono4096MB; skrypt zapisuje rzeczywisty MemTotal i dumpsys meminfo aplikacji. Wynik nowej próby pozostaje do odczytu.
+
+Aktualny build po `c8b42e7` ma kompletne podglądy wszystkich14 masek,158 testów Flutter i15 testów narzędzi release PASS. Naprawiono fałszywy negatywny wynik smoke dla figuryS: origin może pozostać pusty; obecnie porównujemy pełną64-polową maskę po realnym tle i force-stop. Native16KB z RAM4GB doszło do wznowienia, po czym utraciło emulator. API35/36 smoke wybiera teraz oficjalnie wspierany backend ANGLE/SwiftShader (`swangle`), API24 zachowuje sprawdzony SwiftShader. To ustawienie hostowej emulacji, APK nadal uruchamia domyślny Impeller. Źródło trybów: [dokumentacja Android Emulator](https://developer.android.com/studio/run/emulator-acceleration). Nowe wyniki pozostają PENDING.
