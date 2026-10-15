@@ -48,6 +48,15 @@ def board_snapshot(ui_nodes):
     return tuple(cells[(row, col)] for row in range(1, 9) for col in range(1, 9))
 
 
+def resumed_package(activity_state):
+    # Android7 and Android16 label the foreground ActivityRecord differently.
+    for field in ('topResumedActivity', 'mResumedActivity', 'ResumedActivity'):
+        match = re.search(r'\b'+field+r'\s*[:=]\s*ActivityRecord\{[^\n]*?\s([a-zA-Z0-9_.$]+)/[a-zA-Z0-9_.$]+', activity_state)
+        if match:
+            return match[1]
+    return None
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('apk', type=Path)
@@ -191,6 +200,18 @@ def main():
     capture('release-game-pl')
     # Real background/resume, followed by real process death and disk restore.
     adb('shell', 'input', 'keyevent', 'KEYCODE_HOME')
+    background_deadline = time.monotonic()+15
+    while True:
+        state = adb('shell', 'dumpsys', 'activity', 'activities')
+        foreground = resumed_package(state)
+        if foreground is not None and foreground != APP:
+            (args.output/'background-activity-state.txt').write_text(state)
+            # Let the launcher transition finish before issuing a new intent.
+            time.sleep(1)
+            break
+        if time.monotonic() >= background_deadline:
+            raise RuntimeError('Android never moved the app into the background.')
+        time.sleep(.2)
     launch()
     locate(r'Wiersz [1-8], kolumna [1-8], zajęte')
     if board_snapshot(nodes()) != placed_board:

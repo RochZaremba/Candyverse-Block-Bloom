@@ -1,0 +1,23 @@
+{
+  "capture": "adb exec-out screencap -p",
+  "edited": false,
+  "applicationId": "com.renvo.candyverse",
+  "version": "1.0.0+1",
+  "apkSha256": "8e4f0f670e476533f46e6f3b56f956e2700b5d8e0cd422da64cb9f14efe5e975",
+  "ciRun": "https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38717253364",
+  "artifact": "signed-api24-pages4096-apk",
+  "device": "Pixel 2 emulator, google_apis x86_64",
+  "androidApi": 24,
+  "pageSize": 4096,
+  "resolution": [
+    1080,
+    1920
+  ],
+  "densityDpi": 440,
+  "productionEntrypoint": true,
+  "fixtureProgression": false,
+  "filesSha256": {
+    "release-home-pl.png": "903db03f2e46f754956f3a7402066b00789142a5510676bb5380b63b68e0ce23",
+    "release-game-pl.png": "b8a650a9f3b5b5c30dea7b01d2e197690a5e7c159bb048b33823f103688ae770"
+  }
+}

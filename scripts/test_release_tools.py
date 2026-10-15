@@ -7,7 +7,7 @@ from pathlib import Path
 
 from audit_android_artifact import validate_elf, packaged_xml
 from create_upload_key import outside_repository, properties_escape
-from android_release_smoke import read_page_size, board_snapshot
+from android_release_smoke import read_page_size, board_snapshot, resumed_package
 
 
 def native_library(segments):
@@ -22,6 +22,12 @@ def native_library(segments):
 
 
 class ReleaseToolsTests(unittest.TestCase):
+    def test_background_evidence_uses_resumed_activity_across_android_versions(self):
+        for field in ('topResumedActivity=', 'mResumedActivity: ', 'ResumedActivity: '):
+            state = 'other task com.renvo.candyverse/.MainActivity\n'+field+'ActivityRecord{123 u0 com.google.android.apps.nexuslauncher/.NexusLauncherActivity t6}'
+            self.assertEqual(resumed_package(state), 'com.google.android.apps.nexuslauncher')
+        self.assertIsNone(resumed_package('ResumedActivity: null\ncom.renvo.candyverse/.MainActivity'))
+
     def test_s_piece_placement_does_not_require_occupied_origin(self):
         import xml.etree.ElementTree as ET
         occupied = {(1, 2), (1, 3), (2, 1), (2, 2)}
