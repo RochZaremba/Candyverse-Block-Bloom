@@ -109,9 +109,13 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(26),
-                              child: const AspectRatio(
-                                aspectRatio: 3,
-                                child: CandyBrandImage(),
+                              child: Semantics(
+                                label: 'Candyverse: Block & Bloom',
+                                image: true,
+                                child: AspectRatio(
+                                  aspectRatio: 3,
+                                  child: CandyBrandImage(),
+                                ),
                               ),
                             ),
                           ),

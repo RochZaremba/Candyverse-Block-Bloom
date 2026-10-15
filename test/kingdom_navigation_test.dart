@@ -1,5 +1,6 @@
 import 'package:candyverse/core/localization/app_strings.dart';
 import 'package:candyverse/core/presentation/candy_message.dart';
+import 'package:candyverse/core/presentation/candy_transition.dart';
 import 'package:candyverse/core/theme/app_theme.dart';
 import 'package:candyverse/home/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -108,4 +109,34 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+  testWidgets('opaque scene transitions skip motion when the OS requests it', (
+    tester,
+  ) async {
+    const scene = SizedBox(key: Key('scene'));
+    final route = MaterialPageRoute<void>(builder: (_) => scene);
+    Widget? result;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Builder(
+          builder: (context) {
+            result = const CandyPageTransitionsBuilder().buildTransitions(
+              route,
+              context,
+              const AlwaysStoppedAnimation(.5),
+              const AlwaysStoppedAnimation(0),
+              scene,
+            );
+            return result!;
+          },
+        ),
+      ),
+    );
+    expect(result, isA<ColoredBox>());
+    tester.platformDispatcher.accessibilityFeaturesTestValue =
+        FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    await tester.pump();
+    expect(identical(result, scene), isTrue);
+    route.dispose();
+  });
 }
