@@ -123,9 +123,13 @@ Nowe pliki lokalne `/home/roch/.cache/candyverse/artifacts/kingdom-1.1.0/`:
 
 Przeglądy agentów ekonomii i release nie wykryły blokera; poprawiono dokumentację
 pochodzenia grafiki52c08a8 i listing PL/EN12718e5. Poprzednie materiały1.0.0 są
-historyczne. Nowy PR integracyjny jeszcze nieutworzony; draft kandydata przygotowywany.
+historyczne. Nowy [PR#14](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/14)
+jest otwarty; draft `v1.1.0-rc.1` zawiera wszystkie trzy pliki o powyższych hashach.
+Macierz CI pobiera te nowe pliki, nie historyczne rc.1.
+Dokumenty architektury/QA23c2b12 i nowy banner sklepu e28c31d zintegrowano;
+nie zmieniają zamrożonego źródła binariów6e0780f.
 
-Niedokończone: rzeczywisty smoke nowej wersji na telefonie, audyt APK/AAB,
+Niedokończone: rzeczywisty smoke nowej wersji na telefonie,
 cztery przypadki zgodności nowego podpisanego kandydata, CI i merge integracji.
 Nie oznaczać tego rozszerzenia jako opublikowanego ani w pełni przetestowanego.
 Blokery Play Console i backupu klucza pozostają aktualne.

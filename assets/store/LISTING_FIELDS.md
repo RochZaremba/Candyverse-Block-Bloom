@@ -20,9 +20,10 @@ Sources checked2026-10-15:
 
 - [PL text](listing_pl.txt), [EN text](listing_en.txt).
 - [Rendered kitten 512px store icon](../brand/store_icon_512.png).
-- [PL feature graphic](feature_graphic_pl.png), [EN feature graphic](feature_graphic_en.png).
+- [Candy Kingdom feature graphic (both languages)](kingdom_feature_graphic.png)
+  and [prompt/provenance](KINGDOM_FEATURE_PROVENANCE.md).
 
-The existing feature graphics show the older1.0.0-rc.1 candy mark and palette.
+The old feature_graphic_pl/en files show the older1.0.0-rc.1 candy mark and palette.
 They are historical promotional illustrations, not screenshots or current
 Candy Kingdom presentation. Replace submission materials with reviewed new
 branding and screenshots captured from the actual signed candidate, without
