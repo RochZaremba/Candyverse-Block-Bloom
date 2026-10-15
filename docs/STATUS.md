@@ -85,6 +85,13 @@ Grafiki AI są lokalne, nie ma runtimeAI/nowych SDK; [źródła i prompty](../as
 
 ## Przekazanie
 
+Sesja dokumentacyjna 2026-10-15: dodano krótką polską
+[notatkę o projekcie](../NOTATKA_O_PROJEKCIE.md) na prośbę właściciela.
+Branch `docs/project-note`, baza `1b64404` (merge PR#15); bez nowego PR.
+Walidacja `python3 scripts/check_docs.py` i `git diff --check`: PASS.
+Zmiana dotyczy wyłącznie dokumentacji; testów aplikacji nie uruchamiano ponownie.
+Stan wydania, ograniczenia i następne zadanie pozostają opisane poniżej.
+
 Root main z implementacją: PR#14/7b5db1a. Przekazanie raportów, listing/README,
 publicznych linków i contents:read: [PR#15](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/15),
 branch docs/kingdom-release-handoff, commit531fc68 i aktualizacja tego odnośnika.
