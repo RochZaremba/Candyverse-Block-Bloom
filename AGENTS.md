@@ -56,3 +56,12 @@ Tylko jeśli to **konieczna** poprawka do stabilności, dostępności albo wymog
 ## Ostatni komunikat każdej sesji
 
 Zwięźle podaj: **zrobione / sprawdzone komendy i wyniki / branch-commit-PR / niedokończone / jedno konkretne następne zadanie**. Zostaw repo w stanie, z którego nowy agent może kontynuować bez rozmowy źródłowej.
+
+## Zatwierdzone rozszerzenie po rc.1
+
+Właściciel2026-10-15 jawnie zamówił Candy Kingdom:30 poziomów, prestiż/gwiazdki,
+pasywny dochód, renderowane assety i nowy UX/EN. Dla T-012–T-018 stosuj
+`docs/KINGDOM_EXPANSION.md` i ADR-0016 zamiast historycznych limitów V1
+(3 poziomy, brak dochodu pasywnego, dawne postacie). Pozostałe zasady offline,
+prywatności, dostępności i testów obowiązują. To zgoda na wskazany zakres,
+nie na dalsze niezlecone funkcje.

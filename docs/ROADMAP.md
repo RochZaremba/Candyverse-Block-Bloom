@@ -33,7 +33,7 @@ Właściciel2026-10-15 zatwierdził rozszerzenie zakresu. Szczegóły i kryteria
 
 | ID | Zadanie | Zależności | Kryterium akceptacji | Preferowany branch |
 | --- | --- | --- | --- | --- |
-| T-012 | Kontrakt i migracja | T-011 | zatwierdzony plan, PRD/GDD/ADR, migracja starego zapisu | feat/candy-kingdom-expansion |
+| T-012 | Kontrakt i migracja | T-011 | zatwierdzony plan, PRD/GDD/ADR, kontrakt migracji starego zapisu | feat/candy-kingdom-expansion |
 | T-013 |30 poziomów i pasywna ekonomia | T-012 | testy cen/czasu/atomowości/resume | feat/kingdom-economy |
 | T-014 | Prestiż / gwiazdki | T-013 | potwierdzony reset3×30, trwała gwiazdka i nowy krajobraz | feat/kingdom-economy |
 | T-015 | Renderowane assety i postacie | T-012 | marka właściciela,4 zwierzaki AI, budynki/wyspy i provenance | feat/kingdom-art |
