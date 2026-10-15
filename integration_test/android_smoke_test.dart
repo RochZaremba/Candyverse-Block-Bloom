@@ -83,6 +83,7 @@ void main() {
     }
 
     Future<void> tap(Finder finder) async {
+      debugPrint('QA tap: $finder');
       await until(() => finder.evaluate().isNotEmpty);
       await tester.ensureVisible(finder.first);
       await tester.pump();
@@ -383,6 +384,9 @@ void main() {
       'fixtureProgression': true,
       'captureMethod': captureUi ? 'flutter-repaint-boundary' : 'disabled',
       'representativeHardware': false,
+      'softwareRendering': const bool.fromEnvironment(
+        'CANDYVERSE_SOFTWARE_RENDERING',
+      ),
     };
     await tester.pumpWidget(const SizedBox());
     await repo.reset();
