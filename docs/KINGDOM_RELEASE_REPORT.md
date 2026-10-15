@@ -38,7 +38,7 @@ Lokalne kopie: `/home/roch/.cache/candyverse/artifacts/kingdom-1.1.0/`.
   odczytuje schema1, zachowuje wybrany język, run i saldo; dochód nie obejmuje
   czasu sprzed migracji. To lokalny zegar, bez obietnicy antycheatu.
 
-## Weryfikacja Androida — w toku
+## Weryfikacja Androida
 
 Fizyczny20min profile na Android16/API36/arm64/4KB działa w osobnym ID
 `com.renvo.candyverse.qa`; nie kasuje danych zwykłej gry. Pierwszą próbę przerwano
@@ -46,9 +46,13 @@ przed instalacją, nie zalicza się do czasu. Wynik ponownej próby oczekuje.
 
 CI finalnego headf060300:
 
-- Flutter38731841063 — oczekuje zakończenia.
-- Signed Android compatibility38731841152 — API24/APK, API36/APK,
-  rzeczywiste API35/16KB/APK oraz API36/universal z finalnego AAB.
+- [Flutter38731841063 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38731841063).
+- [Signed compatibility38731841152 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38731841152): wszystkie cztery przypadki domyślnego renderera,
+  rzeczywisty input oraz pełna64-polowa plansza po tle i force-stop.
+  [API24/APK](qa/kingdom-signed-api24-pages4096-apk-default.json),
+  [API36/APK](qa/kingdom-signed-api36-pages4096-apk-default.json),
+  [API35/16KB/APK](qa/kingdom-signed-api35-pages16384-apk-default.json),
+  [API36/z AAB](qa/kingdom-signed-api36-pages4096-aab-default.json).
 - Android smoke38731841069 —20min aktywnej interakcji i natywny zapis na CPU.
 
 Nie oznaczać kandydata jako zweryfikowanego na podstawie dawnych wyników1.0.0.
