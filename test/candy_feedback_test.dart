@@ -1,5 +1,6 @@
 import 'package:candyverse/save/application/app_session.dart';
 import 'package:candyverse/app/app.dart';
+import 'package:candyverse/save/domain/app_save.dart';
 import 'package:candyverse/core/feedback/feedback_service.dart';
 import 'package:candyverse/core/theme/app_theme.dart';
 import 'package:candyverse/game/presentation/fx_layer.dart';
@@ -76,7 +77,9 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      final settings = SettingsModel();
+      final settings = SettingsModel(
+        initial: const SavedSettings(language: 'pl'),
+      );
       final feedback = FeedbackService(settings, channel: channel);
       final engine = GameEngine(
         traySource: (_) => List.filled(3, pieceCatalog.first),
