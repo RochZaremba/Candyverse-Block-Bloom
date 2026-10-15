@@ -467,7 +467,12 @@ class _GameScreenState extends State<GameScreen> {
             Positioned.fill(
               child: BlockSemantics(
                 child: ColoredBox(
-                  color: theme.color('creamWhite').withValues(alpha: .95),
+                  // Checkpoint I/O must not repaint the game with a white veil.
+                  // The transparent barrier still blocks touch/semantics until
+                  // the same durable-write gate acknowledges the move.
+                  color: controller.saving
+                      ? Colors.transparent
+                      : theme.color('creamWhite').withValues(alpha: .95),
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.all(24),
@@ -475,9 +480,12 @@ class _GameScreenState extends State<GameScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           if (controller.saving) ...[
-                            const CircularProgressIndicator(),
-                            const SizedBox(height: 16),
-                            appText(context, 'Zapisuję…'),
+                            Semantics(
+                              liveRegion: true,
+                              label: AppStrings.of(context)
+                                  .translate('Zapisuję…'),
+                              child: const SizedBox.shrink(),
+                            ),
                           ] else ...[
                             appText(
                               context,
