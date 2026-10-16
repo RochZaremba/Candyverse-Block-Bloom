@@ -1,21 +1,46 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
-## 2026-10-16 — integracja i wydanie T-019 (w toku)
+## 2026-10-16 — T-019: integracja i kandydat 1.2.0+4
 
-Na polecenie właściciela: review, PR, merge i nowy prerelease GitHub 1.2.0+4.
-PR [#16](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/16).
-Autor/committer trzech commitów poprawiony na Roch Zaremba
-<rochzaremba@gmail.com>; head `8554b51`, zawartość wszystkich drzew bez zmian.
-Lokalnie format, analyze, 71 testów silnika, 19 testów narzędzi wydania i docs PASS.
-Testy widgetów 199/199 PASS. Podpisany APK/AAB 1.2.0+4 i universal z finalnego
-AAB zbudowane ze źródeł `18fcf7b` (kod aplikacji `6293730`). Audyt APK/universal,
-bundletool validate/config16KB i weryfikacja podpisów PASS; certyfikat bez zmian.
-Szkic `v1.2.0-rc.1` służy sprawdzeniu podpisanych plików, nie jest publikacją.
-Native smoke:
-[CI38950626989](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38950626989).
-Nie przypisujemy jeszcze wyniku temu przebiegowi ani macierzy podpisanego APK. Brak podłączonego telefonu;
-zgodnie z wcześniejszą decyzją właściciela nie prosimy o ponowny test telefonu.
-Publikacja dotyczy GitHub; Google Play pozostaje nieopublikowane.
+**T-019 DONE.** Integracja przez [PR#16](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/16),
+branch `feat/reference-candy-ui`; kod/testy `6293730`, grafiki `f0cf84e`,
+head integracji przed końcową dokumentacją `a42bdaa`.
+Autor i committer wszystkich nowych commitów: Roch Zaremba <rochzaremba@gmail.com>.
+
+Kandydat GitHub: [v1.2.0-rc.1](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/tag/v1.2.0-rc.1),
+wersja aplikacji **1.2.0/code4**. Google Play nadal **nieopublikowane**.
+Historyczne wydanie 1.1.0+3 pozostaje bez zmian.
+
+- Review kodu i pięciu renderów: bez wykrytych usterek blokujących; dodatkowo
+  obejrzano rzeczywiste PNG produkcyjnego APK z AAB na API36. To review agenta
+  integrującego, nie niezależna aprobata innego konta GitHub.
+- Lokalnie format/analyze/docs/diff PASS, silnik **71/71**, Flutter **199/199**,
+  narzędzia wydania **19/19**. [Flutter CI38952217114 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38952217114).
+- [Signed CI38952217155 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38952217155):
+  APK API24/API36/API35 z rzeczywistym16KB oraz universal z finalnego AAB na API36.
+  Rzeczywisty input, PNG, tło/powrót, force-stop i identyczne64 pola po restore.
+  Pierwsza próba nie widziała draftu; druga napotkała404 dla jednego assetu.
+  Ponownie przesłano identyczny APK, sprawdzono adresy i powtórzono tylko
+  nieudane joby. Hashe/binaria nie zmieniły się; wszystkie cztery warianty PASS.
+- [Native CI38950626989 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38950626989):
+  20-minutowy aktywny scenariusz Androida, prawdziwy DataStore, dochód,
+  poziom30/prestiż, ustawienia/reset i kontynuacja gry. To emulator/CPU,
+  nie ocena wydajności GPU telefonu. Kod/assety/testy są identyczne z `8554b51`.
+- Podpisane APK/AAB/universal zbudowano ze źródeł `18fcf7b` (kod `6293730`).
+  Manifest1.2.0/code4, SDK24/36, backup/permissions, ELF/ZIP16KB, bundletool
+  validate/config16KB i podpisy PASS. Certyfikat pozostaje taki jak poprzednio.
+  [Raport, hashe i ograniczenia](REFERENCE_UI_REVIEW.md#integracja-i-podpisany-kandydat--2026-10-16).
+
+Lokalne pliki i dowody: `/home/roch/.cache/candyverse/artifacts/reference-1.2.0-4/`.
+Żadnych kluczy podpisu ani tokena konta w CI; workflow ma contents:read.
+Do testu draftu użyto krótkotrwałych adresów odczytu assetów, usuwanych po publikacji.
+Brak nowego testu telefonu zgodnie z wcześniejszą decyzją właściciela — nie prosić
+ponownie. Brak submission Play, przyjęcia przez sklep ani nowej oceny GPU60FPS.
+
+**Jedno konkretne następne zadanie:** po zakończeniu weryfikacji konta właściciela
+przygotować test wewnętrzny Play aktualnego AAB1.2.0+4 i odświeżyć materiały sklepu.
+
+Poniżej zachowano historyczny raport gałęzi sprzed integracji i wydania 1.1.0+3.
 
 ## 2026-10-16 — T-019: pięć ekranów według zdjęć właściciela
 

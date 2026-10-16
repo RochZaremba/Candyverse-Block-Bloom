@@ -89,3 +89,21 @@ assetów, przekazanych jako sekrety; SHA256 pozostaje przypięte w workflow.
 Sekrety są usuwane po publikacji; przyszłe przebiegi pobierają publiczny release.
 Klucze podpisu i token konta nie trafiają do CI. Wyniki Androida oraz status
 publikacji zapisuje [STATUS](STATUS.md); nie przypisujemy PASS trwającym jobom.
+
+### Potwierdzone testy Androida
+
+- [Signed CI38952217155 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38952217155):
+  APK API24, API36, rzeczywisty API35/16KB oraz universal z finalnego AAB/API36.
+  Wszystkie cztery raporty potwierdzają produkcyjny entrypoint, natywny input,
+  screenshoty, tło/powrót oraz force-stop z odtworzeniem całej64-polowej planszy.
+- [Native CI38950626989 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38950626989):
+  20 minut aktywnego scenariusza, rzeczywisty DataStore i pełne flow ekonomii,
+  prestiżu, ustawień/resetu. Emulator nie jest reprezentatywnym sprzętem GPU.
+- [Flutter CI38952217114 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38952217114):
+  pełny zestaw kontroli PR i build debug.
+
+Retry macierzy był konieczny przed uruchomieniem części przypadków: draft
+niewidoczny dla tokena CI, następnie404 z magazynu jednego assetu. Ponowny
+upload identycznego APK naprawił dostęp; SHA256 pozostało bez zmian.
+Obejrzano także produkcyjne Home/Game z universal/API36. Nie wykonywano nowego
+testu fizycznego telefonu ani pomiaru GPU. Google Play pozostaje nieopublikowane.
