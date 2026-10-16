@@ -28,3 +28,13 @@ Zaliczenie samego uruchomienia albo obniżenie długości smoke ukrywałoby brak
 Run38708821882 utracił cały emulator także przy natywnym JUnit, po Settings→Game; kernel nie potwierdził OOM ani kolejnego segfault w tej próbie. CPU renderer jest teraz jawną opcją testowej ActivityTestRule, przekazywaną wyłącznie przez argument instrumentacji. Używa oficjalnych stałych FlutterShellArgs z SDK (`enable-software-rendering=true`, `enable-impeller=false`). CI wybiera tę opcję; raport oznacza softwareRendering=true. Profil AOT i20min pozostają wymagane, metryk CPU nie przedstawiamy jako GPU/FPS telefonu. Produkcyjny APK i jego oddzielny smoke zachowują domyślny renderer.
 
 Kontrola samego scenariusza jest współdzielona z hostowym widget testem: MemoryStorage, jeden cykl, jawna etykieta storageKind. Służy wykrywaniu błędów finderów i przejść bez przebudowy Androida. Nie jest testem trwałości ani20min; wrapper natywny odrzuca tę etykietę. Android pozostaje jedynym źródłem dowodu DataStore i realnego czasu.
+
+## QA evidence update — 2026-10-16
+
+T-020 adds an external adb observer on disposable emulators. Log milestones
+hold the UI for3 seconds while the observer captures the actual native surface.
+This does not replace SurfaceView or use PixelCopy/Flutter image conversion.
+The wrapper enables the capture define only on an emulator and requires the
+four new candy/navigation PNGs. Physical QA devices keep capture disabled.
+The report states native-adb-milestone-observer; CPU timings remain diagnostic,
+not a GPU benchmark. The20-minute active dwell still starts after setup.

@@ -10,6 +10,8 @@ import 'package:integration_test/integration_test.dart';
 import 'package:candyverse/app/app.dart';
 import 'package:candyverse/core/theme/app_theme.dart';
 import 'package:candyverse/core/presentation/kingdom_assets.dart';
+import 'package:candyverse/core/presentation/candy_message.dart';
+import 'package:candyverse/island/presentation/persistent_island_screen.dart';
 import 'package:candyverse/settings/settings_screen.dart';
 import 'package:candyverse/game/domain/board.dart';
 import 'package:candyverse/game/domain/game_state.dart';
@@ -53,6 +55,9 @@ void main() {
         defaultValue: 0,
       ),
       captureUi: const bool.fromEnvironment('CANDYVERSE_CAPTURE_FLUTTER_UI'),
+      nativeScreenshots: const bool.fromEnvironment(
+        'CANDYVERSE_NATIVE_SCREENSHOTS',
+      ),
     );
   }, timeout: const Timeout(Duration(hours: 1)));
 }
@@ -68,6 +73,7 @@ Future<void> runSmokeScenario(
   int minutes = 0,
   int minimumDwellCycles = 0,
   bool captureUi = false,
+  bool nativeScreenshots = false,
   Duration uiTimeout = const Duration(minutes: 5),
 }) async {
   await tester.runAsync(warmKingdomAssets);
@@ -128,7 +134,13 @@ Future<void> runSmokeScenario(
   }
 
   Future<void> capture(String name) async {
-    debugPrint('QA milestone: $name');
+    debugPrintSynchronously('QA milestone: $name');
+    // Keep this UI stable while the external adb observer captures the real surface.
+    if (nativeScreenshots) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(seconds: 3)),
+      );
+    }
     if (!captureUi) return;
     await tester.pump(const Duration(milliseconds: 300));
     // Keep the production SurfaceView intact. Native PixelCopy conversion
@@ -270,6 +282,49 @@ Future<void> runSmokeScenario(
   await checkpoint();
   expect(session!.save.encode(), snapshot);
 
+  // T-020: exercise the new navigation and notices against the native repository.
+  final navigationGame = session!.save.activeRun!.game;
+  List<String?> cells(GameState game) => [
+    for (var r = 0; r < 8; r++)
+      for (var c = 0; c < 8; c++) game.board.at((row: r, col: c)),
+  ];
+  await tap(find.byTooltip('Sound and motion'));
+  await until(() => find.byType(SettingsScreen).evaluate().isNotEmpty);
+  await capture('candy-settings-return');
+  await tap(find.byTooltip('Back'));
+  await checkpoint();
+  expect(cells(session!.save.activeRun!.game), cells(navigationGame));
+  await leaveGame();
+  for (var tab = 0; tab < 4; tab++) {
+    await tap(find.byKey(const Key('home-island')));
+    await tap(find.byKey(ValueKey('island-tab-$tab')));
+    expect(find.byKey(const Key('island-menu')).hitTestable(), findsOneWidget);
+    expect(find.byKey(const Key('island-play')).hitTestable(), findsOneWidget);
+    if (tab == 3) await capture('candy-island-map');
+    await tap(find.byKey(const Key('island-menu')));
+    await until(() => find.byType(PersistentIslandScreen).evaluate().isEmpty);
+    expect(find.byType(GameScreen), findsNothing);
+  }
+  await tap(find.byKey(const Key('home-island')));
+  await tap(find.text('COLLECT'));
+  await until(() => find.byType(CandyNotice).evaluate().isNotEmpty);
+  expect(
+    find.text('Income is up to date. Your island earns while you are away.'),
+    findsOneWidget,
+  );
+  await capture('candy-notice-info');
+  await tap(find.byTooltip('Dismiss message'));
+  await until(() => find.byType(CandyNotice).evaluate().isEmpty);
+  await tap(find.byKey(const ValueKey('island-tab-3')));
+  await tap(find.byKey(const Key('island-play')));
+  await checkpoint();
+  await until(() => find.byType(PersistentIslandScreen).evaluate().isEmpty);
+  expect(find.byType(PersistentIslandScreen), findsNothing);
+  expect(cells(session!.save.activeRun!.game), cells(navigationGame));
+  expect(session!.save.activeRun!.game.rngState, navigationGame.rngState);
+  expect(session!.save.activeRun!.game.score, navigationGame.score);
+  expect(cells((await repo.load()).activeRun!.game), cells(navigationGame));
+
   // Explicit test-only no-move fixture exercises the actual UI award/retry.
   final terminal = GameState(
     board: Board.fromRows([
@@ -317,6 +372,12 @@ Future<void> runSmokeScenario(
       );
       expect(session!.save.wallet, wallet - cost);
       expect((await repo.load()).island.level(kind), level);
+      if (kind == BuildingKind.candyTree && level == 1) {
+        expect(find.text('Your island is blooming!'), findsOneWidget);
+        await capture('candy-notice-success');
+      }
+      await tap(find.byTooltip('Dismiss message'));
+      await until(() => find.byType(CandyNotice).evaluate().isEmpty);
     }
   }
   expect(session!.save.wallet, 90);
@@ -468,13 +529,21 @@ Future<void> runSmokeScenario(
     'rasterP95Micros': percentile(rasters, .95),
     'buildOver16667': builds.where((v) => v > 16667).length,
     'rasterOver16667': rasters.where((v) => v > 16667).length,
+    'candyNavigationVerified': true,
+    'candyNoticesVerified': true,
+    'islandPlayResumesFullBoard': true,
+    'settingsReturnPreservesRun': true,
     'fixtureProgression': true,
     'passiveIncomeVerified': true,
     'level30Verified': true,
     'prestigeVerified': true,
     'storageKind': storageKind,
     'runToken': const String.fromEnvironment('CANDYVERSE_QA_RUN_TOKEN'),
-    'captureMethod': captureUi ? 'flutter-repaint-boundary' : 'disabled',
+    'captureMethod': captureUi
+        ? 'flutter-repaint-boundary'
+        : nativeScreenshots
+        ? 'native-adb-milestone-observer'
+        : 'disabled',
     'representativeHardware': false,
     'softwareRendering': const bool.fromEnvironment(
       'CANDYVERSE_SOFTWARE_RENDERING',

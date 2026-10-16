@@ -1,5 +1,13 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
+## 2026-10-16 — natywne QA T-020 w toku
+
+Polecenie właściciela: wykonać natywne QA1.2.1+5. Branch `feat/candy-flow-polish`,
+baza `cc29280`, PR#17. Rozszerzony scenariusz sprawdza nowe menu/play na wszystkich
+zakładkach, settings/back, tę samą64-polową planszę/RNG, komunikaty i zamknięcie.
+Dodano obserwator adb do rzeczywistych PNG na emulatorze; izolacja `.qa` i DataStore
+bez zmian. Hostowy przebieg nowego scenariusza PASS. Wyniku natywnego jeszcze brak.
+
 ## 2026-10-16 — T-020: spójny candy UI i nawigacja
 
 **DONE w branchu `feat/candy-flow-polish`, wersja rozwojowa1.2.1+5.**

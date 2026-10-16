@@ -55,7 +55,23 @@ flutter --version > "$qa_output/flutter-version.txt"
 # Do not clear global logcat: retain other workers' diagnostic history.
 adb -s "$qa_device" logcat -v threadtime AndroidRuntime:E libc:F DEBUG:F ActivityTaskManager:I ActivityManager:I flutter:I FlutterTestRunner:V '*:S' > "$qa_output/android-lifecycle.log" 2>&1 &
 qa_logcat_pid=$!
-trap 'kill "$qa_logcat_pid" 2>/dev/null || true' EXIT
+qa_capture_pid=
+qa_native_capture=false
+cleanup_qa_observers() {
+  kill "$qa_logcat_pid" 2>/dev/null || true
+  if [[ -n "$qa_capture_pid" ]]; then
+    kill "$qa_capture_pid" 2>/dev/null || true
+    wait "$qa_capture_pid" 2>/dev/null || true
+  fi
+}
+trap cleanup_qa_observers EXIT
+# Keep real PNG evidence on disposable emulators; never observe a player's phone.
+if [[ "$(adb -s "$qa_device" shell getprop ro.kernel.qemu | tr -d '\r')" == 1 ]]; then
+  python3 scripts/capture_android_milestones.py --device "$qa_device" \
+    --output "$qa_output/screenshots" > "$qa_output/screenshot-observer.log" 2>&1 &
+  qa_capture_pid=$!
+  qa_native_capture=true
+fi
 if [[ "$qa_runner" == drive ]]; then
 flutter drive --"$qa_mode" "${qa_renderer_args[@]}" -d "$qa_device" \
   --driver integration_test/smoke_driver.dart \
@@ -84,11 +100,12 @@ elif [[ "$qa_runner" == instrumentation ]]; then
   flutter build apk --profile --target-platform "$qa_platform" --target integration_test/android_smoke_test.dart \
     --dart-define="CANDYVERSE_SMOKE_MINUTES=$qa_minutes" \
     --dart-define="CANDYVERSE_QA_RUN_TOKEN=$qa_run_token" \
+    --dart-define="CANDYVERSE_NATIVE_SCREENSHOTS=$qa_native_capture" \
     --dart-define="CANDYVERSE_SOFTWARE_RENDERING=$qa_software_define" \
     > "$qa_output/profile-build.log" 2>&1
-  qa_defines=$(python3 - "$qa_minutes" "$qa_run_token" "$qa_software_define" <<'PY_DEFINES'
+  qa_defines=$(python3 - "$qa_minutes" "$qa_run_token" "$qa_software_define" "$qa_native_capture" <<'PY_DEFINES'
 import base64,sys
-print(','.join(base64.b64encode(value.encode()).decode() for value in ('CANDYVERSE_SMOKE_MINUTES='+sys.argv[1], 'CANDYVERSE_QA_RUN_TOKEN='+sys.argv[2], 'CANDYVERSE_SOFTWARE_RENDERING='+sys.argv[3])))
+print(','.join(base64.b64encode(value.encode()).decode() for value in ('CANDYVERSE_SMOKE_MINUTES='+sys.argv[1], 'CANDYVERSE_QA_RUN_TOKEN='+sys.argv[2], 'CANDYVERSE_SOFTWARE_RENDERING='+sys.argv[3], 'CANDYVERSE_NATIVE_SCREENSHOTS='+sys.argv[4])))
 PY_DEFINES
   )
   qa_native_started=$SECONDS
@@ -130,6 +147,15 @@ if not report['frameCount']:
     raise SystemExit('No profile FrameTiming samples were captured.')
 report['runner']='native-android-instrumentation'
 report['hostInstrumentationElapsedSeconds']=host_elapsed
+if report.get('candyNavigationVerified') is not True or report.get('candyNoticesVerified') is not True:
+    raise SystemExit('Native candy navigation/notice assertions did not complete.')
+if report.get('captureMethod') == 'native-adb-milestone-observer':
+    expected=('candy-settings-return','candy-island-map','candy-notice-info','candy-notice-success')
+    for name in expected:
+        screenshot=out/'screenshots'/f'{name}.png'
+        if not screenshot.exists() or not screenshot.read_bytes().startswith(b'\x89PNG\r\n\x1a\n'):
+            raise SystemExit('Missing native candy screenshot: '+name)
+    report['nativeMilestoneScreenshots']=len(list((out/'screenshots').glob('*.png')))
 (out/'report.json').write_text(json.dumps(report,indent=2)+'\n')
 PY_METRICS
   if [[ -d "$repo_root/build/app/outputs/androidTest-results" ]]; then

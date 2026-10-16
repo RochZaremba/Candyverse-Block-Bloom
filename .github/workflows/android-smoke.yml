@@ -4,6 +4,7 @@ on:
     paths:
       - 'integration_test/**'
       - 'scripts/android_smoke.sh'
+      - 'scripts/capture_android_milestones.py'
       - '.github/workflows/android-smoke.yml'
   workflow_dispatch:
 concurrency:
