@@ -262,6 +262,12 @@ Future<void> runSmokeScenario(
   expect(controller.state.eraserUses, 0);
   expect(controller.state.board.occupiedCount, 0);
   expect(controller.state.score, eraserBefore.score);
+  // Keep an occupied cell in the persisted snapshot: an empty board would
+  // not detect accidental clearing when navigating through the island.
+  await tap(find.byKey(const ValueKey('tray-2')));
+  await tap(find.byKey(const ValueKey('cell-2-2')));
+  await checkpoint();
+  expect(controller.state.board.occupiedCount, 1);
   await capture('game-en');
   final snapshot = session!.save.encode();
   await leaveGame();
