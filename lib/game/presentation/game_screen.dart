@@ -22,6 +22,7 @@ import '../domain/board.dart';
 import '../domain/cell.dart';
 import '../domain/piece.dart';
 import 'candy_tile.dart';
+import '../../core/presentation/candy_controls.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({required this.theme, this.controller, super.key});
@@ -235,15 +236,15 @@ class _GameScreenState extends State<GameScreen> {
       if (!didPop) _leave();
     },
     child: Scaffold(
-      body: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [theme.color('electricPurple'), theme.color('creamWhite')],
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          CandyArt(
+            controller.isGameOver ? 'result-scene' : 'game-scene',
+            fit: BoxFit.fill,
           ),
-        ),
-        child: SafeArea(child: controller.isGameOver ? _result() : _game()),
+          SafeArea(child: controller.isGameOver ? _result() : _game()),
+        ],
       ),
     ),
   );
@@ -251,21 +252,23 @@ class _GameScreenState extends State<GameScreen> {
   Widget _game() => LayoutBuilder(
     builder: (context, constraints) {
       final width = math.min(constraints.maxWidth - 24, 440.0);
-      final compact =
-          constraints.maxHeight < 760 &&
-          MediaQuery.textScalerOf(context).scale(16) <= 20;
+      final compact = MediaQuery.textScalerOf(context).scale(16) <= 20;
       final hasEraser =
           controller.state.eraserUses > 0 &&
           controller.state.board.occupiedCount > 0;
+      final headerHeight = math.min(constraints.maxHeight * .235, width * .43);
       final boardWidth = compact
           ? math.min(
-              width,
+              width * .84,
               math.max(
-                256.0,
-                constraints.maxHeight - 310 - (hasEraser ? 48 : 0),
+                216.0,
+                constraints.maxHeight -
+                    headerHeight -
+                    220 -
+                    (hasEraser ? 48 : 0),
               ),
             )
-          : width;
+          : width * .88;
       return Stack(
         key: stackKey,
         children: [
@@ -275,73 +278,116 @@ class _GameScreenState extends State<GameScreen> {
                 width: width,
                 child: Column(
                   children: [
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: _leave,
-                          tooltip: AppStrings.of(context)
-                              .translate('Wróć do menu'),
-                          icon: const Icon(Icons.arrow_back_rounded),
-                        ),
-                        Expanded(
-                          child: appText(
-                            context,
-                            'Cukierkowa układanka',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w900,
-                              color: theme.color('ink'),
+                    SizedBox(
+                      height: headerHeight,
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: Row(
+                              children: [
+                                IconButton(
+                                  onPressed: _leave,
+                                  tooltip: AppStrings.of(context)
+                                      .translate('Wróć do menu'),
+                                  icon: const Icon(Icons.arrow_back_rounded),
+                                ),
+                                Expanded(
+                                  child: appText(
+                                    context,
+                                    '',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                      color: theme.color('ink'),
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  tooltip: AppStrings.of(context)
+                                      .translate('Dźwięk i ruch'),
+                                  onPressed: () {
+                                    final session = AppSessionScope.maybeOf(
+                                      context,
+                                    );
+                                    if (session == null) {
+                                      showFeedbackSettings(
+                                        context,
+                                        theme: theme,
+                                      );
+                                      return;
+                                    }
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute<void>(
+                                        builder: (_) => SettingsScreen(
+                                          theme: theme,
+                                          session: session,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.tune_rounded),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        IconButton(
-                          tooltip: AppStrings.of(context)
-                              .translate('Dźwięk i ruch'),
-                          onPressed: () {
-                            final session = AppSessionScope.maybeOf(context);
-                            if (session == null) {
-                              showFeedbackSettings(context, theme: theme);
-                              return;
-                            }
-                            Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                builder: (_) => SettingsScreen(
-                                  theme: theme,
-                                  session: session,
-                                ),
+                          Positioned(
+                            left: width * .28,
+                            right: width * .28,
+                            bottom: headerHeight * .06,
+                            child: Text(
+                              'Przyszła\nreklama',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: 'LilitaOne',
+                                fontSize: width * .055,
+                                color: const Color(0xff913493),
+                                height: 1,
                               ),
-                            );
-                          },
-                          icon: const Icon(Icons.tune_rounded),
-                        ),
-                      ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _metric(
-                            'WYNIK',
-                            '${controller.state.score}',
-                            compact: compact,
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: width * .12),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _metric(
+                              'WYNIK',
+                              '${controller.state.score}',
+                              compact: compact,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _metric(
-                            'MONETY W GRZE',
-                            '${controller.state.pendingCoins}',
-                            compact: compact,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _metric(
+                              'MONETY W GRZE',
+                              '${controller.state.pendingCoins}',
+                              compact: compact,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 12),
-                    appText(
-                      context,
-                      'Następne ulepszenie: ${controller.state.totalClearedLines}/${controller.state.nextUpgradeMilestone} linii',
-                      textAlign: TextAlign.center,
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: width * .12),
+                      child: CandyPanel(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        radius: 20,
+                        child: appText(
+                          context,
+                          'Następne ulepszenie: ${controller.state.totalClearedLines}/${controller.state.nextUpgradeMilestone} linii',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ),
                     if (controller.state.eraserUses > 0 &&
                         controller.state.board.occupiedCount > 0 &&
@@ -390,19 +436,17 @@ class _GameScreenState extends State<GameScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: theme.color('creamWhite'),
+                            color: const Color(0xffffe5ad),
                             borderRadius: BorderRadius.circular(
                               theme.panelRadius,
                             ),
                             border: Border.all(
-                              color: theme.color('creamWhite'),
-                              width: 3,
+                              color: const Color(0xffffa8dd),
+                              width: 5,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: theme
-                                    .color('ink')
-                                    .withValues(alpha: .18),
+                                color: const Color(0xccff8cdb),
                                 blurRadius: 18,
                                 offset: const Offset(0, 8),
                               ),
@@ -433,11 +477,22 @@ class _GameScreenState extends State<GameScreen> {
                     const SizedBox(height: 12),
                     Semantics(
                       liveRegion: true,
-                      child: appText(
-                        context,
-                        feedback,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 14),
+                      child: CandyPanel(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        radius: 20,
+                        child: appText(
+                          context,
+                          feedback,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: candyInk,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(height: compact ? 8 : 24),
@@ -514,30 +569,11 @@ class _GameScreenState extends State<GameScreen> {
   );
 
   Widget _metric(String label, String value, {bool compact = false}) =>
-      Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 8,
-          vertical: compact ? 6 : 12,
-        ),
-        decoration: BoxDecoration(
-          color: theme.color('creamWhite').withValues(alpha: .9),
-          borderRadius: BorderRadius.circular(22),
-        ),
-        child: Column(
-          children: [
-            appText(
-              context,
-              label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
-            ),
-            appText(
-              context,
-              value,
-              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900),
-            ),
-          ],
-        ),
+      CandyMetric(
+        label: AppStrings.of(context).translate(label),
+        value: value,
+        compact: compact,
+        trophy: label.contains('WYNIK'),
       );
 
   Widget _board() {
@@ -666,16 +702,20 @@ class _GameScreenState extends State<GameScreen> {
               preview = null;
             }),
             child: Container(
-              height: compact ? 88 : 108,
+              height: compact ? 72 : 96,
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: theme.color('creamWhite').withValues(alpha: .6),
+                gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xfffff9e9), Color(0xffffefd9)],
+                ),
                 borderRadius: BorderRadius.circular(22),
                 border: Border.all(
                   width: 2,
                   color: selected == slot
-                      ? theme.color('ink')
-                      : theme.color('creamWhite'),
+                      ? const Color(0xffff24c3)
+                      : const Color(0xffffd7ee),
                 ),
               ),
               child: piece == null
@@ -736,62 +776,121 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _result() => Center(
-    child: SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.auto_awesome_rounded, size: 64, color: theme.color('ink')),
-          const SizedBox(height: 20),
-          appText(
-            context,
-            'Piękna układanka!',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
-          ),
-          const SizedBox(height: 8),
-          appText(
-            context,
-            'Żaden z pozostałych klocków nie pasuje.',
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          _metric('TWÓJ WYNIK', '${controller.state.score}'),
-          const SizedBox(height: 12),
-          _metric('MONETY Z PODEJŚCIA', '${controller.state.pendingCoins}'),
-          const SizedBox(height: 24),
-          FilledButton(
-            onPressed: () {
-              setState(() {
-                selected = null;
-                preview = null;
-                fxEvent = null;
-                feedback = 'Przeciągnij klocek lub wybierz go i dotknij pola.';
-              });
-              controller.restart();
-            },
-            child: appText(context, 'Zagraj ponownie'),
-          ),
-          if (AppSessionScope.maybeOf(context) != null)
-            TextButton.icon(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => PersistentIslandScreen(
-                    theme: theme,
-                    session: AppSessionScope.maybeOf(context)!,
+  Widget _result() => LayoutBuilder(
+    builder: (context, constraints) {
+      final strings = AppStrings.of(context);
+      final width = math.min(constraints.maxWidth, 480.0);
+      final height = math.max(constraints.maxHeight, width * 16 / 9);
+      return SingleChildScrollView(
+        child: Center(
+          child: SizedBox(
+            width: width,
+            child: Column(
+              children: [
+                SizedBox(height: height * .18),
+                SizedBox(
+                  height: height * .12,
+                  child: Center(
+                    child: Text(
+                      'Przyszła\nreklama',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'LilitaOne',
+                        fontSize: width * .065,
+                        color: const Color(0xff913493),
+                        height: 1,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              icon: const Icon(Icons.landscape_rounded),
-              label: appText(context, 'Odwiedź wyspę'),
+                SizedBox(height: height * .06),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: CandyLettering(
+                    strings.translate('Piękna układanka!'),
+                    size: width * .10,
+                    color: const Color(0xffff8add),
+                  ),
+                ),
+                SizedBox(height: height * .20),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * .10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _metric(
+                          'TWÓJ WYNIK',
+                          '${controller.state.score}',
+                          compact: true,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: _metric(
+                          'MONETY Z PODEJŚCIA',
+                          '${controller.state.pendingCoins}',
+                          compact: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * .11),
+                  child: CandyAction(
+                    label: strings.translate('Zagraj ponownie'),
+                    icon: Icons.play_arrow_rounded,
+                    fontSize: width * .075,
+                    height: 58,
+                    onPressed: () {
+                      setState(() {
+                        selected = null;
+                        preview = null;
+                        fxEvent = null;
+                        feedback =
+                            'Przeciągnij klocek lub wybierz go i dotknij pola.';
+                      });
+                      controller.restart();
+                    },
+                  ),
+                ),
+                if (AppSessionScope.maybeOf(context) != null)
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: width * .11),
+                    child: CandyAction(
+                      label: strings.translate('Odwiedź wyspę'),
+                      tone: CandyButtonTone.aqua,
+                      icon: Icons.landscape_rounded,
+                      fontSize: width * .065,
+                      height: 54,
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => PersistentIslandScreen(
+                            theme: theme,
+                            session: AppSessionScope.maybeOf(context)!,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * .22),
+                  child: CandyAction(
+                    label: strings.translate('Wróć do menu'),
+                    tone: CandyButtonTone.cream,
+                    fontSize: 16,
+                    height: 48,
+                    icon: Icons.home_rounded,
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
             ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: appText(context, 'Wróć do menu'),
           ),
-        ],
-      ),
-    ),
+        ),
+      );
+    },
   );
 }

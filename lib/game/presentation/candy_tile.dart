@@ -22,29 +22,31 @@ class CandyTile extends StatelessWidget {
     return Opacity(
       opacity: ghost ? .45 : 1,
       child: Padding(
-        padding: const EdgeInsets.all(2),
+        padding: const EdgeInsets.all(1.5),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(theme.tileRadius * .75),
-            color: skin == null
-                ? theme.color('ink').withValues(alpha: .07)
-                : null,
+            borderRadius: BorderRadius.circular(theme.tileRadius * .65),
+            color: skin == null ? const Color(0xfff2e3bd) : null,
             gradient: skin == null
-                ? null
+                ? const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xfffff3d7), Color(0xffefdfb7)],
+                  )
                 : LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Color.lerp(color, theme.color('creamWhite'), .4)!,
+                      Color.lerp(color, Colors.white, .22)!,
                       color,
-                      Color.lerp(color, theme.color('ink'), .10)!,
+                      Color.lerp(color, const Color(0xff86008f), .13)!,
                     ],
                   ),
             border: Border.all(
               color: invalid
                   ? theme.color('danger')
                   : skin == null
-                  ? theme.color('ink').withValues(alpha: .06)
+                  ? const Color(0xffdfcca4)
                   : theme
                         .color('creamWhite')
                         .withValues(alpha: ghost ? .9 : .5),

@@ -5,9 +5,9 @@ requested that the application follow them nearly one-to-one. Their file names
 are `1000016960.jpg` (menu), `1000016962.jpg` (game), `1000016961.jpg`
 (result), `1000016958.jpg` (return dialog), and `1000016959.jpg` (island).
 
-All six new runtime PNGs were produced by the built-in image editing tool from
+All eight new runtime PNGs were produced by the built-in image editing tool from
 those references and copied unchanged from its output. There is no network
-image service or generated text in the runtime app. The source JPEGs are not
+image service or runtime image generation in the app. The source JPEGs are not
 used as flat screenshots behind invisible hit targets. Scores, currency,
 board, tray, progress, controls, dialogs and navigation are Flutter widgets.
 
@@ -19,6 +19,8 @@ board, tray, progress, controls, dialogs and navigation are Flutter widgets.
 | island-scene.png | `exec-e5fe4cf9-10ff-4cd9-816b-4d105b8b815d`, 1448×1086; island scenery with distant castle, bridges and waterfalls; foreground buildings and pets removed for live progression sprites. |
 | control-atlas.png | `exec-1117ec4a-886a-4f74-9dc6-2962f1d4360d`, 1254×1254 RGBA; four blank gold, aqua, pink and cream pill surfaces. Source rectangles are in candy_controls.dart. |
 | reference-mascots.png | `exec-37bf217b-d4dd-4a5d-aa27-33d8f709871f`, 1024×1536 RGBA; kitten/puppy, bunny/hamster, bird/star in two columns and three rows. |
+| reference-buildings.png | `exec-7ea58337-24d5-48b6-aa46-e50f6a42105e`, 887×1774 RGBA; six evolutions of the reference pink candy tree, jelly house and blue star/water fountain, with explicit per-sprite alpha bounds. |
+| reference-logo.png | `exec-488cde77-1e5e-4830-a047-806aa6d25af2`, 2172×724 RGBA; isolated rainbow logo for the island header, with no rectangular sky backdrop. |
 
 The initial mascot output `exec-21e8c20f-731c-40fe-9deb-e97845160b10` had a
 colored background; a second image-editing pass removed it, preserving the
@@ -51,6 +53,13 @@ preserving the six characters and their positions.
 directory on GitHub. It is distributed under the SIL Open Font License 1.1,
 retained as `assets/fonts/LilitaOne-OFL.txt`. It is bundled locally for headings
 and button lettering; body text continues to use the app's existing font.
+Lilita One does not contain every Polish accented letter. The shared text theme
+explicitly falls back to Roboto for those glyphs; widget tests load the checked-in
+Roboto faces as well, matching the existing Android body-font fallback.
 
 Historical Kingdom artwork remains intact for provenance and prestige worlds.
-Existing building stage sprites remain the source of all 30 upgrade levels.
+The new reference building atlas supplies six appearance stages for all 30
+upgrade levels. Its prompt requested the three exact reference designs, six
+progressively richer stages, isolated alpha sprites and no UI or pets. The
+transparent row boundaries were inspected at y=230/476/744/1048/1374; source
+rectangles are recorded in island_scene.dart. The historical atlas remains intact.

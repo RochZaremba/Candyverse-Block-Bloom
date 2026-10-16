@@ -1,12 +1,12 @@
 {
   "$schemaNote": "Source of truth for candy colors and motion; pure data, no networking",
   "palette": {
-    "candyPink": "#FF5DA2",
+    "candyPink": "#FF43B4",
     "bubblegumPink": "#FF8CC6",
     "electricPurple": "#A58AFF",
-    "blueberry": "#6E78FF",
-    "turquoise": "#44E1D8",
-    "lemonYellow": "#FFEA73",
+    "blueberry": "#00A5FF",
+    "turquoise": "#00DCD4",
+    "lemonYellow": "#FFD21C",
     "mangoOrange": "#FFBD59",
     "candyLime": "#BDF764",
     "creamWhite": "#FFF4DD",

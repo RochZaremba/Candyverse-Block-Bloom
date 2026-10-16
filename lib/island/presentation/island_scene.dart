@@ -13,7 +13,7 @@ String characterName(CandyCharacter kind) => switch (kind) {
   CandyCharacter.pinkMochi => 'Maple the kitten',
   CandyCharacter.blueJelly => 'Biscuit the puppy',
   CandyCharacter.lemonBlob => 'Clover the bunny',
-  CandyCharacter.mintyMonster => 'Toffee the fox',
+  CandyCharacter.mintyMonster => 'Toffee the hamster',
 };
 String buildingName(BuildingKind kind) => switch (kind) {
   BuildingKind.candyTree => 'Cukierkowe drzewo',
@@ -106,16 +106,26 @@ class _IslandSceneState extends State<IslandScene>
   @override
   Widget build(BuildContext context) => RepaintBoundary(
     child: AspectRatio(
-      aspectRatio: 400 / 350,
+      aspectRatio: 400 / 275,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final scale = constraints.maxWidth / 400;
-          const buildings = [Offset(105, 88), Offset(200, 88), Offset(295, 88)];
+          final buildings = widget.worldIndex % 3 == 0
+              ? [
+                  const Offset(100, 147),
+                  const Offset(302, 159),
+                  const Offset(218, 207),
+                ]
+              : [
+                  const Offset(105, 88),
+                  const Offset(200, 88),
+                  const Offset(295, 88),
+                ];
           const characters = [
-            Offset(78, 249),
-            Offset(320, 249),
-            Offset(156, 285),
-            Offset(254, 286),
+            Offset(45, 178),
+            Offset(355, 198),
+            Offset(100, 235),
+            Offset(305, 235),
           ];
           return ClipRRect(
             borderRadius: BorderRadius.circular(22),
@@ -123,27 +133,34 @@ class _IslandSceneState extends State<IslandScene>
               children: [
                 Positioned.fill(
                   child: RepaintBoundary(
-                    child: KingdomSprite(
-                      key: ValueKey('world-${widget.worldIndex % 3}'),
-                      asset: 'assets/kingdom/worlds.png',
-                      row: widget.worldIndex % 3,
-                      column: 0,
-                      rows: 3,
-                      columns: 1,
-                      fit: BoxFit.cover,
-                    ),
+                    child: widget.worldIndex % 3 == 0
+                        ? Image.asset(
+                            key: const ValueKey('world-0'),
+                            'assets/kingdom/island-scene.png',
+                            fit: BoxFit.cover,
+                            gaplessPlayback: true,
+                          )
+                        : KingdomSprite(
+                            key: ValueKey('world-${widget.worldIndex % 3}'),
+                            asset: 'assets/kingdom/worlds.png',
+                            row: widget.worldIndex % 3,
+                            column: 0,
+                            rows: 3,
+                            columns: 1,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
                 for (var i = 0; i < 3; i++)
                   Positioned(
-                    left: (buildings[i].dx - 48) * scale,
+                    left: (buildings[i].dx - 59) * scale,
                     top:
                         (buildings[i].dy -
                             52 +
                             (widget.worldIndex % 3 == 2 ? 14 : 0)) *
                         scale,
-                    width: math.max(48.0, 96 * scale),
-                    height: math.max(48.0, 104 * scale),
+                    width: math.max(48.0, 118 * scale),
+                    height: math.max(48.0, 120 * scale),
                     child: _BuildingSprite(
                       theme: widget.theme,
                       kind: BuildingKind.values[i],
@@ -167,6 +184,24 @@ class _IslandSceneState extends State<IslandScene>
                       kind: CandyCharacter.values[i],
                       idle: idle,
                       phase: i * .17,
+                    ),
+                  ),
+                if (widget.characterCount > 0)
+                  Positioned(
+                    left: 251 * scale,
+                    top: 205 * scale,
+                    width: 51 * scale,
+                    height: 58 * scale,
+                    child: const IgnorePointer(
+                      child: ExcludeSemantics(
+                        child: KingdomSprite(
+                          asset: 'assets/kingdom/reference-mascots.png',
+                          row: 2,
+                          column: 0,
+                          rows: 3,
+                          columns: 2,
+                        ),
+                      ),
                     ),
                   ),
                 Positioned.fill(
@@ -193,38 +228,38 @@ class _IslandSceneState extends State<IslandScene>
   );
 }
 
-// Inspected alpha bounds in the immutable 1024×1536 generated atlas. Its
-// evolution rows are unequal and early sprites have wider transparent margins.
+// Inspected alpha bounds in the immutable 887×1774 reference atlas.
+// Unequal evolution rows are separated by fully transparent scan lines.
 const _buildingSources = [
   [
-    Rect.fromLTRB(110, 44, 247, 181),
-    Rect.fromLTRB(407, 28, 608, 186),
-    Rect.fromLTRB(740, 35, 952, 180),
+    Rect.fromLTRB(56, 32, 246, 225),
+    Rect.fromLTRB(326, 24, 558, 229),
+    Rect.fromLTRB(628, 34, 852, 219),
   ],
   [
-    Rect.fromLTRB(83, 207, 283, 401),
-    Rect.fromLTRB(391, 212, 634, 401),
-    Rect.fromLTRB(734, 222, 958, 398),
+    Rect.fromLTRB(34, 256, 281, 473),
+    Rect.fromLTRB(319, 262, 566, 474),
+    Rect.fromLTRB(613, 261, 867, 476),
   ],
   [
-    Rect.fromLTRB(56, 416, 297, 636),
-    Rect.fromLTRB(377, 412, 647, 638),
-    Rect.fromLTRB(710, 432, 987, 639),
+    Rect.fromLTRB(32, 498, 283, 743),
+    Rect.fromLTRB(311, 502, 582, 744),
+    Rect.fromLTRB(609, 505, 871, 740),
   ],
   [
-    Rect.fromLTRB(28, 647, 333, 902),
-    Rect.fromLTRB(363, 649, 664, 901),
-    Rect.fromLTRB(703, 651, 994, 905),
+    Rect.fromLTRB(16, 765, 301, 1047),
+    Rect.fromLTRB(301, 769, 584, 1044),
+    Rect.fromLTRB(600, 772, 878, 1046),
   ],
   [
-    Rect.fromLTRB(8, 910, 341, 1194),
-    Rect.fromLTRB(341, 909, 671, 1190),
-    Rect.fromLTRB(684, 912, 1013, 1194),
+    Rect.fromLTRB(13, 1066, 301, 1373),
+    Rect.fromLTRB(301, 1076, 594, 1369),
+    Rect.fromLTRB(598, 1067, 881, 1374),
   ],
   [
-    Rect.fromLTRB(14, 1199, 341, 1509),
-    Rect.fromLTRB(341, 1194, 683, 1506),
-    Rect.fromLTRB(683, 1201, 1015, 1517),
+    Rect.fromLTRB(7, 1394, 301, 1741),
+    Rect.fromLTRB(301, 1403, 598, 1743),
+    Rect.fromLTRB(598, 1396, 878, 1746),
   ],
 ];
 Rect _buildingSource(BuildingKind kind, int level) =>
@@ -291,7 +326,7 @@ class _BuildingSprite extends StatelessWidget {
                           ((level - 1) % 5) * .02,
                       child: KingdomSprite(
                         key: ValueKey('building-art-${kind.name}-$level'),
-                        asset: 'assets/kingdom/buildings.png',
+                        asset: 'assets/kingdom/reference-buildings.png',
                         row: ((level - 1) ~/ 5).clamp(0, 5),
                         column: kind.index,
                         rows: 6,
@@ -400,10 +435,10 @@ class _CharacterSpriteState extends State<_CharacterSprite>
         child: AnimatedBuilder(
           animation: Listenable.merge([widget.idle, reaction]),
           child: KingdomSprite(
-            asset: 'assets/kingdom/mascots.png',
+            asset: 'assets/kingdom/reference-mascots.png',
             row: widget.kind.index ~/ 2,
             column: widget.kind.index % 2,
-            rows: 2,
+            rows: 3,
             columns: 2,
           ),
           builder: (_, child) {
@@ -472,4 +507,22 @@ class _CandyFireworks extends CustomPainter {
   @override
   bool shouldRepaint(_CandyFireworks old) =>
       old.progress != progress || old.theme != theme;
+}
+
+/// Building preview shares the exact stage rectangles used by the live island.
+class BuildingArtwork extends StatelessWidget {
+  const BuildingArtwork({required this.kind, required this.level, super.key});
+  final BuildingKind kind;
+  final int level;
+  @override
+  Widget build(BuildContext context) => ExcludeSemantics(
+    child: KingdomSprite(
+      asset: 'assets/kingdom/reference-buildings.png',
+      row: ((level - 1) ~/ 5).clamp(0, 5),
+      column: kind.index,
+      rows: 6,
+      columns: 3,
+      sourceRect: _buildingSource(kind, level.clamp(1, 30)),
+    ),
+  );
 }

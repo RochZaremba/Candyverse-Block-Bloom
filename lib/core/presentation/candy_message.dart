@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'candy_controls.dart';
+
 /// Candyverse's supplied artwork, cropped by layout without editing the source.
 class CandyBrandImage extends StatelessWidget {
   const CandyBrandImage({this.icon = false, super.key});
@@ -90,30 +92,83 @@ class CandyDialog extends StatelessWidget {
   final Widget content;
   final List<Widget> actions;
   @override
-  Widget build(BuildContext context) => AlertDialog(
-    backgroundColor: const Color(0xfffff8eb),
-    surfaceTintColor: Colors.transparent,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(30),
-      side: const BorderSide(color: Color(0xffeea3c7), width: 3),
-    ),
-    title: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(22),
-          child: const SizedBox(
-            width: 72,
-            height: 72,
-            child: CandyBrandImage(icon: true),
-          ),
+  Widget build(BuildContext context) => Dialog(
+    backgroundColor: Colors.transparent,
+    insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 440),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CandyFriends(height: 120),
+            CandyPanel(
+              radius: 34,
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DefaultTextStyle.merge(
+                    style: const TextStyle(
+                      fontFamily: 'LilitaOne',
+                      fontSize: 27,
+                      color: candyInk,
+                      height: 1.1,
+                    ),
+                    textAlign: TextAlign.center,
+                    child: title is Text && (title as Text).data != null
+                        ? CandyLettering(
+                            (title as Text).data!,
+                            size: 29,
+                            color: const Color(0xffff94d8),
+                          )
+                        : title,
+                  ),
+                  const SizedBox(height: 14),
+                  DefaultTextStyle.merge(
+                    style: const TextStyle(
+                      color: candyInk,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    textAlign: TextAlign.center,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.sizeOf(context).height * .30,
+                      ),
+                      child: SingleChildScrollView(child: content),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  for (var i = 0; i < actions.length; i++)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child:
+                          actions[i] is ButtonStyleButton &&
+                              (actions[i] as ButtonStyleButton).child is Text
+                          ? CandyAction(
+                              key: actions[i].key,
+                              label:
+                                  ((actions[i] as ButtonStyleButton).child
+                                          as Text)
+                                      .data ??
+                                  '',
+                              onPressed:
+                                  (actions[i] as ButtonStyleButton).onPressed,
+                              tone: i == 0
+                                  ? CandyButtonTone.gold
+                                  : CandyButtonTone.aqua,
+                              fontSize: 22,
+                              height: 58,
+                            )
+                          : actions[i],
+                    ),
+                ],
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 12),
-        title,
-      ],
+      ),
     ),
-    content: content,
-    actions: actions,
-    actionsOverflowButtonSpacing: 8,
   );
 }

@@ -1,5 +1,6 @@
 import 'package:candyverse/core/localization/app_strings.dart';
 import 'package:candyverse/core/presentation/candy_message.dart';
+import 'package:candyverse/core/presentation/candy_controls.dart';
 import 'package:candyverse/core/presentation/candy_transition.dart';
 import 'package:candyverse/core/theme/app_theme.dart';
 import 'package:candyverse/home/home_screen.dart';
@@ -51,7 +52,7 @@ void main() {
       final bounds = tester.getRect(gear);
       expect(bounds.width, greaterThanOrEqualTo(48));
       expect(bounds.height, greaterThanOrEqualTo(48));
-      expect(bounds.left, lessThan(32));
+      expect(bounds.right, greaterThan(280));
       expect(bounds.top, lessThan(32));
       expect(tester.takeException(), isNull);
     },
@@ -102,7 +103,7 @@ void main() {
       );
       await tester.tap(find.text('Open'));
       await tester.pumpAndSettle();
-      expect(find.byType(CandyBrandImage), findsOneWidget);
+      expect(find.byType(CandyFriends), findsOneWidget);
       await tester.tap(find.text('Lovely'));
       await tester.pumpAndSettle();
       expect(find.byType(CandyDialog), findsNothing);
