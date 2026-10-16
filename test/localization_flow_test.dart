@@ -15,6 +15,7 @@ import 'package:candyverse/game/domain/board.dart';
 import 'package:candyverse/game/domain/piece.dart';
 import 'package:candyverse/game/presentation/game_screen.dart';
 import 'package:candyverse/upgrades/domain/upgrade.dart';
+import 'package:candyverse/island/presentation/island_screen.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -114,7 +115,7 @@ void main() {
       );
       await tester.tap(find.text('ISLAND'));
       await tester.pumpAndSettle();
-      expect(find.text('Your candy island'), findsOneWidget);
+      expect(find.byType(IslandScreen), findsOneWidget);
       expect(find.text('Candy Tree'), findsOneWidget);
       await tester.tap(find.text('Candy Tree'));
       await tester.pumpAndSettle();
@@ -125,7 +126,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('PLAY'));
       await tester.pumpAndSettle();
-      expect(find.text('Candy puzzle'), findsOneWidget);
+      expect(find.byType(GameScreen), findsOneWidget);
       expect(find.text('Next upgrade: 0/5 lines'), findsOneWidget);
       final controller = tester
           .widget<GameScreen>(find.byType(GameScreen))
@@ -202,12 +203,12 @@ void main() {
     expect(next.save.wallet, 25);
     await tester.tap(find.text('Visit island'));
     await tester.pumpAndSettle();
-    expect(find.text('Candy Coins: 25'), findsOneWidget);
+    expect(find.text('25'), findsOneWidget);
     await tester.tap(find.byTooltip('Back to menu'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Play again'));
     await tester.pumpAndSettle();
-    expect(find.text('Candy puzzle'), findsOneWidget);
+    expect(find.byType(GameScreen), findsOneWidget);
     expect(next.save.activeRun!.id, 2);
   });
   for (final width in [320.0, 412.0]) {

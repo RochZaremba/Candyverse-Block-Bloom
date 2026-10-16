@@ -1,5 +1,11 @@
 # Architektura aplikacji
 
+2026-10-16: warstwę prezentacji rozszerza
+[ADR-0018](adr/0018-reference-screen-presentation.md). Nowe sceny i atlasy są
+wstępnie dekodowanymi lokalnymi assetami; `CandyAction`, `CandyPanel` i
+`CandyMetric` współdzielą oprawę rzeczywistych kontrolek. Dane nadal dostarcza
+istniejący `AppSession` i niezmieniona domena gry/schema2.
+
 Aktualny kontrakt rozszerzenia1.1.0+2 określają
 [ADR-0016](adr/0016-kingdom-progression-and-art.md) i
 [KINGDOM_EXPANSION](KINGDOM_EXPANSION.md). Sekcje „Zaimplementowany kontrakt

@@ -80,8 +80,8 @@ void main() {
       await tester.pumpAndSettle();
       expect(session.save.wallet, 30);
       expect(session.save.island.level(BuildingKind.candyTree), 1);
-      expect(find.text('Candy Coins: 30'), findsOneWidget);
-      expect(find.text('Poziom 1/30'), findsOneWidget);
+      expect(find.text('30'), findsOneWidget);
+      expect(find.text('Poz. 1 / 30'), findsOneWidget);
       await expectLater(
         find.byType(IslandScreen),
         matchesGoldenFile('goldens/island_purchase_412.png'),
@@ -90,7 +90,7 @@ void main() {
       final restored = AppSession(repo, await repo.load());
       await tester.pumpWidget(CandyverseApp(theme: theme, session: restored));
       await tester.pumpAndSettle();
-      expect(find.text('Rekord: 0  •  Candy Coins: 30'), findsOneWidget);
+      expect(find.text('30'), findsOneWidget);
       expect(restored.save.island.level(BuildingKind.candyTree), 1);
     },
   );

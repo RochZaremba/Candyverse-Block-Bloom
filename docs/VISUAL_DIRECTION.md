@@ -1,5 +1,18 @@
 # Visual Direction — Candyverse
 
+## Referencje właściciela — 2026-10-16
+
+Bieżący kierunek prezentacji określa [ADR-0018](adr/0018-reference-screen-presentation.md):
+pięć portretowych kompozycji, pełna cukierkowa sceneria, duże renderowane postacie,
+osobne ilustracje menu/gry/wyniku i błyszczące złote, turkusowe oraz różowe
+powierzchnie przycisków. Gear menu znajduje się po prawej. Źródła oraz font
+opisuje [provenance](../assets/kingdom/REFERENCE_ART.md).
+
+Nowe obrazy referencyjne testów mają nazwy `test/goldens/reference_*_360.png`.
+Przed akceptacją należy obejrzeć ich realny render, a nie wyłącznie zaakceptować
+zmienione pliki. Wartości pochodzą z modelu; skala tekstu, położenie tacki i
+wybór figury muszą pozostać użyteczne także na małym ekranie.
+
 ## North Star
 
 **Polished candy toy, not Material demo.** Maksimum przyjaznych kolorów, miękkich form i satysfakcjonujących mikroanimacji, przy bardzo czytelnej planszy. W świecie są galaretki, chmurki, cukierkowe drzewa i miękkie stworki. Nie robimy brutalnych motywów, groteski ani hiperbodźcowego migotania.

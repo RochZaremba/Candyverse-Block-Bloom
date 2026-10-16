@@ -74,6 +74,7 @@ class AppTheme {
     ),
     textTheme: ThemeData.light().textTheme.apply(
       fontFamily: 'Roboto',
+      fontFamilyFallback: const ['Roboto'],
       bodyColor: color('ink'),
       displayColor: color('ink'),
     ),

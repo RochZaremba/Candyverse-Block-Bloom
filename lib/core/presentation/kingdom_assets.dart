@@ -4,7 +4,20 @@ import 'package:flutter/painting.dart';
 
 /// Decode once before the first Flutter frame; all routes share these same keys.
 Future<void> warmKingdomAssets() async {
-  for (final name in ['brand-sheet', 'mascots', 'buildings', 'worlds']) {
+  for (final name in [
+    'brand-sheet',
+    'mascots',
+    'buildings',
+    'worlds',
+    'menu-scene',
+    'game-scene',
+    'island-scene',
+    'control-atlas',
+    'reference-mascots',
+    'reference-logo',
+    'reference-buildings',
+    'result-scene',
+  ]) {
     final stream = AssetImage('assets/kingdom/$name.png')
         .resolve(ImageConfiguration.empty);
     final loaded = Completer<void>();

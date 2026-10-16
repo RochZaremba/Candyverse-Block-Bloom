@@ -10,6 +10,7 @@
 | Moduły Flutter, save, API wewnętrzne | [Architecture](ARCHITECTURE.md) |
 | Zadania + zależności | [Roadmap](ROADMAP.md) |
 | Obecny rzeczywisty stan i handoff | [Status](STATUS.md) |
+| Nowa oprawa z pięciu zdjęć właściciela | [T-019 — podglądy](REFERENCE_UI_REVIEW.md) |
 | Testy i DoD | [Test Plan](TEST_PLAN.md) |
 | Publikacja Google Play | [Release](RELEASE_GOOGLE_PLAY.md) i [raport Candy Kingdom](KINGDOM_RELEASE_REPORT.md) |
 | Prywatność i rodziny | [Privacy & Safety](PRIVACY_AND_SAFETY.md) |
