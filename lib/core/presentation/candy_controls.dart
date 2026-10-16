@@ -310,6 +310,7 @@ class CandyBanner extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 65),
             child: Text(
               'Przyszła\nreklama',
+              textScaler: TextScaler.noScaling,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontFamily: 'LilitaOne',
@@ -359,10 +360,121 @@ class CandyFriends extends StatelessWidget {
                 column: index % 2,
                 rows: 3,
                 columns: 2,
+                sourceRect: referencePetRect(index),
               ),
             ),
         ],
       ),
+    ),
+  );
+}
+
+/// Atlas order is part of the checked-in artwork contract.
+enum CandySymbol { home, back, settings, play, success, attention, info, retry }
+
+class CandyGlyph extends StatelessWidget {
+  const CandyGlyph(this.symbol, {this.size = 48, super.key});
+  final CandySymbol symbol;
+  final double size;
+  @override
+  Widget build(BuildContext context) => ExcludeSemantics(
+    child: SizedBox.square(
+      dimension: size,
+      child: KingdomSprite(
+        asset: 'assets/kingdom/navigation-atlas.png',
+        row: symbol.index ~/ 2,
+        column: symbol.index % 2,
+        rows: 4,
+        columns: 2,
+        sourceRect: Rect.fromLTRB(
+          symbol.index.isEven ? 88 : 520,
+          (symbol.index ~/ 2) * 384,
+          symbol.index.isEven ? 504 : 936,
+          (symbol.index ~/ 2 + 1) * 384,
+        ),
+      ),
+    ),
+  );
+}
+
+class CandyIconButton extends StatelessWidget {
+  const CandyIconButton({
+    required this.symbol,
+    required this.label,
+    required this.onPressed,
+    super.key,
+  });
+  final CandySymbol symbol;
+  final String label;
+  final VoidCallback? onPressed;
+  @override
+  Widget build(BuildContext context) => IconButton(
+    tooltip: label,
+    onPressed: onPressed,
+    padding: EdgeInsets.zero,
+    constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+    icon: Opacity(
+      opacity: onPressed == null ? .5 : 1,
+      child: CandyGlyph(symbol),
+    ),
+  );
+}
+
+/// Secondary screens share the same scenery and clearly labelled back action.
+class CandyPage extends StatelessWidget {
+  const CandyPage({
+    required this.title,
+    required this.backLabel,
+    required this.child,
+    super.key,
+  });
+  final String title, backLabel;
+  final Widget child;
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: Stack(
+      fit: StackFit.expand,
+      children: [
+        const CandyArt('game-scene'),
+        const ColoredBox(color: Color(0xd9fff4dd)),
+        SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                    child: Row(
+                      children: [
+                        if (Navigator.canPop(context))
+                          CandyIconButton(
+                            symbol: CandySymbol.back,
+                            label: backLabel,
+                            onPressed: () => Navigator.maybePop(context),
+                          )
+                        else
+                          const SizedBox.square(dimension: 48),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: CandyLettering(
+                            title,
+                            size: 28,
+                            color: const Color(0xffff94d8),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const SizedBox.square(dimension: 48),
+                      ],
+                    ),
+                  ),
+                  Expanded(child: child),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     ),
   );
 }

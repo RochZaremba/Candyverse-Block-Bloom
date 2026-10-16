@@ -1,0 +1,34 @@
+{
+  "version": "1.2.1+5",
+  "sourceCommit": "8e68c2e91c135b69c737edc0b6c8fdf93d59500d",
+  "applicationCommit": "f65e01d",
+  "nativeRun": 38963761707,
+  "pullRequest": 17,
+  "expectedStorageKind": "native-data-store",
+  "expectedActiveMinutes": 20,
+  "physicalPhoneRetest": false,
+  "nativeRunUrl": "https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38963761707",
+  "fullReportSha256": "55455f9084e6a8534593e935ad7d47ebf5391e0b329321e8370d29ef1aeab8e2",
+  "fullRunScreenshotLimitation": "Several captures precede the named UI state; do not use them to approve notice appearance.",
+  "junit": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "releaseCompatibilityTestedVersion": "1.2.0+4",
+  "signedCandidate121Tested": false,
+  "uiDiagnostic": {
+    "sourceCommit": "56ab19fd3131a1fe606e8ef0ff504fe7ca28e7f1",
+    "run": 38968393258,
+    "url": "https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38968393258",
+    "activeMinutes": 0,
+    "purpose": "Capture and visually inspect corrected native UI states; not a substitute for the completed 20-minute run.",
+    "screenshotsSha256": {
+      "candy-flow-candy-settings-return.png": "ab92aac57f8c67df3df1d119bebb47442960e738fab9f85eed56a0dcd6974d50",
+      "candy-flow-candy-island-map.png": "334a263496b585d098e3d498e703aabef87d4256d8baf148496ab82518f8a9f1",
+      "candy-flow-candy-notice-info.png": "ba1384cf681b129d7d089ed14dfc44d3fdd1fb114fd4929a61a925dba83e88c3",
+      "candy-flow-candy-notice-success.png": "a67aa956cc3add30e8ee4121357daa599140ad92b65d5cc417f26e2c831f1861"
+    }
+  }
+}

@@ -42,6 +42,10 @@ void main() {
     final storage = MemoryStorage()..values[SaveRepository.key] = 'broken';
     await show(tester, SaveRepository(storage));
     expect(find.text('Could not open your save'), findsOneWidget);
+    await expectLater(
+      find.byType(Scaffold).first,
+      matchesGoldenFile('goldens/candy_recovery.png'),
+    );
     await tester.tap(find.text('Start fresh'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));

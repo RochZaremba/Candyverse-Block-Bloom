@@ -22,9 +22,10 @@ class IslandScreen extends StatefulWidget {
     this.onCollectIncome,
     this.onPrestige,
     this.incomeNeedsRetry = false,
+    this.onPlay,
     super.key,
   });
-  final VoidCallback? onCollectIncome, onPrestige;
+  final VoidCallback? onCollectIncome, onPrestige, onPlay;
   final bool incomeNeedsRetry;
   final AppTheme theme;
   final IslandState island;
@@ -55,9 +56,61 @@ class _IslandScreenState extends State<IslandScreen> {
           heightFactor: 1,
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 540),
-            child: Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                for (var i = 0; i < 4; i++) Expanded(child: _tab(context, i)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  child: Row(
+                    children: [
+                      CandyIconButton(
+                        key: const Key('island-menu'),
+                        symbol: CandySymbol.home,
+                        label: strings.translate('Wróć do menu'),
+                        onPressed: () =>
+                            Navigator.of(context)
+                                .popUntil((route) => route.isFirst),
+                      ),
+                      const SizedBox(width: 10),
+                      if (widget.wallet != null)
+                        Expanded(
+                          child: CandyAction(
+                            key: const Key('island-play'),
+                            label: strings.text('GRAJ', 'PLAY'),
+                            icon: Icons.play_arrow_rounded,
+                            fontSize: 22,
+                            height: 48,
+                            onPressed: widget.onPlay,
+                          ),
+                        )
+                      else
+                        Expanded(
+                          child: CandyLettering(
+                            strings.text('Twoja wyspa', 'Your island'),
+                            size: 23,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                if (MediaQuery.textScalerOf(context).scale(16) > 22)
+                  for (var row = 0; row < 2; row++)
+                    Row(
+                      children: [
+                        for (var col = 0; col < 2; col++)
+                          Expanded(child: _tab(context, row * 2 + col)),
+                      ],
+                    )
+                else
+                  Row(
+                    children: [
+                      for (var i = 0; i < 4; i++)
+                        Expanded(child: _tab(context, i)),
+                    ],
+                  ),
               ],
             ),
           ),
@@ -150,8 +203,9 @@ class _IslandScreenState extends State<IslandScreen> {
                                           ],
                                         ),
                                       ),
-                                      IconButton(
-                                        tooltip: strings.text(
+                                      CandyIconButton(
+                                        symbol: CandySymbol.settings,
+                                        label: strings.text(
                                           'Ustawienia',
                                           'Settings',
                                         ),
@@ -174,10 +228,6 @@ class _IslandScreenState extends State<IslandScreen> {
                                             ),
                                           );
                                         },
-                                        icon: const Icon(
-                                          Icons.settings_rounded,
-                                          color: candyInk,
-                                        ),
                                       ),
                                     ],
                                   ),
@@ -199,15 +249,6 @@ class _IslandScreenState extends State<IslandScreen> {
                                 worldIndex: island.stars % 3,
                                 onBuildingTap: (kind) =>
                                     _details(context, kind),
-                              ),
-                              Positioned(
-                                left: 8,
-                                bottom: 5,
-                                child: IconButton.filledTonal(
-                                  tooltip: strings.translate('Wróć do menu'),
-                                  onPressed: () => Navigator.pop(context),
-                                  icon: const Icon(Icons.home_rounded),
-                                ),
                               ),
                             ],
                           ),
@@ -517,6 +558,7 @@ class _IslandScreenState extends State<IslandScreen> {
                     column: kind.index % 2,
                     rows: 3,
                     columns: 2,
+                    sourceRect: referencePetRect(kind.index),
                   ),
                 ),
                 title: Text(

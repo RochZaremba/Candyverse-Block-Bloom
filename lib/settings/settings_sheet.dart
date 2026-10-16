@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
-import '../core/presentation/candy_message.dart';
+import '../core/presentation/candy_controls.dart';
 import '../core/localization/app_strings.dart';
 import 'settings_model.dart';
 
@@ -12,86 +12,78 @@ void showFeedbackSettings(BuildContext context, {required AppTheme theme}) {
   showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
-    backgroundColor: theme.color('creamWhite'),
-    shape: RoundedRectangleBorder(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-      side: BorderSide(
-        color: theme.color('candyPink').withValues(alpha: .5),
-        width: 3,
-      ),
-    ),
+    backgroundColor: Colors.transparent,
     builder: (context) => SafeArea(
       child: SingleChildScrollView(
-        child: ListenableBuilder(
-          listenable: settings,
-          builder: (context, _) => Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 16),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(22),
-                child: const SizedBox(
-                  width: 72,
-                  height: 72,
-                  child: CandyBrandImage(icon: true),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  AppStrings.of(context)
-                      .text('Dźwięk i ruch', 'Sound and motion'),
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w900,
+        child: CandyPanel(
+          child: ListenableBuilder(
+            listenable: settings,
+            builder: (context, _) => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 16),
+                const CandyFriends(height: 90),
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text(
+                    AppStrings.of(context)
+                        .text('Dźwięk i ruch', 'Sound and motion'),
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
-              ),
-              SwitchListTile(
-                title: Text(AppStrings.of(context).text('Dźwięk', 'Sound')),
-                value: settings.sound,
-                onChanged: settings.setSound,
-              ),
-              SwitchListTile(
-                title: Text(AppStrings.of(context).text('Haptyka', 'Haptics')),
-                value: settings.haptics,
-                onChanged: settings.setHaptics,
-              ),
-              SwitchListTile(
-                title: Text(
-                  AppStrings.of(context)
-                      .text('Ograniczony ruch', 'Reduced motion'),
+                SwitchListTile(
+                  title: Text(AppStrings.of(context).text('Dźwięk', 'Sound')),
+                  value: settings.sound,
+                  onChanged: settings.setSound,
                 ),
-                subtitle: Text(
-                  AppStrings.of(context).text(
-                    'Mniej animacji i bez drobinek.',
-                    'Fewer animations and no particles.',
+                SwitchListTile(
+                  title: Text(
+                    AppStrings.of(context).text('Haptyka', 'Haptics'),
+                  ),
+                  value: settings.haptics,
+                  onChanged: settings.setHaptics,
+                ),
+                SwitchListTile(
+                  title: Text(
+                    AppStrings.of(context)
+                        .text('Ograniczony ruch', 'Reduced motion'),
+                  ),
+                  subtitle: Text(
+                    AppStrings.of(context).text(
+                      'Mniej animacji i bez drobinek.',
+                      'Fewer animations and no particles.',
+                    ),
+                  ),
+                  value: settings.reduceMotion,
+                  onChanged: settings.setReduceMotion,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    settings.persisted
+                        ? AppStrings.of(context).text(
+                            'Ustawienia są zapisywane na tym urządzeniu.',
+                            'Preferences are saved on this device.',
+                          )
+                        : AppStrings.of(context).text(
+                            'Ustawienia obowiązują do zamknięcia aplikacji.',
+                            'Preferences last until the app closes.',
+                          ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-                value: settings.reduceMotion,
-                onChanged: settings.setReduceMotion,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  settings.persisted
-                      ? AppStrings.of(context).text(
-                          'Ustawienia są zapisywane na tym urządzeniu.',
-                          'Preferences are saved on this device.',
-                        )
-                      : AppStrings.of(context).text(
-                          'Ustawienia obowiązują do zamknięcia aplikacji.',
-                          'Preferences last until the app closes.',
-                        ),
-                  textAlign: TextAlign.center,
+                CandyAction(
+                  onPressed: () => Navigator.pop(context),
+                  label: AppStrings.of(context).text('Gotowe', 'Done'),
+                  fontSize: 22,
+                  height: 58,
                 ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(AppStrings.of(context).text('Gotowe', 'Done')),
-              ),
-              const SizedBox(height: 12),
-            ],
+                const SizedBox(height: 12),
+              ],
+            ),
           ),
         ),
       ),

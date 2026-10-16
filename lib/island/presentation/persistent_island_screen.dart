@@ -6,6 +6,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/feedback/feedback_service.dart';
 import '../../save/application/app_session.dart';
 import 'island_screen.dart';
+import '../../game/presentation/game_screen.dart';
 
 class PersistentIslandScreen extends StatefulWidget {
   const PersistentIslandScreen({
@@ -28,7 +29,13 @@ class _PersistentIslandScreenState extends State<PersistentIslandScreen> {
       try {
         await widget.session.collectIncome();
       } catch (_) {
-        if (mounted) showCandyMessage(context, widget.session.error!);
+        if (mounted) {
+          showCandyMessage(
+            context,
+            AppStrings.of(context).translate(widget.session.error!),
+            error: true,
+          );
+        }
       }
     });
   }
@@ -66,6 +73,7 @@ class _PersistentIslandScreenState extends State<PersistentIslandScreen> {
           context,
           widget.session.error ??
               AppStrings.of(context).text('Błąd zapisu.', 'Save failed.'),
+          error: true,
         );
       }
     }
@@ -89,6 +97,32 @@ class _PersistentIslandScreenState extends State<PersistentIslandScreen> {
           context,
           widget.session.error ??
               AppStrings.of(context).text('Błąd zapisu.', 'Save failed.'),
+          error: true,
+        );
+      }
+    }
+  }
+
+  Future<void> _play() async {
+    try {
+      final controller = await widget.session.openRun();
+      if (!mounted) return;
+      final navigator = Navigator.of(context);
+      final theme = widget.theme;
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      navigator.popUntil((route) => route.isFirst);
+      navigator.push(
+        MaterialPageRoute<void>(
+          builder: (_) => GameScreen(theme: theme, controller: controller),
+        ),
+      );
+    } catch (_) {
+      if (mounted) {
+        showCandyMessage(
+          context,
+          AppStrings.of(context)
+              .translate(widget.session.error ?? 'Błąd zapisu.'),
+          error: true,
         );
       }
     }
@@ -106,6 +140,7 @@ class _PersistentIslandScreenState extends State<PersistentIslandScreen> {
         wallet: session.save.wallet,
         price: session.save.price,
         incomeNeedsRetry: session.incomeNeedsRetry,
+        onPlay: canAct ? _play : null,
         onCollectIncome: canAct ? _collect : null,
         onPrestige: canAct && !session.incomeNeedsRetry ? _prestige : null,
         onPurchase: !canAct || session.incomeNeedsRetry
@@ -132,6 +167,7 @@ class _PersistentIslandScreenState extends State<PersistentIslandScreen> {
                       session.error ??
                           AppStrings.of(context)
                               .text('Błąd zapisu.', 'Save failed.'),
+                      error: true,
                     );
                   }
                 }

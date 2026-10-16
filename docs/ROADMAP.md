@@ -20,6 +20,7 @@ Zadania mają stabilne ID. **Status wykonania prowadź wyłącznie w `STATUS.md`
 
 | ID | Zadanie | Zależności | Kryterium akceptacji | Preferowany branch |
 | --- | --- | --- | --- | --- |
+| T-020 | Spójne komunikaty i intuicyjna nawigacja | T-019 | Wspólne cukierkowe komunikaty/ustawienia/recovery, nowe kontrolki z provenance, menu i gra z każdej zakładki wyspy, poprawny stos tras, PL/EN/320dp/tekst200%, testy i rendery | feat/candy-flow-polish |
 | T-019 | Pięć ekranów według zdjęć właściciela | T-018 | Lokalne tła, żywe UI i zapis, menu/gry/wynik/okno/wyspa, działające zakładki i zakupy, goldeny 9:16, małe ekrany i tekst 2×, analyze/test/build | feat/reference-candy-ui |
 
 ## Pull request strategy

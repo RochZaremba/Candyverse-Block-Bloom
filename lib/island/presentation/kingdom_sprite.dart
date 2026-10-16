@@ -148,3 +148,13 @@ class _AtlasPainter extends CustomPainter {
       sourceRect != old.sourceRect ||
       alignment != old.alignment;
 }
+
+/// Generated pets have unequal row padding; avoid painting the previous row's paws.
+Rect referencePetRect(int index) => switch (index) {
+  0 => const Rect.fromLTRB(0, 0, 512, 560),
+  1 => const Rect.fromLTRB(512, 0, 1024, 560),
+  2 => const Rect.fromLTRB(0, 570, 512, 1080),
+  3 => const Rect.fromLTRB(512, 570, 1024, 1090),
+  4 => const Rect.fromLTRB(0, 1100, 512, 1536),
+  _ => const Rect.fromLTRB(512, 1100, 1024, 1536),
+};
