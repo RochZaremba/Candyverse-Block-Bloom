@@ -74,9 +74,21 @@ jobs:
       - name: Download signed candidate without signing credentials
         env:
           GH_TOKEN: ${{ github.token }}
+          # Optional, short-lived read-only asset URL for an unpublished draft.
+          # Removed after publication; regular reruns use the public release.
+          CANDIDATE_APK_URL: ${{ secrets.CANDYVERSE_CANDIDATE_APK_URL }}
+          CANDIDATE_UNIVERSAL_URL: ${{ secrets.CANDYVERSE_CANDIDATE_UNIVERSAL_URL }}
         run: |
           mkdir -p build/release-qa
-          gh release download v1.2.0-rc.1 --repo "$GITHUB_REPOSITORY" --pattern "${{ matrix.candidate }}" --dir build/release-qa
+          candidate_url="$CANDIDATE_APK_URL"
+          if [ '${{ matrix.kind }}' = aab ]; then
+            candidate_url="$CANDIDATE_UNIVERSAL_URL"
+          fi
+          if [ -n "$candidate_url" ]; then
+            curl --fail --silent --show-error --location "$candidate_url" --output 'build/release-qa/${{ matrix.candidate }}'
+          else
+            gh release download v1.2.0-rc.1 --repo "$GITHUB_REPOSITORY" --pattern "${{ matrix.candidate }}" --dir build/release-qa
+          fi
           echo '${{ matrix.sha256 }}  build/release-qa/${{ matrix.candidate }}' | sha256sum --check
       - name: Enable KVM on disposable runner
         run: |
