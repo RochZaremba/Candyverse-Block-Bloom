@@ -1,5 +1,9 @@
 # Candy Kingdom artwork
 
+2026-10-16: the owner's five new screen references are implemented with separate
+background plates, live Flutter UI and additional sprite assets. Sources and
+generation notes: [REFERENCE_ART.md](REFERENCE_ART.md).
+
 Created2026-10-15 for the owner's explicitly requested visual replacement.
 All runtime assets are local; no image service or network SDK ships in the app.
 
