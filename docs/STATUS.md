@@ -4,6 +4,8 @@
 
 **DONE w branchu `feat/candy-flow-polish`, wersja rozwojowa1.2.1+5.**
 Baza `199e79f` (merge PR#16), grafiki/kontrakt `0c430d3`, implementacja `f65e01d`.
+PR [#17](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/17) otwarty;
+handoff `343fcd9`. Lokalne wyniki poniżej są potwierdzone; bieżące CI sprawdzaj w PR.
 Publiczne wydanie pozostaje1.2.0+4; T-020 nie jest jeszcze scalone ani opublikowane.
 
 - Wspólne CandyNotice dla informacji/sukcesów/błędów: generowane ikony,
