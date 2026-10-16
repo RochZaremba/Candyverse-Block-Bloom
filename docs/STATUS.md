@@ -1,12 +1,42 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
-## 2026-10-16 — natywne QA T-020 w toku
+## 2026-10-16 — natywne QA T-020: aktywny scenariusz PASS
 
-Polecenie właściciela: wykonać natywne QA1.2.1+5. Branch `feat/candy-flow-polish`,
-baza `cc29280`, PR#17. Rozszerzony scenariusz sprawdza nowe menu/play na wszystkich
-zakładkach, settings/back, tę samą64-polową planszę/RNG, komunikaty i zamknięcie.
-Dodano obserwator adb do rzeczywistych PNG na emulatorze; izolacja `.qa` i DataStore
-bez zmian. Hostowy przebieg nowego scenariusza PASS. Wyniku natywnego jeszcze brak.
+Branch `feat/candy-flow-polish`, PR [#17](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/17),
+wersja1.2.1+5. [Native CI38963761707 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38963761707),
+źródło `8e68c2e`, kod aplikacji `f65e01d`. Rozszerzenie scenariusza `dbdbf57`;
+`8e68c2e` wymaga zajętego pola przed porównaniem planszy po powrocie.
+
+- API35, profile AOT, prawdziwy DataStore; **1202s aktywnej gry,691 ruchów,
+  740 reakcji,37 cykli**. JUnit:1 test,0 failures,0 errors.
+- Menu/play na wszystkich4 zakładkach, settings/back, identyczne64 pola/RNG,
+  komunikaty i zamknięcie PASS. Dochód, poziom30, prestiż i reset PASS.
+- [Surowy raport](qa/candy-flow-api35-profile-cpu.json):7427 FrameTiming,
+  build p95=6286µs, raster p95=72783µs. Software rendering na emulatorze;
+  te liczby nie potwierdzają GPU60FPS telefonu.
+- [Flutter CI38963761701 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38963761701).
+  Lokalny rozszerzony host smoke, analyze, docs, shell syntax i diff PASS.
+- Pierwsze PNG z pełnego przebiegu pokazują częściowo poprzednią klatkę;
+  nie zaliczamy ich jako dowodu wyglądu komunikatów. `56ab19f` pompuje przejście
+  przed zrzutem. Osobny [diagnostyczny przebieg UI38968393258 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38968393258),
+  source `56ab19f`:100s scenariusza,0 minut dwell, nie zastępuje pełnego testu.
+  Obejrzano prawidłowe, nieedytowane PNG: [ustawienia](qa/candy-flow-candy-settings-return.png),
+  [mapa](qa/candy-flow-candy-island-map.png), [informacja](qa/candy-flow-candy-notice-info.png),
+  [sukces](qa/candy-flow-candy-notice-success.png). [Raport diagnostyczny](qa/candy-flow-api35-ui-diagnostic.json),
+  [źródła i SHA256](qa/candy-flow-provenance.json), [JUnit pełnego QA](qa/candy-flow-api35-junit.xml).
+
+Artefakty: `/home/roch/.cache/candyverse/artifacts/candy-flow-1.2.1-5/`.
+Zmiany QA nie modyfikują `lib/`, assetów, Androida ani wersji/zależności aplikacji.
+Publiczne1.2.0+4 pozostaje bez zmian. Signed compatibility nadal testuje1.2.0+4,
+więc jego PASS nie jest testem podpisanego1.2.1+5. Nie powtarzamy testu telefonu
+zgodnie z decyzją właściciela.
+
+**Następny krok:** przygotować podpisany kandydat1.2.1+5 i jego macierz
+kompatybilności APK/AAB. PR#17 pozostaje otwarty. Ponowiony pełny smoke PR dla
+`56ab19f` jest w toku; zaliczony20-minutowy wynik powyżej dotyczy `8e68c2e`.
+[Flutter CI38968384949 SUCCESS](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38968384949)
+dla `56ab19f`: pierwsza próba zatrzymana przez uszkodzony ZIP NDK przy pobieraniu
+przez sdkmanager; ponowienie na świeżym runnerze PASS.
 
 ## 2026-10-16 — T-020: spójny candy UI i nawigacja
 
@@ -48,7 +78,8 @@ Weryfikacja lokalna:
   [nawigacja PL200%](../test/goldens/candy_navigation_pl_320.png),
   [recovery](../test/goldens/candy_recovery.png).
 
-Brak nowego testu natywnego/emulatorowego/podpisanego release dla1.2.1+5.
+Stan po implementacji (przed QA opisanym wyżej): brak nowego testu natywnego
+i podpisanego release dla1.2.1+5.
 Workflow signed compatibility nadal pobiera publiczne1.2.0+4; jego wynik nie
 zalicza natywnego QA T-020. Nie prosimy o powtórkę telefonu (decyzja właściciela).
 
