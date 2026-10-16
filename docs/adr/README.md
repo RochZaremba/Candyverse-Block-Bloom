@@ -40,3 +40,5 @@ Istniejące ADR-y:
 
 - [ADR-0016 — Kingdom progression and art](0016-kingdom-progression-and-art.md)
 - [0017 Isolated Android QA](0017-isolated-android-qa.md)
+
+- [0018 Reference screen presentation](0018-reference-screen-presentation.md)

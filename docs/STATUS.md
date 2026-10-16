@@ -1,5 +1,50 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
+## 2026-10-16 — T-019: pięć ekranów według zdjęć właściciela
+
+**DONE w gałęzi `feat/reference-candy-ui`, wersja rozwojowa 1.2.0+4.**
+Commit aplikacji i testów: `e2a269d`; pierwsza partia grafik: `9afa7d1`.
+Nowa oprawa nie została scalona do main ani opublikowana jako wydanie.
+
+- Menu, plansza, wynik, okno powrotu i wyspa otrzymały kompozycje, lokalne tła,
+  postacie, logo, błyszczące przyciski i ramki według pięciu referencji.
+  Osobny atlas zawiera sześć etapów trzech budynków, w tym niebieską fontannę
+  z gwiazdką. [Pięć rzeczywistych renderów i procedura](REFERENCE_UI_REVIEW.md).
+- Wyniki, pieniądze, poziomy, plansza i klocki są żywymi widgetami. Istniejąca
+  domena, ceny i schema2 pozostały zachowane. COLLECT i karty korzystają z
+  AppSession; zakładki wyspy pokazują mieszkańców, dekoracje i mapę. Nawigacja
+  jest przypięta na dole, a duży tekst otrzymuje przewijanie/pionowe karty.
+- Dialogi zachowują klucze i callbacki akcji, czytelną przewijaną treść i
+  potwierdzenia. Jawny fallback Roboto uzupełnia brakujące polskie litery fontu
+  Lilita One. [Decyzja](adr/0018-reference-screen-presentation.md),
+  [grafiki i licencje](../assets/kingdom/REFERENCE_ART.md).
+
+### Weryfikacja bieżących źródeł w środowisku chmurowym
+
+- `flutter test --no-pub --concurrency=2`: **199/199 PASS**, końcowy przebieg bez
+  `--update-goldens`; pięć nowych przypadków obejmuje także prawdziwy ruch,
+  anulowanie powrotu, restart, zapis zakupu, odbiór dochodu i zakładki.
+- `dart test test/game`: **71/71 PASS**; `flutter analyze --no-pub` i format PASS.
+- Python release tools **19/19 PASS** oraz kontrola dokumentacji/tokenów PASS.
+- `flutter build apk --debug --no-pub`: PASS; manifest ma wersję **1.2.0/code4**,
+  identyfikator `com.renvo.candyverse`, SDK24/36. Audyt debug: dozwolone uprawnienia,
+  backup exclusions, pięć 64-bit ELF, ZIP16KB i podpis APK PASS.
+- Host smoke: prawdziwe akcje UI, dochód, poziom30, prestiż, settings/reset i
+  kontynuacja gry PASS. Storage scenariusza to `memory-host-validation`.
+  To nie jest nowy test natywnego DataStore ani pomiar GPU.
+
+Artefakt lokalny: `build/artifacts/candyverse-1.2.0-4-debug.apk` (debug, nie release).
+SHA256: `c48e9a0e4ac75802a1154832cc6d7e0d7c714ac713a55bd755f1dc4fb61500b7`.
+Logi są w `/workspace/.candyverse-tools/logs/reference-*`.
+Nie wykonywano nowego testu na telefonie/emulatorze ani publikacji Play/GitHub
+release. Wyniki GitHub Actions tej gałęzi nie były weryfikowane; API GitHub
+odmówiło dostępu podczas próby odczytu repozytorium.
+
+**Jedno następne zadanie:** przejrzeć T-019 na podstawie pięciu renderów i
+zintegrować gałąź przez PR; utworzenie PR przez API nie było dostępne w tej sesji.
+
+Poniżej zachowano historyczny handoff i dowody wydania 1.1.0+3.
+
 Aktualizacja2026-10-15. **Candy Kingdom1.1.0+3: publiczny prerelease GitHub. Google Play: nieopublikowane.**
 
 Implementacja na main: `7b5db1a`, merge [PR#14](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/14), head `231258a`.

@@ -16,6 +16,12 @@ Zadania mają stabilne ID. **Status wykonania prowadź wyłącznie w `STATUS.md`
 | T-010 | QA, golden/smoke, optymalizacja | T-009 | test matrix, profiling 60FPS aspirational, poprawione problemy | `test/qa-hardening` |
 | T-011 | Privacy, store assets, release | T-010 | poprawne teksty/URL, listing, release config, test AAB, signing instr. | `chore/playstore-release` |
 
+## Zamówiona prezentacja według referencji — 2026-10-16
+
+| ID | Zadanie | Zależności | Kryterium akceptacji | Preferowany branch |
+| --- | --- | --- | --- | --- |
+| T-019 | Pięć ekranów według zdjęć właściciela | T-018 | Lokalne tła, żywe UI i zapis, menu/gry/wynik/okno/wyspa, działające zakładki i zakupy, goldeny 9:16, małe ekrany i tekst 2×, analyze/test/build | feat/reference-candy-ui |
+
 ## Pull request strategy
 
 T-001 bootstrap osobny PR; T-002 i T-003 mogą mieć osobne PR; UI i VFX nie powinny trafiać jako jeden gigantyczny PR. Każdy PR ma testy i weryfikację, a merge jest dozwolony wyłącznie po pozytywnych wymaganych kontrolach. `main` zawsze ma się budować (po utworzeniu Flutter). W nowych sesjach sprawdzaj, czy branch/PR nie został już zrobiony.
