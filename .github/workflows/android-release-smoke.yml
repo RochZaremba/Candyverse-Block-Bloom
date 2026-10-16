@@ -13,7 +13,7 @@ permissions:
   contents: read
 jobs:
   production-entrypoint:
-    # The verified candidate is public; no signing credentials or write scope.
+    # Download the pinned candidate; no signing credentials or write scope.
     permissions:
       contents: read
     name: production-entrypoint (API${{ matrix.api }}, pages${{ matrix.page-size }}, ${{ matrix.kind }}, ${{ matrix.renderer }})
@@ -31,8 +31,8 @@ jobs:
             features: -feature -Vulkan
             renderer: default
             kind: apk
-            candidate: candyverse-1.1.0-3.apk
-            sha256: 3af487f4105810001d293af7e460ee41d51eda003376f10576d1d7799909be75
+            candidate: candyverse-1.2.0-4.apk
+            sha256: 51ab72e985c0ec5d4f3a8a0f309efd4325a340778c217751d84a140e422913bd
           - api: 36
             target: google_apis
             page-size: 4096
@@ -41,8 +41,8 @@ jobs:
             features: -feature -Vulkan
             renderer: default
             kind: apk
-            candidate: candyverse-1.1.0-3.apk
-            sha256: 3af487f4105810001d293af7e460ee41d51eda003376f10576d1d7799909be75
+            candidate: candyverse-1.2.0-4.apk
+            sha256: 51ab72e985c0ec5d4f3a8a0f309efd4325a340778c217751d84a140e422913bd
           - api: 35
             target: google_apis_ps16k
             page-size: 16384
@@ -51,8 +51,8 @@ jobs:
             features: -feature -Vulkan,GLDirectMem
             renderer: default
             kind: apk
-            candidate: candyverse-1.1.0-3.apk
-            sha256: 3af487f4105810001d293af7e460ee41d51eda003376f10576d1d7799909be75
+            candidate: candyverse-1.2.0-4.apk
+            sha256: 51ab72e985c0ec5d4f3a8a0f309efd4325a340778c217751d84a140e422913bd
           - api: 36
             target: google_apis
             page-size: 4096
@@ -61,8 +61,8 @@ jobs:
             features: -feature -Vulkan
             renderer: default
             kind: aab
-            candidate: candyverse-1.1.0-3-from-aab.apk
-            sha256: 32e552b82cf81425eeb1e5369d218f1833e6f619a2ab848f990a3f53ea2c453c
+            candidate: candyverse-1.2.0-4-from-aab.apk
+            sha256: e509a92a1e14e6f65e0be3f1b817cb18dee435f0f2ff7692d2dd04e2103d6fc6
     steps:
       - uses: actions/checkout@v4
         with:
@@ -76,7 +76,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p build/release-qa
-          gh release download v1.1.0-rc.2 --repo "$GITHUB_REPOSITORY" --pattern "${{ matrix.candidate }}" --dir build/release-qa
+          gh release download v1.2.0-rc.1 --repo "$GITHUB_REPOSITORY" --pattern "${{ matrix.candidate }}" --dir build/release-qa
           echo '${{ matrix.sha256 }}  build/release-qa/${{ matrix.candidate }}' | sha256sum --check
       - name: Enable KVM on disposable runner
         run: |

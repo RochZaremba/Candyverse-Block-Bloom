@@ -3,12 +3,17 @@
 ## 2026-10-16 — integracja i wydanie T-019 (w toku)
 
 Na polecenie właściciela: review, PR, merge i nowy prerelease GitHub 1.2.0+4.
+PR [#16](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/16).
 Autor/committer trzech commitów poprawiony na Roch Zaremba
 <rochzaremba@gmail.com>; head `8554b51`, zawartość wszystkich drzew bez zmian.
 Lokalnie format, analyze, 71 testów silnika, 19 testów narzędzi wydania i docs PASS.
-Testy widgetów i podpisany build trwają. Native smoke:
+Testy widgetów 199/199 PASS. Podpisany APK/AAB 1.2.0+4 i universal z finalnego
+AAB zbudowane ze źródeł `18fcf7b` (kod aplikacji `6293730`). Audyt APK/universal,
+bundletool validate/config16KB i weryfikacja podpisów PASS; certyfikat bez zmian.
+Szkic `v1.2.0-rc.1` służy sprawdzeniu podpisanych plików, nie jest publikacją.
+Native smoke:
 [CI38950626989](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38950626989).
-Nie przypisujemy jeszcze wyniku temu przebiegowi. Brak podłączonego telefonu;
+Nie przypisujemy jeszcze wyniku temu przebiegowi ani macierzy podpisanego APK. Brak podłączonego telefonu;
 zgodnie z wcześniejszą decyzją właściciela nie prosimy o ponowny test telefonu.
 Publikacja dotyczy GitHub; Google Play pozostaje nieopublikowane.
 
