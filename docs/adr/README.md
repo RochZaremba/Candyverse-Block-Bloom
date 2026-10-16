@@ -42,3 +42,5 @@ Istniejące ADR-y:
 - [0017 Isolated Android QA](0017-isolated-android-qa.md)
 
 - [0018 Reference screen presentation](0018-reference-screen-presentation.md)
+
+- [0019 Candy feedback and navigation](0019-candy-feedback-and-navigation.md)

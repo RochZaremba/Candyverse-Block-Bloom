@@ -1,5 +1,13 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
+## 2026-10-16 — T-020 w toku
+
+Na polecenie właściciela: spójne komunikaty i bardziej intuicyjna nawigacja.
+Branch `feat/candy-flow-polish`, baza `199e79f` (merge PR#16).
+Baseline: `flutter test --concurrency=2` **199/199 PASS**, czysty worktree przed pracą.
+Kontrakt: ADR-0019. Kolejny krok: implementacja i testy flow, małego ekranu oraz tekstu200%.
+
+
 ## 2026-10-16 — T-019: integracja i kandydat 1.2.0+4
 
 **T-019 DONE.** Integracja przez [PR#16](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/16),
