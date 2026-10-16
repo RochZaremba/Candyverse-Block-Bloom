@@ -3,6 +3,7 @@ import '../../core/localization/app_strings.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../core/presentation/candy_controls.dart';
 import '../domain/upgrade.dart';
 
 class UpgradeChoices extends StatelessWidget {
@@ -27,6 +28,7 @@ class UpgradeChoices extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const CandyFriends(height: 86),
             Semantics(
               liveRegion: true,
               child: appText(
@@ -60,40 +62,43 @@ class UpgradeChoices extends StatelessWidget {
                   elevation: 5,
                   shadowColor: theme.color('ink').withValues(alpha: .3),
                   clipBehavior: Clip.antiAlias,
-                  child: InkWell(
-                    key: ValueKey('upgrade-${upgrade.name}'),
-                    borderRadius: BorderRadius.circular(24),
-                    onTap: () => onChoose(upgrade),
-                    child: Padding(
-                      padding: const EdgeInsets.all(18),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ExcludeSemantics(
-                            child: CustomPaint(
-                              size: const Size(44, 48),
-                              painter: _UpgradeEmblem(theme, upgrade),
+                  child: CandyPanel(
+                    padding: EdgeInsets.zero,
+                    child: InkWell(
+                      key: ValueKey('upgrade-${upgrade.name}'),
+                      borderRadius: BorderRadius.circular(24),
+                      onTap: () => onChoose(upgrade),
+                      child: Padding(
+                        padding: const EdgeInsets.all(18),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ExcludeSemantics(
+                              child: CustomPaint(
+                                size: const Size(44, 48),
+                                painter: _UpgradeEmblem(theme, upgrade),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                appText(
-                                  context,
-                                  upgrade.title,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w900,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  appText(
+                                    context,
+                                    upgrade.title,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w900,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                appText(context, upgrade.description),
-                              ],
+                                  const SizedBox(height: 4),
+                                  appText(context, upgrade.description),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

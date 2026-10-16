@@ -74,3 +74,8 @@ home/back, settings/play, success/attention, information/retry. Uniform size,
 complete uncropped circles, padding, no text, no characters, no background.
 Alpha checked at corners and between cells. Flutter crops sprites at paint time;
 no runtime generation or new SDK. Text, tooltips and actions remain native widgets.
+
+T-020 also refines the paint-time source rectangles of reference-mascots.png:
+its generated rows have unequal padding. referencePetRect() excludes the
+previous row's paws while keeping the original PNG unchanged. No image editor,
+procedural replacement or new generated pet was used for that correction.

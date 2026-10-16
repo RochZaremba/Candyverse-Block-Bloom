@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:candyverse/home/home_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -206,7 +208,8 @@ void main() {
     expect(find.text('25'), findsOneWidget);
     await tester.tap(find.byTooltip('Back to menu'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Play again'));
+    expect(find.byType(HomeScreen), findsOneWidget);
+    await tester.tap(find.byKey(const Key('home-play')));
     await tester.pumpAndSettle();
     expect(find.byType(GameScreen), findsOneWidget);
     expect(next.save.activeRun!.id, 2);

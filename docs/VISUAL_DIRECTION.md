@@ -13,6 +13,18 @@ Przed akceptacją należy obejrzeć ich realny render, a nie wyłącznie zaakcep
 zmienione pliki. Wartości pochodzą z modelu; skala tekstu, położenie tacki i
 wybór figury muszą pozostać użyteczne także na małym ekranie.
 
+## T-020 — komunikaty i nawigacja
+
+Właściciel 2026-10-16 zamówił ujednolicenie pozostałego UI i bardziej intuicyjną
+nawigację ([ADR-0019](adr/0019-candy-feedback-and-navigation.md)). Komunikaty
+informacyjne, sukces i błąd korzystają z CandyNotice i nowego atlasu kontrolek;
+mają zamknięcie, pełne semantyki i przewijaną treść. Przy dużym tekście treść
+przechodzi pod ikonę. Ustawienia/recovery/ulepszenia używają wspólnych paneli.
+Menu i gra na wyspie są poza scrollem, dostępne na każdej zakładce. Przy 200%
+tekstu zakładki układają się w dwa rzędy. Back w ustawieniach wraca do ekranu
+wywołującego; menu usuwa pośrednie trasy. Dekoracyjny napis banera zachowuje
+skalę ilustracji, pozostały tekst i akcje respektują skalowanie systemowe.
+
 ## North Star
 
 **Polished candy toy, not Material demo.** Maksimum przyjaznych kolorów, miękkich form i satysfakcjonujących mikroanimacji, przy bardzo czytelnej planszy. W świecie są galaretki, chmurki, cukierkowe drzewa i miękkie stworki. Nie robimy brutalnych motywów, groteski ani hiperbodźcowego migotania.

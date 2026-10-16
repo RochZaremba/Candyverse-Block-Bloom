@@ -37,6 +37,7 @@ class HomeScreen extends StatelessWidget {
           context,
           AppStrings.of(context)
               .translate(session?.error ?? 'Błąd zapisu. Spróbuj ponownie.'),
+          error: true,
         );
       }
     }
@@ -65,7 +66,11 @@ class HomeScreen extends StatelessWidget {
                     ),
                     child: Stack(
                       children: [
-                        Positioned.fill(
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          height: height,
                           child: const CandyArt('menu-scene', fit: BoxFit.fill),
                         ),
                         Column(
@@ -84,6 +89,7 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                   child: Text(
                                     'Przyszła\nreklama',
+                                    textScaler: TextScaler.noScaling,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontFamily: 'LilitaOne',
@@ -199,43 +205,24 @@ class HomeScreen extends StatelessWidget {
                         Positioned(
                           right: 12,
                           top: 10,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color(0x307d2cbd),
-                                  blurRadius: 8,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: IconButton(
-                              key: const Key('home-settings'),
-                              tooltip: strings.text('Ustawienia', 'Settings'),
-                              color: candyInk,
-                              iconSize: 28,
-                              constraints: const BoxConstraints(
-                                minWidth: 48,
-                                minHeight: 48,
-                              ),
-                              icon: const Icon(Icons.settings_rounded),
-                              onPressed: () {
-                                if (session == null) {
-                                  showFeedbackSettings(context, theme: theme);
-                                  return;
-                                }
-                                Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (_) => SettingsScreen(
-                                      theme: theme,
-                                      session: session!,
-                                    ),
+                          child: CandyIconButton(
+                            key: const Key('home-settings'),
+                            label: strings.text('Ustawienia', 'Settings'),
+                            symbol: CandySymbol.settings,
+                            onPressed: () {
+                              if (session == null) {
+                                showFeedbackSettings(context, theme: theme);
+                                return;
+                              }
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => SettingsScreen(
+                                    theme: theme,
+                                    session: session!,
                                   ),
-                                );
-                              },
-                            ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],

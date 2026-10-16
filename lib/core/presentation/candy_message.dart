@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'candy_controls.dart';
+import '../localization/app_strings.dart';
 
 /// Candyverse's supplied artwork, cropped by layout without editing the source.
 class CandyBrandImage extends StatelessWidget {
@@ -36,46 +37,108 @@ class CandyBrandImage extends StatelessWidget {
   );
 }
 
+enum CandyNoticeKind { information, success, error }
+
+class CandyNotice extends StatelessWidget {
+  const CandyNotice({
+    required this.message,
+    this.kind = CandyNoticeKind.information,
+    this.onDismiss,
+    this.action,
+    super.key,
+  });
+  final String message;
+  final CandyNoticeKind kind;
+  final VoidCallback? onDismiss;
+  final Widget? action;
+  @override
+  Widget build(BuildContext context) {
+    final large = MediaQuery.textScalerOf(context).scale(16) > 22;
+    final glyph = CandyGlyph(switch (kind) {
+      CandyNoticeKind.success => CandySymbol.success,
+      CandyNoticeKind.error => CandySymbol.attention,
+      CandyNoticeKind.information => CandySymbol.info,
+    });
+    final dismiss = onDismiss == null
+        ? const SizedBox.shrink()
+        : IconButton(
+            onPressed: onDismiss,
+            tooltip: AppStrings.of(context)
+                .text('Zamknij komunikat', 'Dismiss message'),
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            icon: const Icon(Icons.close_rounded, color: candyInk),
+          );
+    final text = ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * .4,
+      ),
+      child: SingleChildScrollView(
+        child: Text(
+          message,
+          style: const TextStyle(
+            color: candyInk,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+    return Semantics(
+      liveRegion: true,
+      child: CandyPanel(
+        radius: 28,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (large) ...[
+              Row(children: [glyph, const Spacer(), dismiss]),
+              const SizedBox(height: 8),
+              text,
+            ] else
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  glyph,
+                  const SizedBox(width: 10),
+                  Expanded(child: text),
+                  dismiss,
+                ],
+              ),
+            if (action != null) ...[const SizedBox(height: 12), action!],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 void showCandyMessage(
   BuildContext context,
   String message, {
   bool success = false,
+  bool error = false,
 }) {
   final messenger = ScaffoldMessenger.of(context);
-  messenger.hideCurrentSnackBar();
+  messenger.removeCurrentSnackBar();
   messenger.showSnackBar(
     SnackBar(
       behavior: SnackBarBehavior.floating,
-      backgroundColor: const Color(0xfffff6e6),
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-        side: BorderSide(
-          color: success ? const Color(0xff63cba5) : const Color(0xffed8db8),
-          width: 3,
-        ),
-      ),
-      content: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: const SizedBox(
-              width: 48,
-              height: 48,
-              child: CandyBrandImage(icon: true),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(
-                color: Color(0xff382453),
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ],
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      padding: EdgeInsets.zero,
+      margin: const EdgeInsets.all(12),
+      duration: MediaQuery.accessibleNavigationOf(context)
+          ? const Duration(days: 1)
+          : const Duration(seconds: 8),
+      content: CandyNotice(
+        message: message,
+        kind: error
+            ? CandyNoticeKind.error
+            : success
+            ? CandyNoticeKind.success
+            : CandyNoticeKind.information,
+        onDismiss: messenger.hideCurrentSnackBar,
       ),
     ),
   );
@@ -155,7 +218,9 @@ class CandyDialog extends StatelessWidget {
                                   '',
                               onPressed:
                                   (actions[i] as ButtonStyleButton).onPressed,
-                              tone: i == 0
+                              tone: actions[i].key == const Key('confirm-reset')
+                                  ? CandyButtonTone.pink
+                                  : i == 0
                                   ? CandyButtonTone.gold
                                   : CandyButtonTone.aqua,
                               fontSize: 22,

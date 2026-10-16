@@ -1,5 +1,6 @@
 import '../../core/localization/app_strings.dart';
 import '../../core/presentation/candy_message.dart';
+import '../../core/presentation/candy_controls.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -86,41 +87,53 @@ class _SaveBootstrapState extends State<SaveBootstrap> {
         localizationsDelegates: GlobalMaterialLocalizations.delegates,
         theme: widget.theme.material,
         home: Builder(
-          builder: (context) => Scaffold(
-            body: SafeArea(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (loading)
-                        const CircularProgressIndicator()
-                      else ...[
-                        appText(
-                          context,
-                          'Nie można otworzyć zapisu',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+          builder: (context) => CandyPage(
+            title: 'Candyverse',
+            backLabel: AppStrings.of(context).text('Wróć', 'Back'),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: SingleChildScrollView(
+                  child: CandyPanel(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const CandyFriends(height: 100),
+                        if (loading)
+                          const CircularProgressIndicator()
+                        else ...[
+                          appText(
+                            context,
+                            'Nie można otworzyć zapisu',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        appText(
-                          context,
-                          'Twój zapis nie został zastąpiony. Możesz ponowić próbę.',
-                        ),
-                        FilledButton(
-                          onPressed: _load,
-                          child: appText(context, 'Spróbuj ponownie'),
-                        ),
-                        if (failure is SaveRecoveryRequired)
-                          TextButton(
-                            onPressed: () => _recoverFrom(context),
-                            child: appText(context, 'Rozpocznij od nowa'),
+                          const SizedBox(height: 16),
+                          appText(
+                            context,
+                            'Twój zapis nie został zastąpiony. Możesz ponowić próbę.',
                           ),
+                          CandyAction(
+                            onPressed: _load,
+                            label: AppStrings.of(context)
+                                .translate('Spróbuj ponownie'),
+                            fontSize: 22,
+                            height: 58,
+                          ),
+                          if (failure is SaveRecoveryRequired)
+                            CandyAction(
+                              onPressed: () => _recoverFrom(context),
+                              label: AppStrings.of(context)
+                                  .translate('Rozpocznij od nowa'),
+                              tone: CandyButtonTone.pink,
+                              fontSize: 20,
+                              height: 58,
+                            ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),

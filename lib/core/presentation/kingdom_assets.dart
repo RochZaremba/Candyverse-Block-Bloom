@@ -13,6 +13,7 @@ Future<void> warmKingdomAssets() async {
     'game-scene',
     'island-scene',
     'control-atlas',
+    'navigation-atlas',
     'reference-mascots',
     'reference-logo',
     'reference-buildings',

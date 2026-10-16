@@ -257,9 +257,18 @@ void main() {
       findsOneWidget,
     );
     storage.failRemove = null;
-    await tester.pump(const Duration(seconds: 5));
+    await tester.tap(find.byTooltip('Zamknij komunikat'));
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(find.byKey(const Key('reset-data')), 200);
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('reset-data')),
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byType(ListView),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
     await tester.tap(find.byKey(const Key('reset-data')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('confirm-reset')));
