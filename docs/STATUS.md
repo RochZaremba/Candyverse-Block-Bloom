@@ -1,9 +1,21 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
+## 2026-10-16 — integracja i wydanie T-019 (w toku)
+
+Na polecenie właściciela: review, PR, merge i nowy prerelease GitHub 1.2.0+4.
+Autor/committer trzech commitów poprawiony na Roch Zaremba
+<rochzaremba@gmail.com>; head `8554b51`, zawartość wszystkich drzew bez zmian.
+Lokalnie format, analyze, 71 testów silnika, 19 testów narzędzi wydania i docs PASS.
+Testy widgetów i podpisany build trwają. Native smoke:
+[CI38950626989](https://github.com/RochZaremba/Candyverse-Block-Bloom/actions/runs/38950626989).
+Nie przypisujemy jeszcze wyniku temu przebiegowi. Brak podłączonego telefonu;
+zgodnie z wcześniejszą decyzją właściciela nie prosimy o ponowny test telefonu.
+Publikacja dotyczy GitHub; Google Play pozostaje nieopublikowane.
+
 ## 2026-10-16 — T-019: pięć ekranów według zdjęć właściciela
 
 **DONE w gałęzi `feat/reference-candy-ui`, wersja rozwojowa 1.2.0+4.**
-Commit aplikacji i testów: `e2a269d`; pierwsza partia grafik: `9afa7d1`.
+Commit aplikacji i testów: `6293730`; pierwsza partia grafik: `f0cf84e`.
 Nowa oprawa nie została scalona do main ani opublikowana jako wydanie.
 
 - Menu, plansza, wynik, okno powrotu i wyspa otrzymały kompozycje, lokalne tła,
