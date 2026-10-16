@@ -38,3 +38,9 @@ The wrapper enables the capture define only on an emulator and requires the
 four new candy/navigation PNGs. Physical QA devices keep capture disabled.
 The report states native-adb-milestone-observer; CPU timings remain diagnostic,
 not a GPU benchmark. The20-minute active dwell still starts after setup.
+
+Manual dispatch may select0 minutes for a separate UI screenshot diagnostic.
+Pull requests and default dispatch retain20 minutes. A0-minute report never
+qualifies as the required active QA; it must be labelled separately from the
+already completed20-minute run. Captures pump route/snackbar transitions before
+notifying the external observer, so screenshots do not show the previous frame.

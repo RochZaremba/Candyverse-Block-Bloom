@@ -134,6 +134,9 @@ Future<void> runSmokeScenario(
   }
 
   Future<void> capture(String name) async {
+    // Async persistence/navigation may mount a route or snackbar at the end of
+    // the preceding pump. Advance its transition before asking adb for pixels.
+    await tester.pump(const Duration(milliseconds: 400));
     debugPrintSynchronously('QA milestone: $name');
     // Keep this UI stable while the external adb observer captures the real surface.
     if (nativeScreenshots) {
