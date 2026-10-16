@@ -1,12 +1,49 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
-## 2026-10-16 — T-020 w toku
+## 2026-10-16 — T-020: spójny candy UI i nawigacja
 
-Na polecenie właściciela: spójne komunikaty i bardziej intuicyjna nawigacja.
-Branch `feat/candy-flow-polish`, baza `199e79f` (merge PR#16).
-Baseline: `flutter test --concurrency=2` **199/199 PASS**, czysty worktree przed pracą.
-Kontrakt: ADR-0019. Kolejny krok: implementacja i testy flow, małego ekranu oraz tekstu200%.
+**DONE w branchu `feat/candy-flow-polish`, wersja rozwojowa1.2.1+5.**
+Baza `199e79f` (merge PR#16), grafiki/kontrakt `0c430d3`, implementacja `f65e01d`.
+Publiczne wydanie pozostaje1.2.0+4; T-020 nie jest jeszcze scalone ani opublikowane.
 
+- Wspólne CandyNotice dla informacji/sukcesów/błędów: generowane ikony,
+  candy panel, zamknięcie, semantyki, przewijanie i układ pionowy przy dużym
+  tekście. Przy nawigacji do gry nie zostają stare komunikaty wyspy.
+- Ustawienia, sheet dźwięku/ruchu, recovery i wybór ulepszeń używają wspólnych
+  paneli/przycisków; retry błędu zapisu pozostaje rzeczywisty. Przezroczysta
+  blokada w trakcie checkpointu zachowana, bez powrotu białego flash.
+- Menu i gra dostępne stale na każdej zakładce wyspy; menu czyści pośrednie
+  trasy, gra otwiera istniejący AppSession. Back w ustawieniach wraca do gry.
+  Zakładki przy200% tekstu przechodzą w2 rzędy. Dotyk>=48dp.
+- Nowy lokalny [atlas8 kontrolek](../assets/kingdom/navigation-atlas.png),
+  wbudowany imagegen, nieedytowany PNG z alpha. [Prompt i provenance](../assets/kingdom/REFERENCE_ART.md#t-020--navigation-atlaspng).
+  Poprawione wyłącznie paint-time kadry starych postaci usuwają sąsiednie łapki.
+  Silnik, ekonomia, save schema, zależności i zasady offline/prywatności bez zmian.
+
+Weryfikacja lokalna:
+- Baseline199/199; końcowo `flutter test --no-pub --concurrency=2` **206/206 PASS**
+  bez aktualizacji goldenów, `dart test test/game` **71/71 PASS**.
+- Format69 plików bez zmian, analyze bez problemów, docs/diff PASS,
+  Python release tools **19/19 PASS**.
+- `flutter build apk --debug --no-pub` PASS; audyt debug: SDK24/36,
+  backup exclusions,5 ELF64/ZIP16KB i podpis debug PASS. INTERNET dotyczy
+  developerskiego APK; nie jest to podpisane wydanie produkcyjne.
+- Nowe testy obejmują wszystkie zakładki, wznowienie tej samej64-polowej planszy,
+  brak zaległych tras, settings/back, zamknięcie i zastąpienie komunikatu,
+  PL/EN/320dp/200%. Obejrzano realne rendery Fluttera:
+  [sukces](../test/goldens/notice_success_320.png),
+  [komunikat PL200%](../test/goldens/notice_pl_320.png),
+  [komunikat EN200%](../test/goldens/notice_en_320.png),
+  [ustawienia](../test/goldens/candy_settings_320.png),
+  [nawigacja PL200%](../test/goldens/candy_navigation_pl_320.png),
+  [recovery](../test/goldens/candy_recovery.png).
+
+Brak nowego testu natywnego/emulatorowego/podpisanego release dla1.2.1+5.
+Workflow signed compatibility nadal pobiera publiczne1.2.0+4; jego wynik nie
+zalicza natywnego QA T-020. Nie prosimy o powtórkę telefonu (decyzja właściciela).
+
+**Jedno następne zadanie:** integracja T-020 przez PR, następnie przygotowanie
+podpisanego kandydata1.2.1+5 z natywnym QA nowego UI.
 
 ## 2026-10-16 — T-019: integracja i kandydat 1.2.0+4
 
