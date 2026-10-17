@@ -1,5 +1,13 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
+## 2026-10-18 — T-021 Roguelite Evolution w toku
+
+Branch `feat/roguelite-evolution` oparty na `bcb24b6` z otwartego PR#17.
+Nowe zamówienie właściciela:12 ulepszeń/3 ścieżki/4 synergie; ADR-0020.
+Baseline Flutter206/206 PASS. Repo przed zmianami czyste.
+Trwa implementacja silnika, migracji i UI; brak jeszcze wyniku nowych testów.
+
+
 ## 2026-10-16 — natywne QA T-020: aktywny scenariusz PASS
 
 Branch `feat/candy-flow-polish`, PR [#17](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/17),

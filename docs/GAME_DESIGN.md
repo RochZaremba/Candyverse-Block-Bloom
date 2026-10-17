@@ -87,3 +87,10 @@ Nie implementuj streaków codziennych, wymuszonych przerw reklamowych ani mechan
 Zatwierdzone przez właściciela2026-10-15: sekcje5–6 dotyczące limitu3 poziomów,
 braku pasywnego dochodu i dawnych sylwetek zastępuje [KINGDOM_EXPANSION](KINGDOM_EXPANSION.md).
 Zasady planszy, punktacji, Lucky Jelly i idempotentnej nagrody runu bez zmian.
+
+## Roguelite Evolution — nowe runy od T-021
+
+Kontrakt [ADR-0020](adr/0020-roguelite-evolution.md) zastępuje sekcję4 oraz
+zasadę braku wpływu koloru na eksplozje dla nowych runów. Bazowe punkty i monety
+bez zmian; bonusCoins dodawane po formule Lucky Jelly, bez mnożenia premii.
+Stare snapshoty zachowują dotychczasowe reguły do końca podejścia.
