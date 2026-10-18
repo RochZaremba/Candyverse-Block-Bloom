@@ -149,8 +149,10 @@ report['runner']='native-android-instrumentation'
 report['hostInstrumentationElapsedSeconds']=host_elapsed
 if report.get('candyNavigationVerified') is not True or report.get('candyNoticesVerified') is not True:
     raise SystemExit('Native candy navigation/notice assertions did not complete.')
+if report.get('evolutionPowersVerified') is not True or report.get('evolutionRestoreVerified') is not True:
+    raise SystemExit('Native evolution power/restore assertions did not complete.')
 if report.get('captureMethod') == 'native-adb-milestone-observer':
-    expected=('candy-settings-return','candy-island-map','candy-notice-info','candy-notice-success')
+    expected=('candy-settings-return','candy-island-map','candy-notice-info','candy-notice-success','evolution-powers','evolution-bomb-preview','evolution-cleared')
     for name in expected:
         screenshot=out/'screenshots'/f'{name}.png'
         if not screenshot.exists() or not screenshot.read_bytes().startswith(b'\x89PNG\r\n\x1a\n'):

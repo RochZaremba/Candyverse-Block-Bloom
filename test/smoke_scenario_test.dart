@@ -24,6 +24,8 @@ void main() {
     expect(metrics['dwellCycles'], 1);
     expect(metrics['dwellMoves'], greaterThan(0));
     expect(metrics['dwellReactions'], 20);
+    expect(metrics['evolutionPowersVerified'], isTrue);
+    expect(metrics['evolutionRestoreVerified'], isTrue);
     expect(metrics['candyNavigationVerified'], isTrue);
     expect(metrics['candyNoticesVerified'], isTrue);
     expect(metrics['islandPlayResumesFullBoard'], isTrue);

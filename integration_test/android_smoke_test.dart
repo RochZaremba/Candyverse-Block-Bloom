@@ -1,3 +1,5 @@
+import 'package:candyverse/upgrades/domain/evolution.dart';
+
 import 'dart:convert';
 import 'dart:ui' as ui;
 
@@ -519,6 +521,70 @@ Future<void> runSmokeScenario(
   expect((await repo.load()).wallet, 0);
   await capture('home-reset-en');
   expect((await repo.load()).settings.language, 'en');
+  // T-021 fixture: real power inputs, checkpoint and a reconstructed session.
+  final evolutionFixture = GameState(
+    board: Board.empty().withCells({
+      (row: 2, col: 2): 'candyPink',
+      (row: 2, col: 3): 'candyPink',
+      (row: 3, col: 3): 'lemonYellow',
+      (row: 7, col: 7): 'blueberry',
+    }),
+    tray: [dot, null, pieceCatalog.last],
+    rngState: 1234,
+    evolution: Evolution(
+      explosive: 3,
+      rainbow: 3,
+      paws: 3,
+      moves: 15,
+      bombCharges: 2,
+      bombs: [18, 27],
+    ),
+  );
+  await mount(
+    AppSaveV1(
+      nextRunId: 2,
+      activeRun: SavedRun(1, 59, evolutionFixture),
+      settings: const SavedSettings(language: 'en', reduceMotion: true),
+    ),
+  );
+  await tap(find.byKey(const Key('home-play')));
+  await tap(find.byKey(const Key('evolution-rainbow')));
+  await tap(find.byKey(const Key('rainbow-slot-2')));
+  await tap(find.byKey(const Key('power-color-blueberry')));
+  await checkpoint();
+  final evolved = (await repo.load()).activeRun!.game;
+  expect(evolved.evolution!.rainbowPrimed, isTrue);
+  expect(evolved.evolution!.rainbowCooldown, 4);
+  expect(evolved.evolution!.synergies.length, 4);
+  expect(evolved.tray[2]!.id, isNot(pieceCatalog.last.id));
+  expect(evolved.pendingCoins, 2);
+  expect(session!.save.wallet, 0);
+  await capture('evolution-powers');
+  await leaveGame();
+  final powerSave = await repo.load();
+  await mount(powerSave);
+  await tap(find.byKey(const Key('home-play')));
+  expect(
+    session!.save.activeRun!.game.evolution!.toJson(),
+    evolved.evolution!.toJson(),
+  );
+  expect(session!.save.activeRun!.game.rngState, evolved.rngState);
+  await tap(find.byKey(const Key('evolution-bomb')));
+  await tap(find.byKey(const Key('power-color-blueberry')));
+  await tap(find.byKey(const Key('cell-2-2')));
+  expect(find.text('Remove 4 blocks. Charges: 2.'), findsOneWidget);
+  await capture('evolution-bomb-preview');
+  await tap(find.byKey(const Key('confirm-bomb')));
+  await checkpoint();
+  final exploded = (await repo.load()).activeRun!.game;
+  expect(exploded.board.occupiedCount, 0);
+  expect(exploded.evolution!.bombCharges, 0);
+  expect(exploded.evolution!.rainbowPrimed, isFalse);
+  expect(exploded.pendingCoins, 6);
+  expect(exploded.rngState, evolved.rngState);
+  expect(session!.save.wallet, 0);
+  await capture('evolution-cleared');
+
   int percentile(List<int> samples, double p) {
     if (samples.isEmpty) return 0;
     final sorted = samples.toList()..sort();
@@ -538,6 +604,8 @@ Future<void> runSmokeScenario(
     'rasterP95Micros': percentile(rasters, .95),
     'buildOver16667': builds.where((v) => v > 16667).length,
     'rasterOver16667': rasters.where((v) => v > 16667).length,
+    'evolutionPowersVerified': true,
+    'evolutionRestoreVerified': true,
     'candyNavigationVerified': true,
     'candyNoticesVerified': true,
     'islandPlayResumesFullBoard': true,
