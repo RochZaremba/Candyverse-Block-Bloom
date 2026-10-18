@@ -3,7 +3,9 @@
 ## 2026-10-18 — T-021 Roguelite Evolution zaimplementowane
 
 Branch `feat/roguelite-evolution` oparty na `bcb24b6` z otwartego PR#17.
-Kontrakt `5dc3aa7` i [ADR-0020](adr/0020-roguelite-evolution.md); jawne
+Implementacja `a351df1`, Android smoke `4022750`, dokumentacja `d2e021c`.
+PR [#18](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/18), baza
+`feat/candy-flow-polish` (PR#17 nadal otwarty). Kontrakt `5dc3aa7` i [ADR-0020](adr/0020-roguelite-evolution.md); jawne
 zamówienie właściciela. Wersja rozwojowa **1.3.0+6**, publiczne wydanie bez zmian.
 
 - 12 kart:4 poziomy Explosive Candy, Rainbow Magic i Lucky Paws. Progi co5
@@ -35,7 +37,8 @@ developerskiego APK. Brak nowego wyniku natywnego DataStore i podpisanego releas
 QA1.2.1+5 nie zalicza nowego silnika. Nie prosimy o powtórkę telefonu.
 
 **Następny krok:** sprawdzić CI z natywnym scenariuszem Evolution przed integracją;
-PR ma bazować na gałęzi PR#17, aby nie mieszać wcześniejszej oprawy z T-021.
+PR#18 bazuje na gałęzi PR#17, aby nie mieszać wcześniejszej oprawy z T-021.
+Po scaleniu#17 przestaw bazę#18 na main. CI#18 uruchomiono; brak jeszcze wyniku.
 
 ## 2026-10-16 — natywne QA T-020: aktywny scenariusz PASS
 
