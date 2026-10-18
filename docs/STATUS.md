@@ -1,12 +1,41 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
-## 2026-10-18 — T-021 Roguelite Evolution w toku
+## 2026-10-18 — T-021 Roguelite Evolution zaimplementowane
 
 Branch `feat/roguelite-evolution` oparty na `bcb24b6` z otwartego PR#17.
-Nowe zamówienie właściciela:12 ulepszeń/3 ścieżki/4 synergie; ADR-0020.
-Baseline Flutter206/206 PASS. Repo przed zmianami czyste.
-Trwa implementacja silnika, migracji i UI; brak jeszcze wyniku nowych testów.
+Kontrakt `5dc3aa7` i [ADR-0020](adr/0020-roguelite-evolution.md); jawne
+zamówienie właściciela. Wersja rozwojowa **1.3.0+6**, publiczne wydanie bez zmian.
 
+- 12 kart:4 poziomy Explosive Candy, Rainbow Magic i Lucky Paws. Progi co5
+  ruchów i co5 linii są niezależne, kolejkują każdy zdobyty wybór.
+- Bomba: wiersze ładują, krzyż→3×3→łańcuchy→szybsze ładowanie; znaczniki,
+  podgląd rzeczywistych pól/kosztu, anulowanie i potwierdzenie.
+- Tęcza: wybrany slot, inny ID z seedowanego RNG, cooldown liczony placementami,
+  od L3 wybór koloru. Paws: punkty i pending coins za combo.
+- 4 synergie: Rainbow Explosion, Golden Explosion, Lucky Spectrum,
+  Candy Constellation; nazwy i objaśnienia w panelu, zapowiedź na karcie.
+- Schema3 zachowuje ładunki, cooldown, priming, RNG i bonusCoins. Decoder1/2
+  zachowuje dotychczasowe runy/karty/bonusy i profil. Nowe runy używają Evolution.
+  Portfel rośnie dopiero przy idempotentnej finalizacji. Brak nowych SDK/sieci.
+- Panel pod tacką jest przewijany; poprawione gesty pion/poziom zachowują drag
+  mimo dłuższej zawartości. Tap-select odsłania planszę, gdy jest poza widokiem.
+
+Sprawdzone lokalnie (baseline206/206):
+- `flutter test --no-pub --concurrency=2`: **230/230 PASS**, bez update-goldens.
+- `dart test test/game`: **88/88 PASS**, w tym17 nowych przypadków Evolution.
+- Analyze bez uwag, format74 plików bez zmian, docs/diff i shell syntax PASS;
+  Python release tools19/19 PASS; rozszerzony host smoke PASS.
+- Obejrzano realne rendery kart PL/EN/200%, panelu mocy i podglądu bomby,
+  planszę320/412 i kompaktową tackę. Goldeny w `test/goldens/evolution_*.png`.
+
+`flutter build apk --debug --no-pub` PASS. Audyt debug: SDK24/36,
+backup exclusions,5 ELF64/ZIP16KB i podpis debug PASS. INTERNET dotyczy tylko
+developerskiego APK. Brak nowego wyniku natywnego DataStore i podpisanego release
+1.3.0+6; rozszerzono scenariusz Androida o moce i odtworzenie sesji. Poprzednie
+QA1.2.1+5 nie zalicza nowego silnika. Nie prosimy o powtórkę telefonu.
+
+**Następny krok:** sprawdzić CI z natywnym scenariuszem Evolution przed integracją;
+PR ma bazować na gałęzi PR#17, aby nie mieszać wcześniejszej oprawy z T-021.
 
 ## 2026-10-16 — natywne QA T-020: aktywny scenariusz PASS
 

@@ -12,8 +12,12 @@ oraz4 synergie. Poniższe wartości to jawny początkowy balans implementacji.
 
 T-021: trzy ścieżki po cztery kolejne karty. Wybór oferuje następny poziom
 każdej niewymaksowanej ścieżki, tasowany snapshot RNG. Próg to wzrost
-`max(moves ~/ 5, totalClearedLines ~/ 5)`; przekroczenia kolejkują się.
-Każde5 poprawnych placementów daje rozwój również bez czyszczenia. Akcje mocy
+`moves ~/ 5 + totalClearedLines ~/ 5`; przekroczenia kolejkują się, także
+dwa wybory przy jednoczesnym progu ruchów i linii. Pierwotny pomysł `max`
+odrzucono podczas implementacji: szybkie linie opóźniałyby późniejsze karty
+za ruchy, wbrew celowi odczuwalnej ewolucji co kilka placementów.
+Każde5 poprawnych placementów daje rozwój również bez czyszczenia. Przy skróceniu interwału zachowujemy naliczone wiersze (mogą doładować bombę),
+a pozostały cooldown tęczy ograniczamy do nowego maksimum. Akcje mocy
 nie liczą się jako ruchy, nie ładują cooldownu ani progów i nie resetują combo.
 
 | Ścieżka | Karty1–4 | Efekty |
