@@ -63,3 +63,19 @@ upgrade levels. Its prompt requested the three exact reference designs, six
 progressively richer stages, isolated alpha sprites and no UI or pets. The
 transparent row boundaries were inspected at y=230/476/744/1048/1374; source
 rectangles are recorded in island_scene.dart. The historical atlas remains intact.
+
+## T-020 — navigation-atlas.png
+
+Generated with the built-in image tool on 2026-10-16, output
+`exec-6c875121-789a-4562-8889-0704b8f8aba6`, copied unchanged (1024×1536 RGBA).
+Style reference: existing control-atlas.png. Prompt: create a transparent 2-column,
+4-row atlas of glossy candy circles, white/pink rims and clear white symbols:
+home/back, settings/play, success/attention, information/retry. Uniform size,
+complete uncropped circles, padding, no text, no characters, no background.
+Alpha checked at corners and between cells. Flutter crops sprites at paint time;
+no runtime generation or new SDK. Text, tooltips and actions remain native widgets.
+
+T-020 also refines the paint-time source rectangles of reference-mascots.png:
+its generated rows have unequal padding. referencePetRect() excludes the
+previous row's paws while keeping the original PNG unchanged. No image editor,
+procedural replacement or new generated pet was used for that correction.

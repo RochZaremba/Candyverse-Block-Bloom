@@ -20,6 +20,9 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   }
   await bodyFont.load();
   await (FontLoader(
+    'MaterialIcons',
+  )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
+  await (FontLoader(
     'LilitaOne',
   )..addFont(rootBundle.load('assets/fonts/LilitaOne-Regular.ttf'))).load();
   await warmKingdomAssets();

@@ -288,11 +288,11 @@ class _GameScreenState extends State<GameScreen> {
                             right: 0,
                             child: Row(
                               children: [
-                                IconButton(
+                                CandyIconButton(
+                                  symbol: CandySymbol.back,
                                   onPressed: _leave,
-                                  tooltip: AppStrings.of(context)
+                                  label: AppStrings.of(context)
                                       .translate('Wróć do menu'),
-                                  icon: const Icon(Icons.arrow_back_rounded),
                                 ),
                                 Expanded(
                                   child: appText(
@@ -305,8 +305,9 @@ class _GameScreenState extends State<GameScreen> {
                                     ),
                                   ),
                                 ),
-                                IconButton(
-                                  tooltip: AppStrings.of(context)
+                                CandyIconButton(
+                                  symbol: CandySymbol.settings,
+                                  label: AppStrings.of(context)
                                       .translate('Dźwięk i ruch'),
                                   onPressed: () {
                                     final session = AppSessionScope.maybeOf(
@@ -328,7 +329,6 @@ class _GameScreenState extends State<GameScreen> {
                                       ),
                                     );
                                   },
-                                  icon: const Icon(Icons.tune_rounded),
                                 ),
                               ],
                             ),
@@ -339,6 +339,7 @@ class _GameScreenState extends State<GameScreen> {
                             bottom: headerHeight * .06,
                             child: Text(
                               'Przyszła\nreklama',
+                              textScaler: TextScaler.noScaling,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontFamily: 'LilitaOne',
@@ -527,7 +528,7 @@ class _GameScreenState extends State<GameScreen> {
                   // the same durable-write gate acknowledges the move.
                   color: controller.saving
                       ? Colors.transparent
-                      : theme.color('creamWhite').withValues(alpha: .95),
+                      : theme.color('ink').withValues(alpha: .55),
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.all(24),
@@ -542,14 +543,18 @@ class _GameScreenState extends State<GameScreen> {
                               child: const SizedBox.shrink(),
                             ),
                           ] else ...[
-                            appText(
-                              context,
-                              'Nie udało się zapisać postępu. Ponów zapis przed kolejnym ruchem.',
-                              textAlign: TextAlign.center,
-                            ),
-                            FilledButton(
-                              onPressed: controller.retrySave,
-                              child: appText(context, 'Ponów zapis'),
+                            CandyNotice(
+                              kind: CandyNoticeKind.error,
+                              message: AppStrings.of(context).translate(
+                                'Nie udało się zapisać postępu. Ponów zapis przed kolejnym ruchem.',
+                              ),
+                              action: CandyAction(
+                                onPressed: controller.retrySave,
+                                label: AppStrings.of(context)
+                                    .translate('Ponów zapis'),
+                                fontSize: 20,
+                                height: 58,
+                              ),
                             ),
                           ],
                         ],
@@ -793,6 +798,7 @@ class _GameScreenState extends State<GameScreen> {
                   child: Center(
                     child: Text(
                       'Przyszła\nreklama',
+                      textScaler: TextScaler.noScaling,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: 'LilitaOne',
@@ -882,7 +888,9 @@ class _GameScreenState extends State<GameScreen> {
                     fontSize: 16,
                     height: 48,
                     icon: Icons.home_rounded,
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () =>
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst),
                   ),
                 ),
                 const SizedBox(height: 12),

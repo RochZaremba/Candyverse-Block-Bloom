@@ -58,3 +58,5 @@ alpha checks and use are recorded in [REFERENCE_ART.md](kingdom/REFERENCE_ART.md
 The locally bundled Lilita One font is SIL OFL 1.1; see
 [its license](fonts/LilitaOne-OFL.txt).
 
+
+- `kingdom/navigation-atlas.png`: generated locally with the built-in image tool for T-020; [provenance](kingdom/REFERENCE_ART.md#t-020--navigation-atlaspng). No runtime service.

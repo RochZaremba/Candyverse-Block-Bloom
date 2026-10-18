@@ -440,6 +440,7 @@ class _CharacterSpriteState extends State<_CharacterSprite>
             column: widget.kind.index % 2,
             rows: 3,
             columns: 2,
+            sourceRect: referencePetRect(widget.kind.index),
           ),
           builder: (_, child) {
             final bounce = animate ? math.sin(reaction.value * math.pi) : 0.0;

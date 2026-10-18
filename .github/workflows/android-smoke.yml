@@ -4,8 +4,15 @@ on:
     paths:
       - 'integration_test/**'
       - 'scripts/android_smoke.sh'
+      - 'scripts/capture_android_milestones.py'
       - '.github/workflows/android-smoke.yml'
   workflow_dispatch:
+    inputs:
+      active_minutes:
+        description: '20 = full active QA; 0 = UI evidence diagnostic only'
+        type: choice
+        default: '20'
+        options: ['20', '0']
 concurrency:
   group: android-smoke-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -32,10 +39,10 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - name: Twenty minutes of active Android smoke
+      - name: Native Android QA (20 minutes by default; optional UI diagnostic)
         uses: reactivecircus/android-emulator-runner@v2
         env:
-          CANDYVERSE_SMOKE_MINUTES: '20'
+          CANDYVERSE_SMOKE_MINUTES: ${{ inputs.active_minutes || '20' }}
           CANDYVERSE_SOFTWARE_RENDERING: '1'
           CANDYVERSE_QA_OUTPUT: build/qa-smoke
         with:
