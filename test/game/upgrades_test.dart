@@ -60,7 +60,7 @@ void main() {
 
   test('seeded card order and queued choices replay from snapshot', () {
     final e = GameEngine.seeded(seed: 19);
-    final pending = e.start().copyWith(pendingUpgradeChoices: 3);
+    final pending = e.start(legacy: true).copyWith(pendingUpgradeChoices: 3);
     final a = e.resolvePhase(pending);
     final b = GameEngine.seeded(seed: 91).resolvePhase(pending);
     expect(a.upgradeChoices, b.upgradeChoices);

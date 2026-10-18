@@ -1,3 +1,4 @@
+import '../../upgrades/domain/evolution.dart';
 import '../../upgrades/domain/upgrade.dart';
 import 'board.dart';
 import 'cell.dart';
@@ -8,6 +9,8 @@ import 'random_source.dart';
 import 'scoring.dart';
 import 'tray_generator.dart';
 import '../../core/config/game_balance.dart';
+
+part 'evolution_rules.dart';
 
 /// T-003 supplies seeded, weighted and fair generation through this boundary.
 /// It receives the board AFTER clearing. No generator runs for rejected moves.
@@ -72,11 +75,12 @@ class GameEngine {
   final int? seed;
   final GameBalance balance;
 
-  GameState start() {
+  GameState start({bool legacy = false}) {
     final board = Board.empty();
     final random = seed == null ? null : SeededRandom(seed!);
     return GameState(
       board: board,
+      evolution: legacy ? null : Evolution(),
       tray: _pickTray(board, random),
       rngState: random?.state,
     );
@@ -176,34 +180,55 @@ class GameEngine {
                 (throw StateError('Seeded runs require an RNG snapshot.')),
           );
     final nextTray = refilled ? _pickTray(clear.board, random) : tray;
+    final evolution = state.evolution == null
+        ? null
+        : _advanceEvolution(state, clear, moveScore.streak);
+    final combo =
+        clear.lineCount >= 2 || (clear.lineCount > 0 && moveScore.streak >= 2);
+    final points = moveScore.points + (combo ? 40 * (evolution?.paws ?? 0) : 0);
+    final progressed = state.copyWith(
+      evolution: evolution,
+      totalClearedLines: state.totalClearedLines + clear.lineCount,
+    );
     return PlacementResult._(
       state: resolvePhase(
         state.copyWith(
           board: clear.board,
           tray: nextTray,
-          score: state.score + moveScore.points,
+          evolution: evolution,
+          score: state.score + points,
           streak: moveScore.streak,
           totalClearedLines: state.totalClearedLines + clear.lineCount,
           rngState: random?.state,
           pendingUpgradeChoices:
               state.pendingUpgradeChoices +
-              (state.totalClearedLines + clear.lineCount) ~/ 5 -
-              state.totalClearedLines ~/ 5,
+              _milestones(progressed) -
+              _milestones(state),
         ),
       ),
       accepted: true,
       clear: clear,
       placedCells: placed,
       refilled: refilled,
-      scoreDelta: moveScore.points,
+      scoreDelta: points,
     );
   }
 
-  List<Upgrade> availableUpgrades(GameState state) => [
-    if (state.sugarRushLevel < 2) Upgrade.sugarRush,
-    if (state.luckyJellyLevel < 2) Upgrade.luckyJelly,
-    if (state.eraserAcquired < 2) Upgrade.rainbowEraser,
-  ];
+  List<Upgrade> availableUpgrades(GameState state) {
+    final e = state.evolution;
+    if (e != null) {
+      return [
+        if (e.explosive < 4) Upgrade.values[3 + e.explosive],
+        if (e.rainbow < 4) Upgrade.values[7 + e.rainbow],
+        if (e.paws < 4) Upgrade.values[11 + e.paws],
+      ];
+    }
+    return [
+      if (state.sugarRushLevel < 2) Upgrade.sugarRush,
+      if (state.luckyJellyLevel < 2) Upgrade.luckyJelly,
+      if (state.eraserAcquired < 2) Upgrade.rainbowEraser,
+    ];
+  }
 
   /// Choice draws share the production snapshot RNG. The explicit tray test
   /// adapter alone can use a fixed deterministic seed when no RNG is provided.
@@ -236,7 +261,8 @@ class GameEngine {
     return state.copyWith(
       phase: !isGameOver(state)
           ? RunPhase.playing
-          : state.eraserUses > 0 && state.board.occupiedCount > 0
+          : (state.eraserUses > 0 && state.board.occupiedCount > 0) ||
+                canRescueWithEvolution(state)
           ? RunPhase.needsEraserDecision
           : RunPhase.gameOver,
     );
@@ -248,8 +274,13 @@ class GameEngine {
         !availableUpgrades(state).contains(upgrade)) {
       return state;
     }
+    var evolution = state.evolution;
+    if (evolution != null && upgrade.isEvolution) {
+      evolution = _markBombs(evolution.advancePath(upgrade.path), state.board);
+    }
     return resolvePhase(
       state.copyWith(
+        evolution: evolution,
         sugarRushLevel:
             state.sugarRushLevel + (upgrade == Upgrade.sugarRush ? 1 : 0),
         luckyJellyLevel:

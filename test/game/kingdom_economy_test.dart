@@ -126,7 +126,7 @@ void main() {
       expect(migrated.wallet, 120);
       expect(migrated.incomeRemainder, 0);
       expect(AppSaveV1().settings.language, 'en');
-      expect(jsonDecode(migrated.encode())['schemaVersion'], 2);
+      expect(jsonDecode(migrated.encode())['schemaVersion'], 3);
     },
   );
 

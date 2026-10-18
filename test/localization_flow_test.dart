@@ -129,7 +129,7 @@ void main() {
       await tester.tap(find.text('PLAY'));
       await tester.pumpAndSettle();
       expect(find.byType(GameScreen), findsOneWidget);
-      expect(find.text('Next upgrade: 0/5 lines'), findsOneWidget);
+      expect(find.text('Card: 5 moves / 5 lines'), findsOneWidget);
       final controller = tester
           .widget<GameScreen>(find.byType(GameScreen))
           .controller!;
@@ -169,7 +169,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Choose an upgrade'), findsOneWidget);
     expect(
-      find.text('+25% base coins for the whole run. Maximum 2 levels.'),
+      find.text('Swap a shape in your chosen slot. Recharges after 6 moves.'),
       findsOneWidget,
     );
     await expectLater(

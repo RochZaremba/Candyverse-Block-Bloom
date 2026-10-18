@@ -209,11 +209,11 @@ void main() {
     final controller = await session.openRun();
     expect(controller.state.upgradeChoices, choice.upgradeChoices);
     expect(controller.state.rngState, choice.rngState);
-    controller.chooseUpgrade(Upgrade.sugarRush);
+    controller.chooseUpgrade(Upgrade.explosiveCandy);
     await settle();
     final saved = await repo.load();
     expect(saved.activeRun!.game.pendingUpgradeChoices, 1);
-    expect(saved.activeRun!.game.sugarRushLevel, 1);
+    expect(saved.activeRun!.game.evolution!.explosive, 1);
     session.dispose();
   });
   test('a fresh Home run after result resets cached game controller', () async {

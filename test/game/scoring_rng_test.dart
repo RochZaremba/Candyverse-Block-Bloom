@@ -1,3 +1,4 @@
+import 'package:candyverse/upgrades/domain/upgrade.dart';
 import 'package:candyverse/core/config/game_balance.dart';
 import 'package:candyverse/game/domain/board.dart';
 import 'package:candyverse/game/domain/game_action.dart';
@@ -373,6 +374,12 @@ void main() {
         state = result.state;
         replay = replica.placePiece(replay, action).state;
         expectSameRun(state, replay);
+        while (state.phase == RunPhase.upgrade) {
+          final choice = state.upgradeChoices.first;
+          state = engine.chooseUpgrade(state, choice);
+          replay = replica.chooseUpgrade(replay, choice);
+          expectSameRun(state, replay);
+        }
       }
       expect(refills, greaterThan(2));
     });

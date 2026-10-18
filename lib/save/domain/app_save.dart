@@ -1,3 +1,5 @@
+import '../../upgrades/domain/evolution.dart';
+
 import 'dart:convert';
 
 import '../../game/domain/board.dart';
@@ -16,8 +18,15 @@ class SavedRun {
 }
 
 class RunResult {
-  const RunResult(this.id, this.score, this.lines, this.coins, this.luckyLevel);
-  final int id, score, lines, coins, luckyLevel;
+  const RunResult(
+    this.id,
+    this.score,
+    this.lines,
+    this.coins,
+    this.luckyLevel, [
+    this.bonusCoins = 0,
+  ]);
+  final int id, score, lines, coins, luckyLevel, bonusCoins;
 }
 
 class SavedSettings {
@@ -140,6 +149,7 @@ class AppSaveV1 {
         game.totalClearedLines,
         game.pendingCoins,
         game.luckyJellyLevel,
+        game.evolution?.bonusCoins ?? 0,
       ),
     );
   }
@@ -190,7 +200,7 @@ class AppSaveV1 {
   }
 
   String encode() => jsonEncode({
-    'schemaVersion': 2,
+    'schemaVersion': 3,
     'incomeTimestampMs': incomeTimestampMs,
     'incomeRemainder': incomeRemainder,
     'stars': island.stars,
@@ -220,6 +230,7 @@ class AppSaveV1 {
             'lines': lastResult!.lines,
             'coins': lastResult!.coins,
             'luckyLevel': lastResult!.luckyLevel,
+            'bonusCoins': lastResult!.bonusCoins,
           },
   });
 
@@ -227,7 +238,7 @@ class AppSaveV1 {
     try {
       final data = _map(jsonDecode(raw));
       final version = data['schemaVersion'];
-      if (version != 1 && version != 2) {
+      if (version != 1 && version != 2 && version != 3) {
         throw const FormatException('Unsupported save version.');
       }
       final island = _map(data['island']);
@@ -241,7 +252,8 @@ class AppSaveV1 {
         final lucky = _int(result, 'luckyLevel', max: 2);
         final lines = _int(result, 'lines');
         final coins = _int(result, 'coins');
-        if (coins != 5 * lines * (4 + lucky) ~/ 4) {
+        final bonus = version == 3 ? _int(result, 'bonusCoins') : 0;
+        if (coins != 5 * lines * (4 + lucky) ~/ 4 + bonus) {
           throw const FormatException('Invalid reward.');
         }
         parsedResult = RunResult(
@@ -250,6 +262,7 @@ class AppSaveV1 {
           lines,
           coins,
           lucky,
+          bonus,
         );
       }
       return AppSaveV1(
@@ -285,7 +298,7 @@ class AppSaveV1 {
             : SavedRun(
                 _int(run, 'id', min: 1),
                 run['seed'] as int,
-                _decodeGame(_map(run['game'])),
+                _decodeGame(_map(run['game']), evolutionVersion: version == 3),
               ),
         lastResult: parsedResult,
       );
@@ -314,6 +327,7 @@ Map<String, Object?> _encodeGame(GameState g) => {
               ],
             },
   ],
+  'evolution': g.evolution?.toJson(),
   'pendingCoins': g.pendingCoins,
   'score': g.score,
   'streak': g.streak,
@@ -335,7 +349,10 @@ String? _skin(Object? value) {
   return value;
 }
 
-GameState _decodeGame(Map<String, dynamic> d) {
+GameState _decodeGame(
+  Map<String, dynamic> d, {
+  required bool evolutionVersion,
+}) {
   final tray = (d['tray'] as List).map((value) {
     if (value == null) return null;
     final p = _map(value);
@@ -354,7 +371,13 @@ GameState _decodeGame(Map<String, dynamic> d) {
     }
     return Piece(id: mask.id, cells: cells, skin: _skin(p['skin'])!);
   }).toList();
+  if (evolutionVersion && !d.containsKey('evolution')) {
+    throw const FormatException('Missing evolution discriminator');
+  }
   final g = GameState(
+    evolution: !evolutionVersion || d['evolution'] == null
+        ? null
+        : Evolution.fromJson(_map(d['evolution'])),
     board: Board.fromRows(
       (d['board'] as List).map((row) => (row as List).map(_skin)),
     ),
@@ -379,16 +402,24 @@ GameState _decodeGame(Map<String, dynamic> d) {
       (g.phase == RunPhase.playing &&
           (g.pendingUpgradeChoices != 0 || engine.isGameOver(g))) ||
       (g.phase == RunPhase.needsEraserDecision &&
-          (g.eraserUses == 0 || !engine.isGameOver(g))) ||
+          ((g.eraserUses == 0 && !engine.canRescueWithEvolution(g)) ||
+              !engine.isGameOver(g))) ||
       (g.phase == RunPhase.gameOver && !engine.isGameOver(g))) {
     throw const FormatException('Invalid run phase or pending reward.');
   }
   if (g.streak > g.totalClearedLines ||
-      g.pendingUpgradeChoices > g.totalClearedLines ~/ 5 ||
+      g.pendingUpgradeChoices >
+          (g.evolution?.moves ?? 0) ~/ 5 + g.totalClearedLines ~/ 5 ||
       g.upgradeChoices.any(
         (u) => !GameEngine.seeded(seed: 0).availableUpgrades(g).contains(u),
       )) {
     throw const FormatException('Invalid run progress.');
+  }
+  if (g.evolution != null &&
+      g.evolution!.bombs.any(
+        (i) => g.board.at((row: i ~/ 8, col: i % 8)) == null,
+      )) {
+    throw const FormatException('Bomb marker must occupy a cell');
   }
   return g;
 }

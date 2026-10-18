@@ -1,3 +1,4 @@
+import '../../upgrades/domain/evolution.dart';
 import '../../upgrades/domain/upgrade.dart';
 import 'board.dart';
 import 'piece.dart';
@@ -7,6 +8,7 @@ class GameState {
   GameState({
     required this.board,
     required Iterable<Piece?> tray,
+    this.evolution,
     this.score = 0,
     this.streak = 0,
     this.totalClearedLines = 0,
@@ -51,6 +53,7 @@ class GameState {
   }
 
   static const traySize = 3;
+  final Evolution? evolution;
   final Board board;
   final List<Piece?> tray;
   final int score;
@@ -64,10 +67,13 @@ class GameState {
   final int pendingUpgradeChoices;
   final RunPhase phase;
   final List<Upgrade> upgradeChoices;
-  int get pendingCoins => 5 * totalClearedLines * (4 + luckyJellyLevel) ~/ 4;
+  int get pendingCoins =>
+      5 * totalClearedLines * (4 + luckyJellyLevel) ~/ 4 +
+      (evolution?.bonusCoins ?? 0);
   int get nextUpgradeMilestone => (totalClearedLines ~/ 5 + 1) * 5;
 
   GameState copyWith({
+    Evolution? evolution,
     Board? board,
     Iterable<Piece?>? tray,
     int? score,
@@ -82,6 +88,7 @@ class GameState {
     RunPhase? phase,
     Iterable<Upgrade>? upgradeChoices,
   }) => GameState(
+    evolution: evolution ?? this.evolution,
     board: board ?? this.board,
     tray: tray ?? this.tray,
     score: score ?? this.score,
