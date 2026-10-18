@@ -488,6 +488,18 @@ Future<void> runSmokeScenario(
     }
     await checkpoint();
     final game = tester.widget<GameScreen>(find.byType(GameScreen)).controller!;
+    // The final placement of this dwell batch may open a modal card choice.
+    // Finish earned choices before trying the deliberately blocked menu button.
+    while (game.state.phase == RunPhase.upgrade) {
+      await tap(
+        find.byKey(ValueKey('upgrade-${game.state.upgradeChoices.first.name}')),
+      );
+      await checkpoint();
+    }
+    if (game.state.phase == RunPhase.needsEraserDecision) {
+      await tap(find.text('Finish run'));
+      await checkpoint();
+    }
     if (game.isGameOver) {
       await tap(find.text('Back to menu'));
     } else {
