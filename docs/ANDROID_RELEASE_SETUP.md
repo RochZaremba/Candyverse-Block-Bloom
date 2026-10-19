@@ -40,12 +40,12 @@ See [Flutter's Android signing guide](https://docs.flutter.dev/deployment/androi
 
 ## Build and verify
 
-For the Candy Kingdom candidate, after the repository tests and T-018 QA pass,
-use version1.1.0+3. Keep the published1.0.0-rc.1 artifacts unchanged:
+For the Roguelite Evolution candidate, after the repository tests and T-021 QA pass,
+use version1.3.0+6. Keep all previously published artifacts unchanged:
 
 ```sh
-flutter build appbundle --release --build-name=1.1.0 --build-number=3
-flutter build apk --release --build-name=1.1.0 --build-number=3
+flutter build appbundle --release --build-name=1.3.0 --build-number=6
+flutter build apk --release --build-name=1.3.0 --build-number=6
 python3 scripts/audit_android_artifact.py build/app/outputs/flutter-apk/app-release.apk
 ```
 
@@ -126,7 +126,7 @@ is refused. JDK21 and bundletool1.18.3 were used for the1.1.0 candidate.
 ```sh
 java scripts/BuildCandyverseApks.java /path/to/bundletool.jar \
   "$HOME/.candyverse-signing/v1/key.properties" \
-  /path/to/candyverse-1.1.0-3.aab /path/to/new-candyverse.apks
+  /path/to/candyverse-1.3.0-6.aab /path/to/new-candyverse.apks
 ```
 
 Extract `universal.apk` from that public APK-set ZIP, then run

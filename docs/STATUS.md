@@ -1,5 +1,33 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
+## 2026-10-19 — Evolution1.3.0+6: scalone i opublikowane
+
+PR#17 scalony jako `b24a039`, PR#18 jako `ebb9c2a` po zielonych kontrolach.
+Publiczny [v1.3.0-rc.1](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/tag/v1.3.0-rc.1),
+opublikowany2026-10-19T09:25:41Z; tag=`ebb9c2a`. Google Play nieopublikowane.
+Review agenta integrującego, bez wykrytych blockerów; nie niezależna aprobata.
+
+- Flutter230/230, domena88/88, release tools19/19 i kontrole statyczne PASS.
+  Flutter39114081585 SUCCESS, native39114081625 source `d4b5832` SUCCESS:
+  1202s,610 ruchów,760 reakcji,38 cykli, DataStore, moce/restore, JUnit1/0/0.
+- Poprawka `d4b5832` dotyczy tylko scenariusza: modalny wybór karty na końcu
+  serii blokował menu. Pełne20min ponowiono; aplikacja bez zmiany.
+- Podpisana macierz39229177997 source `c463647`: **4/4 PASS**. APK API24/36/35
+  z16KB i universal z finalnego AAB/API36. Input Androida, tło, force-stop,
+  identyczne64 pola po restore; obejrzano produkcyjne PNG. CPU nie dowodzi GPU60FPS.
+- APK/AAB/universal1.3.0+6 z `d4b5832`, kod identyczny z merge `ebb9c2a`.
+  Certyfikat jak poprzednio, audyty/podpisy/bundletool/16KB PASS. Klucze poza Git/CI.
+- Publiczny APK pobrano bez logowania: SHA256 zgodny,81732793B.
+  Tymczasowe adresy draftu usunięto z secrets; workflow pobiera publiczne pliki.
+
+[Raport, hashe, surowe JSON/JUnit i zrzuty](EVOLUTION_RELEASE_REPORT.md).
+Handoff: branch `chore/evolution-release`; PR dokumentacji/nowego pinu CI#19.
+Bieżące kontrole handoffu sprawdzaj w PR; nie zmienia on kodu produkcyjnego.
+Nie powtarzamy telefonu zgodnie z decyzją właściciela. Poprzednie wydania bez zmian.
+
+**Jedno następne zadanie:** po weryfikacji konta właściciela przygotować test
+wewnętrzny Play dla aktualnego AAB1.3.0+6 i odświeżyć materiały sklepu.
+
 ## 2026-10-18 — T-021 Roguelite Evolution zaimplementowane
 
 Branch `feat/roguelite-evolution` oparty na `bcb24b6` z otwartego PR#17.

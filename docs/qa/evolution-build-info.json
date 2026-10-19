@@ -1,0 +1,27 @@
+{
+  "version": "1.3.0+6",
+  "applicationCommit": "a351df1",
+  "binarySourceCommit": "d4b5832983515003601a2e30025f69beed7f7930",
+  "nativeRun": 39114081625,
+  "flutterRun": 39114081585,
+  "merge17": "b24a0397b5f166b1083e7a52e93ecd7fbd7abded",
+  "merge18": "ebb9c2a5d51e2e4b686d8ed804f4fababd95481e",
+  "certificateSha256": "2064a303250785a1ef85029a03a543dc759ab6d715f1fb2f05dccdca04e70506",
+  "artifacts": {
+    "candyverse-1.3.0-6.apk": {
+      "sha256": "2070be4a7a1a880eb97c45ed14dcf610867f12e0dc215bf3b3ec04bb6c2edfd5",
+      "bytes": 81732793
+    },
+    "candyverse-1.3.0-6.aab": {
+      "sha256": "23a75fec50d09a3ad0efbb535ec2c2c85a72a4370c21277610458872b13ac369",
+      "bytes": 79852876
+    },
+    "candyverse-1.3.0-6-from-aab.apk": {
+      "sha256": "fa58e649408bea6130f8dea79d3877963ee303408ce95176cef162d4d1969555",
+      "bytes": 81778886
+    }
+  },
+  "signedRun": 39229177997,
+  "signedWorkflowSource": "c463647",
+  "releaseTarget": "ebb9c2a5d51e2e4b686d8ed804f4fababd95481e"
+}

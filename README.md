@@ -1,10 +1,10 @@
 # Candyverse: Block & Bloom 
 
-> **Candyverse 1.2.0+4:** nowa oprawa menu, gry, wyniku, okna powrotu i wyspy według referencji właściciela. T-019, 199 testów Fluttera i nowa macierz podpisanego APK/AAB oraz natywny smoke PASS. Kandydat GitHub: **v1.2.0-rc.1**. **Google Play nieopublikowane.** [Stan](docs/STATUS.md), [rendery i raport wydania](docs/REFERENCE_UI_REVIEW.md). Aktualizacja: 2026-10-16.
+> **Candyverse 1.3.0+6 — Roguelite Evolution:**12 kart rozwoju,3 ścieżki mocy i4 synergie, spójne komunikaty i nawigacja.230 testów Fluttera,20-minutowe natywne QA oraz4 warianty podpisanego APK/AAB PASS. Publiczny GitHub prerelease **v1.3.0-rc.1**. **Google Play nieopublikowane.** [Stan](docs/STATUS.md), [raport i hashe](docs/EVOLUTION_RELEASE_REPORT.md). Aktualizacja:2026-10-19.
 
 Kolorowa gra mobilna 2D na Androida: **block puzzle 8×8 + lekkie ulepszenia roguelite + rozwijanie cukierkowej wyspy**. Pierwsze wydanie ma być dopracowane wizualnie, offline, bez reklam, zakupów, kont i backendu. Odbiorcy: głównie 10–16 lat, także starsi.
 
-[**Pobierz APK 1.2.0+4**](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/download/v1.2.0-rc.1/candyverse-1.2.0-4.apk) · [AAB, hashe i dowody QA](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/tag/v1.2.0-rc.1)
+[**Pobierz APK 1.3.0+6**](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/download/v1.3.0-rc.1/candyverse-1.3.0-6.apk) · [AAB, hashe i dowody QA](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/tag/v1.3.0-rc.1)
 
 ## Szybki start
 
