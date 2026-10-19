@@ -65,3 +65,10 @@ pasywny dochód, renderowane assety i nowy UX/EN. Dla T-012–T-018 stosuj
 (3 poziomy, brak dochodu pasywnego, dawne postacie). Pozostałe zasady offline,
 prywatności, dostępności i testów obowiązują. To zgoda na wskazany zakres,
 nie na dalsze niezlecone funkcje.
+
+## Roguelite Evolution — zamówienie 2026-10-18
+
+Właściciel jawnie zamówił12 ulepszeń,3 ścieżki i4 synergie (T-021).
+Stosuj `docs/adr/0020-roguelite-evolution.md` zamiast limitu3 efektów dla nowych
+runów. Stare runy zachowują reguły legacy; zapisy schema1/2 migrują do3.
+Zasady offline, brak presji czasu i idempotentne nagrody pozostają wymagane.

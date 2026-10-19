@@ -187,3 +187,10 @@ Brak backendu, chatów, gamifikacji godzinowej, zdalnego configu, telemetry SDK,
 ## Zaimplementowany kontrakt T-009
 
 Pełne Settings i centralne PL/EN używają SettingsModel, AppSessionScope i AppStrings; MaterialApp otrzymuje wybrany locale i delegaty Flutter SDK. Reset/niepewne potwierdzenia i rewizje ustawień opisuje ADR-0013. Wszystkie sześć ekranów ma działającą nawigację; wynik otwiera produkcyjną wyspę z portfelem i zakupami.
+
+## T-021 Evolution / schema3
+
+[ADR-0020](adr/0020-roguelite-evolution.md): nowy opcjonalny stan Evolution
+w GameState; null oznacza legacy run. Zapis schema3 migruje1/2 bez zmiany
+trwającej gry. Silnik i podgląd mocy pozostają pure Dart, kontroler używa
+tego samego checkpointu z blokadą i retry.

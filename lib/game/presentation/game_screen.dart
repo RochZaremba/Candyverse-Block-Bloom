@@ -1,3 +1,6 @@
+import '../../upgrades/presentation/evolution_panel.dart';
+import '../domain/game_engine.dart';
+import '../domain/tray_generator.dart';
 import '../../core/presentation/candy_message.dart';
 import '../../core/localization/app_strings.dart';
 
@@ -49,12 +52,15 @@ class _GameScreenState extends State<GameScreen> {
   String feedback = 'Przeciągnij klocek lub wybierz go i dotknij pola.';
   Timer? upgradeTimer;
   bool upgradeReady = false;
+  bool targetingBomb = false;
+  String? bombColor;
   bool erasing = false;
   bool confirmingErase = false;
   bool get playing =>
       controller.state.phase == RunPhase.playing &&
       !controller.blocked &&
       !erasing &&
+      !targetingBomb &&
       !confirmingErase;
   AppTheme get theme => widget.theme;
 
@@ -81,6 +87,7 @@ class _GameScreenState extends State<GameScreen> {
     if (controller.state.phase != RunPhase.playing &&
         controller.state.phase != RunPhase.needsEraserDecision) {
       erasing = false;
+      targetingBomb = false;
     }
     if (controller.state.phase == RunPhase.upgrade &&
         !upgradeReady &&
@@ -141,6 +148,274 @@ class _GameScreenState extends State<GameScreen> {
       if (!identical(before, controller.state)) {
         FeedbackScope.maybeOf(context)?.play(CandyCue.place);
       }
+    }
+  }
+
+  Future<String?> _chooseColor({required bool occupiedOnly}) async {
+    final s = AppStrings.of(context);
+    final colors = TrayGenerator.skinIds
+        .where(
+          (color) =>
+              !occupiedOnly ||
+              List.generate(
+                64,
+                (i) => controller.state.board.at((row: i ~/ 8, col: i % 8)),
+              ).contains(color),
+        )
+        .toList();
+    const names = [
+      'Różowy',
+      'Fioletowy',
+      'Turkusowy',
+      'Żółty',
+      'Pomarańczowy',
+      'Miętowy',
+      'Niebieski',
+    ];
+    const english = [
+      'Pink',
+      'Purple',
+      'Turquoise',
+      'Yellow',
+      'Orange',
+      'Mint',
+      'Blue',
+    ];
+    return showDialog<String>(
+      context: context,
+      builder: (context) => CandyDialog(
+        title: Text(s.text('Wybierz kolor', 'Choose a color')),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final color in colors)
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    key: ValueKey('power-color-$color'),
+                    onPressed: () => Navigator.pop(context, color),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 32,
+                          height: 32,
+                          child: CandyTile(theme: theme, skin: color),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            s.text(
+                              names[TrayGenerator.skinIds.indexOf(color)],
+                              english[TrayGenerator.skinIds.indexOf(color)],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: appText(context, 'Anuluj'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _targetBomb() async {
+    if (targetingBomb) {
+      setState(() => targetingBomb = false);
+      return;
+    }
+    final before = controller.state;
+    String? color;
+    if (before.evolution!.rainbowPrimed) {
+      color = await _chooseColor(occupiedOnly: true);
+      if (!mounted || color == null || !identical(before, controller.state)) {
+        return;
+      }
+    }
+    if (!mounted) return;
+    setState(() {
+      targetingBomb = true;
+      bombColor = color;
+      selected = null;
+      preview = null;
+      pointer = null;
+    });
+    _revealBoard();
+  }
+
+  void _revealBoard() {
+    final boardContext = boardKey.currentContext;
+    final box = boardContext?.findRenderObject() as RenderBox?;
+    if (boardContext == null || box == null || !box.hasSize) return;
+    final media = MediaQuery.of(context);
+    final top = box.localToGlobal(Offset.zero).dy;
+    if (top < media.padding.top) {
+      unawaited(Scrollable.ensureVisible(boardContext));
+    } else if (top + box.size.height >
+        media.size.height - media.padding.bottom) {
+      unawaited(Scrollable.ensureVisible(boardContext, alignment: 1));
+    }
+  }
+
+  Future<void> _bomb(Cell cell) async {
+    if (!targetingBomb || confirmingErase || controller.blocked) return;
+    final before = controller.state;
+    final blast = controller.engine.previewBomb(before, cell, color: bombColor);
+    if (blast.cells.isEmpty) return;
+    setState(() => confirmingErase = true);
+    final s = AppStrings.of(context);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => CandyDialog(
+        title: Text(s.text('Cukierkowy wybuch?', 'Candy explosion?')),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                s.text(
+                  'Usuniesz ${blast.cells.length} klocków. Ładunki: ${blast.chargesUsed}.',
+                  'Remove ${blast.cells.length} blocks. Charges: ${blast.chargesUsed}.',
+                ),
+              ),
+              if (before.evolution!.goldenExplosion)
+                Text(
+                  s.text(
+                    '+${blast.cells.length} monet po zakończeniu gry.',
+                    '+${blast.cells.length} coins when the run ends.',
+                  ),
+                ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: 216,
+                height: 216,
+                child: GridView.count(
+                  crossAxisCount: 8,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    for (var i = 0; i < 64; i++)
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color:
+                                blast.cells.contains((row: i ~/ 8, col: i % 8))
+                                ? theme.color('danger')
+                                : Colors.transparent,
+                            width: 2,
+                          ),
+                        ),
+                        child: CandyTile(
+                          theme: theme,
+                          skin: before.board.at((row: i ~/ 8, col: i % 8)),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              Text(
+                s.text(
+                  'Obramowane pola znikną.',
+                  'Outlined cells will disappear.',
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: appText(context, 'Anuluj'),
+          ),
+          TextButton(
+            key: const Key('confirm-bomb'),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(s.text('Wybuch!', 'Explode!')),
+          ),
+        ],
+      ),
+    );
+    if (!mounted) return;
+    setState(() {
+      confirmingErase = false;
+      if (confirm == true) targetingBomb = false;
+    });
+    if (confirm != true || !identical(before, controller.state)) return;
+    controller.detonateBomb(cell, color: bombColor);
+    if (!identical(before, controller.state)) {
+      setState(
+        () => fxEvent = CandyFxEvent(
+          id: ++fxId,
+          placed: const [],
+          cleared: blast.cells,
+        ),
+      );
+      FeedbackScope.maybeOf(context)?.play(CandyCue.clear);
+    }
+  }
+
+  Future<void> _rainbow() async {
+    final before = controller.state;
+    final s = AppStrings.of(context);
+    final slot = await showDialog<int>(
+      context: context,
+      builder: (context) => CandyDialog(
+        title: Text(s.text('Który kształt wymienić?', 'Which shape to swap?')),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var i = 0; i < 3; i++)
+                if (before.tray[i] != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: CandyAction(
+                      key: ValueKey('rainbow-slot-$i'),
+                      fontSize: 18,
+                      label:
+                          s.text('Slot ${i + 1}: ', 'Slot ${i + 1}: ') +
+                          s.translate(_shapeLabel(before.tray[i]!)),
+                      onPressed: () => Navigator.pop(context, i),
+                    ),
+                  ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: appText(context, 'Anuluj'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || slot == null || !identical(before, controller.state)) {
+      return;
+    }
+    String? color;
+    if (before.evolution!.rainbow >= 3) {
+      color = await _chooseColor(occupiedOnly: false);
+      if (!mounted || color == null || !identical(before, controller.state)) {
+        return;
+      }
+    }
+    setState(() {
+      selected = null;
+      preview = null;
+      pointer = null;
+      targetingBomb = false;
+    });
+    controller.useRainbow(slot, color: color);
+    if (!identical(before, controller.state)) {
+      FeedbackScope.maybeOf(context)?.play(CandyCue.upgrade);
     }
   }
 
@@ -385,7 +660,17 @@ class _GameScreenState extends State<GameScreen> {
                         radius: 20,
                         child: appText(
                           context,
-                          'Następne ulepszenie: ${controller.state.totalClearedLines}/${controller.state.nextUpgradeMilestone} linii',
+                          controller.state.evolution == null
+                              ? 'Następne ulepszenie: ${controller.state.totalClearedLines}/${controller.state.nextUpgradeMilestone} linii'
+                              : controller.state.evolution!.maxed
+                              ? AppStrings.of(context).text(
+                                  'Wszystkie ścieżki rozwinięte',
+                                  'All paths evolved',
+                                )
+                              : AppStrings.of(context).text(
+                                  'Karta: ${5 - controller.state.evolution!.moves % 5} ruchów / ${controller.state.nextUpgradeMilestone} linii',
+                                  'Card: ${5 - controller.state.evolution!.moves % 5} moves / ${controller.state.nextUpgradeMilestone} lines',
+                                ),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -420,7 +705,12 @@ class _GameScreenState extends State<GameScreen> {
                         RunPhase.needsEraserDecision) ...[
                       appText(
                         context,
-                        'Klocki nie pasują. Możesz spróbować wymazać jedno pole.',
+                        controller.state.evolution == null
+                            ? 'Klocki nie pasują. Możesz spróbować wymazać jedno pole.'
+                            : AppStrings.of(context).text(
+                                'Brak miejsca. Użyj dostępnej mocy albo zakończ podejście.',
+                                'No space. Use an available power or finish the run.',
+                              ),
                         textAlign: TextAlign.center,
                       ),
                       TextButton(
@@ -475,6 +765,24 @@ class _GameScreenState extends State<GameScreen> {
                           Expanded(child: _slot(slot, compact: compact)),
                       ],
                     ),
+                    if (controller.state.evolution != null)
+                      EvolutionPanel(
+                        evolution: controller.state.evolution!,
+                        targeting: targetingBomb,
+                        onBomb:
+                            controller.blocked ||
+                                controller.state.phase == RunPhase.upgrade ||
+                                controller.state.evolution!.bombCharges == 0 ||
+                                controller.state.board.occupiedCount == 0
+                            ? null
+                            : _targetBomb,
+                        onRainbow:
+                            controller.blocked ||
+                                controller.state.phase == RunPhase.upgrade ||
+                                !controller.state.evolution!.rainbowReady
+                            ? null
+                            : _rainbow,
+                      ),
                     const SizedBox(height: 12),
                     Semantics(
                       liveRegion: true,
@@ -508,6 +816,7 @@ class _GameScreenState extends State<GameScreen> {
                 child: UpgradeChoices(
                   theme: theme,
                   choices: controller.state.upgradeChoices,
+                  evolution: controller.state.evolution,
                   pending: controller.state.pendingUpgradeChoices,
                   onChoose: (upgrade) {
                     final before = controller.state;
@@ -611,16 +920,45 @@ class _GameScreenState extends State<GameScreen> {
             key: ValueKey('cell-${cell.row}-${cell.col}'),
             onTap: confirmingErase
                 ? null
+                : targetingBomb && skin != null
+                ? () => _bomb(cell)
                 : erasing && skin != null
                 ? () => _erase(cell)
                 : !playing || selected == null || activeDragSlot != null
                 ? null
                 : () => _place(cell),
-            child: CandyTile(
-              theme: theme,
-              skin: ghost ? piece!.skin : skin,
-              ghost: ghost,
-              invalid: ghost && !legal,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                CandyTile(
+                  theme: theme,
+                  skin: ghost ? piece!.skin : skin,
+                  ghost: ghost,
+                  invalid: ghost && !legal,
+                ),
+                if (controller.state.evolution?.bombs.contains(index) ?? false)
+                  Positioned(
+                    right: 2,
+                    top: 2,
+                    child: Semantics(
+                      label: AppStrings.of(context).text('Bomba', 'Bomb'),
+                      child: const DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Color(0xff54206b),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(2),
+                          child: Icon(
+                            Icons.flare_rounded,
+                            size: 12,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         );
@@ -666,6 +1004,7 @@ class _GameScreenState extends State<GameScreen> {
           onPointerCancel: (_) {
             if (activeDragSlot != slot) return;
             dragCanceled = true;
+            activeDragSlot = null;
             setState(() {
               pointer = null;
               preview = null;
@@ -675,12 +1014,15 @@ class _GameScreenState extends State<GameScreen> {
             key: ValueKey('tray-$slot'),
             onTap: !playing || piece == null
                 ? null
-                : () => setState(() {
-                    if (activeDragSlot == null) {
-                      selected = selected == slot ? null : slot;
-                    }
-                  }),
-            onPanStart: !playing || piece == null
+                : () {
+                    setState(() {
+                      if (activeDragSlot == null) {
+                        selected = selected == slot ? null : slot;
+                      }
+                    });
+                    if (selected != null) _revealBoard();
+                  },
+            onVerticalDragStart: !playing || piece == null
                 ? null
                 : (details) {
                     if (activeDragSlot != null) return;
@@ -688,24 +1030,38 @@ class _GameScreenState extends State<GameScreen> {
                     selected = slot;
                     _drag(details.globalPosition);
                   },
-            onPanUpdate: !playing || piece == null
+            onVerticalDragUpdate: !playing || piece == null
                 ? null
                 : (details) {
                     if (activeDragSlot == slot) _drag(details.globalPosition);
                   },
-            onPanEnd: !playing || piece == null
+            onVerticalDragEnd: !playing || piece == null
                 ? null
                 : (_) {
                     if (activeDragSlot != slot) return;
                     activeDragSlot = null;
                     if (!dragCanceled) _place(preview);
                   },
-            onPanCancel: () => setState(() {
-              if (activeDragSlot != slot) return;
-              activeDragSlot = null;
-              pointer = null;
-              preview = null;
-            }),
+            onHorizontalDragStart: !playing || piece == null
+                ? null
+                : (details) {
+                    if (activeDragSlot != null) return;
+                    activeDragSlot = slot;
+                    selected = slot;
+                    _drag(details.globalPosition);
+                  },
+            onHorizontalDragUpdate: !playing || piece == null
+                ? null
+                : (details) {
+                    if (activeDragSlot == slot) _drag(details.globalPosition);
+                  },
+            onHorizontalDragEnd: !playing || piece == null
+                ? null
+                : (_) {
+                    if (activeDragSlot != slot) return;
+                    activeDragSlot = null;
+                    if (!dragCanceled) _place(preview);
+                  },
             child: Container(
               height: compact ? 72 : 96,
               padding: const EdgeInsets.all(8),

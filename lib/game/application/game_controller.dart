@@ -86,6 +86,10 @@ class GameController extends ChangeNotifier {
   void chooseUpgrade(Upgrade upgrade) =>
       _apply(engine.chooseUpgrade(_state, upgrade));
   void useEraser(Cell cell) => _apply(engine.useEraser(_state, cell));
+  void detonateBomb(Cell cell, {String? color}) =>
+      _apply(engine.detonateBomb(_state, cell, color: color));
+  void useRainbow(int slot, {String? color}) =>
+      _apply(engine.useRainbow(_state, slot, color: color));
   void declineEraser() => _apply(engine.declineEraser(_state));
 
   PlacementResult place(int slot, Cell origin) {

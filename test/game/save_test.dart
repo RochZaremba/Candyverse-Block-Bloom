@@ -110,7 +110,7 @@ void main() {
     final raw =
         jsonDecode(AppSaveV1().startRun(1).encode()) as Map<String, dynamic>;
     for (final mutation in <void Function(Map<String, dynamic>)>[
-      (d) => d['schemaVersion'] = 3,
+      (d) => d['schemaVersion'] = 4,
       (d) => d['wallet'] = -1,
       (d) => d['nextRunId'] = 1,
       (d) => d['activeRun']['game']['rng'] = 0,

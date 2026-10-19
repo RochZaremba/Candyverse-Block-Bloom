@@ -105,3 +105,15 @@ Oceń na średniopółkowym sprzęcie: przynajmniej krótki profil animacji peł
 ## Release exit gate
 
 Rzeczywisty podpisany APK/AAB z nowym versionCode i potwierdzonym certyfikatem / brak klucza wskazany jako blocker, `targetSdk >= 36` zweryfikowany, testy manualne potwierdzone, Data safety i policy zweryfikowane przeciw rzeczywistym zależnościom, listing odpowiada grze, status dokumentacji aktualny.
+
+## T-021 Evolution
+
+- `test/game/evolution_test.dart`:12 kart, niezależne progi ruchów/linii,
+  ładowanie wierszami, krawędzie i łańcuchy,4 synergie, deterministyczna wymiana,
+  cooldown, ratunek, schema1/2→3, restore i jednokrotna nagroda.
+- `test/evolution_ui_test.dart`: podgląd/anulowanie/potwierdzenie bomby,
+  slot/kolor, blokada checkpointu/retry, PL/EN/320dp/200% i prawdziwe goldeny.
+- Rozszerzony host/native smoke odtwarza sesję po wymianie, sprawdza zapisane
+  RNG/priming, wykonuje Rainbow Explosion i kontroluje pendingCoins/wallet.
+  Natywny raport musi mieć evolutionPowersVerified/evolutionRestoreVerified.
+  Wyniki hosta nie zastępują DataStore Androida; wynik CI sprawdzaj w STATUS.

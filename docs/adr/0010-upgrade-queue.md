@@ -1,6 +1,6 @@
 # ADR-0010: Kolejka wyborów runu i ograniczenie Rainbow Eraser
 
-**Status:** Accepted  
+**Status:** Superseded for new runs by [ADR-0020](0020-roguelite-evolution.md); retained for legacy runs  
 **Date:** 2026-10-14
 
 ## Context

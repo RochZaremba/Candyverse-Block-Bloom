@@ -95,6 +95,24 @@ final _patterns = <(RegExp, String Function(Match, AppStrings))>[
   ),
 ];
 const _english = <String, String>{
+  'Co 3 usunięte wiersze: bomba w kształcie krzyża. Maks. 3 ładunki.':
+      'Every 3 cleared rows: a cross-shaped bomb. Up to 3 charges.',
+  'Bomba usuwa obszar 3×3.': 'Bombs clear a 3×3 area.',
+  'Trafione bomby uruchamiają reakcję łańcuchową.':
+      'Hit bombs trigger a chain reaction.',
+  'Ładuj bombę co 2 usunięte wiersze.': 'Charge a bomb every 2 cleared rows.',
+  'Wymień kształt w wybranym slocie. Odnawia się po 6 ruchach.':
+      'Swap a shape in your chosen slot. Recharges after 6 moves.',
+  'Tęczowa wymiana odnawia się po 4 ruchach.':
+      'Rainbow swap recharges after 4 moves.',
+  'Wybierz też kolor nowego klocka.': 'Also choose the new piece color.',
+  'Tęczowa wymiana odnawia się po 3 ruchach.':
+      'Rainbow swap recharges after 3 moves.',
+  'Combo: co najmniej 2 linie naraz lub kolejne czyszczenie. +40 punktów i +2 monety.': 'Combo: at least 2 lines at once or consecutive clearing moves. +40 points and +2 coins.',
+  'Combo: +80 punktów i +4 monety.': 'Combo: +80 points and +4 coins.',
+  'Combo: +120 punktów i +6 monet.': 'Combo: +120 points and +6 coins.',
+  'Combo: +160 punktów, +8 monet i +2 monety za linię.':
+      'Combo: +160 points, +8 coins and +2 coins per line.',
   'Ułóż. Połącz. Rozkwitaj.': 'Place. Connect. Bloom.',
   'GRAJ': 'PLAY',
   'WZNÓW': 'RESUME',

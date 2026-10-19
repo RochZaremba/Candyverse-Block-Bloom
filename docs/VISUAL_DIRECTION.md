@@ -84,3 +84,13 @@ Nie oznaczaj P0 graficznego jako ukończonego, jeśli ekrany to nieostylowane sz
 Właściciel2026-10-15 zatwierdził renderowaną oprawę na podstawie swojej grafiki,
 cztery zwierzaki i więcej animacji. [Plan](KINGDOM_EXPANSION.md) zastępuje dawny
 limit3 renderów i code-native postacie; kontrast, dostępność i brak fleszy obowiązują.
+
+## T-021 — Evolution
+
+Karty rozwijają istniejące cukierkowe emblematy i CandyPanel, bez emoji.
+Ścieżka/poziom i odblokowywana synergia są tekstem PL/EN. Panel mocy pod tacką
+pokazuje rzeczywiste ładunki/cooldown i opisy synergii. Plansza i trzy kształty
+pozostają nad panelem; dotknięcie slotu odsłania planszę tylko gdy jest poza
+widokiem. Znaczniki bomb mają własną semantykę, a podgląd wybuchu obramowuje
+konkretne pola i pokazuje koszt przed potwierdzeniem. FX używają obecnej warstwy
+cząstek i respektują reduced-motion. [Reguły](adr/0020-roguelite-evolution.md).
