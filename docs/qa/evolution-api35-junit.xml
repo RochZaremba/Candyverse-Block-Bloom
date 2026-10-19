@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuites tests="1" failures="0" errors="0" skipped="0" time="2.444" timestamp="2026-10-18T09:37:49" hostname="localhost">
+  <testsuite name="dev.renvo.candyverse.qa.CandyverseTest" tests="1" failures="0" errors="0" skipped="0" time="1.205" timestamp="2026-10-18T09:37:49" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554 - 15" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="Android native persistence, six screens and active smoke" classname="dev.renvo.candyverse.qa.CandyverseTest" time="1.205" />
+  </testsuite>
+</testsuites>
