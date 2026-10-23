@@ -129,7 +129,9 @@ void main() {
       await place(2, 1, 1);
       expect(controller.state, same(snapshot));
       expect(audio, hasLength(2));
-      await tester.tap(find.byTooltip('Dźwięk i ruch'));
+      await tester.tap(find.byKey(const Key('game-info')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Dźwięk i ruch'));
       await tester.pumpAndSettle();
       await tester.tap(find.byType(SwitchListTile).at(0));
       await tester.pump();

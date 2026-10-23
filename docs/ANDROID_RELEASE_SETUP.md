@@ -40,12 +40,12 @@ See [Flutter's Android signing guide](https://docs.flutter.dev/deployment/androi
 
 ## Build and verify
 
-For the Roguelite Evolution candidate, after the repository tests and T-021 QA pass,
-use version1.3.0+6. Keep all previously published artifacts unchanged:
+For the readability candidate, after the repository tests and T-022 QA pass,
+use version1.3.1+7. This candidate has not been built or published yet. Keep all previously published artifacts unchanged:
 
 ```sh
-flutter build appbundle --release --build-name=1.3.0 --build-number=6
-flutter build apk --release --build-name=1.3.0 --build-number=6
+flutter build appbundle --release --build-name=1.3.1 --build-number=7
+flutter build apk --release --build-name=1.3.1 --build-number=7
 python3 scripts/audit_android_artifact.py build/app/outputs/flutter-apk/app-release.apk
 ```
 
@@ -70,6 +70,21 @@ For an AAB, additionally inspect `bundletool dump config --bundle=<file>` for
 `PAGE_ALIGNMENT_16K` and test the generated APK set.
 [Android's page-size guide](https://developer.android.com/guide/practices/page-sizes)
 describes the distinction between alignment and runtime behavior.
+
+## APK podglądowe bez zmiany obecnej instalacji
+
+Jeśli klucz produkcyjny jest niedostępny, można zbudować osobny debug preview:
+
+```sh
+ORG_GRADLE_PROJECT_candyversePreview=true flutter build apk --debug --target-platform android-arm64 --no-pub
+python3 scripts/audit_android_artifact.py build/app/outputs/flutter-apk/app-debug.apk --debug --preview
+```
+
+Pakiet `com.renvo.candyverse.preview` ma nazwę Candyverse Preview i osobny zapis.
+Nie aktualizuje ani nie usuwa danych podpisanej aplikacji produkcyjnej. Wariant
+ARM64 jest przeznaczony dla telefonów ARM64; nie jest podpisanym wydaniem,
+aktualizacją istniejącej gry ani artefaktem do Play. Gradle odrzuca zadania release
+z flagą preview. Standardowy wariant i certyfikat produkcyjny pozostają bez zmian.
 
 ## Candy Kingdom branding
 

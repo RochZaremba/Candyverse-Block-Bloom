@@ -109,7 +109,9 @@ void main() {
             for (var c = 0; c < 8; c++) snapshot.board.at((row: r, col: c)),
         ],
       );
-      await tester.tap(find.byTooltip('Sound and motion'));
+      await tester.tap(find.byKey(const Key('game-info')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Sound and motion'));
       await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('Back'));
       await tester.pumpAndSettle();

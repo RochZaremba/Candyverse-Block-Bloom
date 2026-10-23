@@ -198,6 +198,7 @@ Future<void> runSmokeScenario(
     tray: [dot, dot, dot],
     rngState: 2,
     totalClearedLines: 9,
+    legacyMoves: 29,
     score: 1500,
     eraserAcquired: 1,
     eraserUses: 1,
@@ -257,7 +258,7 @@ Future<void> runSmokeScenario(
   await tap(find.byKey(const ValueKey('cell-1-1')));
   await checkpoint();
   final eraserBefore = controller.state;
-  await tap(find.text('Rainbow Eraser (1)'));
+  await tap(find.byKey(const Key('game-eraser')));
   await tap(find.byKey(const ValueKey('cell-1-1')));
   await tap(find.text('Cancel'));
   expect(controller.state, same(eraserBefore));
@@ -299,7 +300,8 @@ Future<void> runSmokeScenario(
     for (var r = 0; r < 8; r++)
       for (var c = 0; c < 8; c++) game.board.at((row: r, col: c)),
   ];
-  await tap(find.byTooltip('Sound and motion'));
+  await tap(find.byKey(const Key('game-info')));
+  await tap(find.text('Sound and motion'));
   await until(() => find.byType(SettingsScreen).evaluate().isNotEmpty);
   await capture('candy-settings-return');
   await tap(find.byTooltip('Back'));
@@ -360,6 +362,7 @@ Future<void> runSmokeScenario(
     ),
   );
   await tap(find.text('PLAY'));
+  await tap(find.byKey(const Key('game-status')));
   await tap(find.text('Finish run'));
   await checkpoint();
   expect(session!.save.wallet, 375);
@@ -470,6 +473,7 @@ Future<void> runSmokeScenario(
           ),
         );
       } else if (game.state.phase == RunPhase.needsEraserDecision) {
+        await tap(find.byKey(const Key('game-status')));
         await tap(find.text('Finish run'));
       } else {
         final slot = game.state.tray.indexWhere(
@@ -497,6 +501,7 @@ Future<void> runSmokeScenario(
       await checkpoint();
     }
     if (game.state.phase == RunPhase.needsEraserDecision) {
+      await tap(find.byKey(const Key('game-status')));
       await tap(find.text('Finish run'));
       await checkpoint();
     }

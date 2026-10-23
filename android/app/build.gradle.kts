@@ -6,6 +6,8 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Explicit debug preview installs beside the signed production app.
+val previewBuild = providers.gradleProperty("candyversePreview").orNull == "true"
 val qaInstrumentation = providers.gradleProperty("candyverseInstrumentation").orNull == "true"
 val signingProperties = Properties()
 val signingPropertiesPath = System.getenv("CANDYVERSE_KEY_PROPERTIES")
@@ -23,6 +25,7 @@ if (signingPropertiesFile != null) {
 
 gradle.taskGraph.whenReady {
     if (allTasks.any { it.name.contains("release", ignoreCase = true) }) {
+        require(!previewBuild) { "Preview builds cannot produce a release." }
         require(!qaInstrumentation) { "QA instrumentation cannot produce a release." }
         require(signingPropertiesFile != null) {
             "Release signing required. Set CANDYVERSE_KEY_PROPERTIES to an external credentials file."
@@ -52,8 +55,16 @@ android {
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        applicationId = if (qaInstrumentation) "com.renvo.candyverse.qa" else "com.renvo.candyverse"
-        manifestPlaceholders["candyverseAppLabel"] = if (qaInstrumentation) "Candyverse QA" else "Candyverse: Block & Bloom"
+        applicationId = when {
+            qaInstrumentation -> "com.renvo.candyverse.qa"
+            previewBuild -> "com.renvo.candyverse.preview"
+            else -> "com.renvo.candyverse"
+        }
+        manifestPlaceholders["candyverseAppLabel"] = when {
+            qaInstrumentation -> "Candyverse QA"
+            previewBuild -> "Candyverse Preview"
+            else -> "Candyverse: Block & Bloom"
+        }
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24

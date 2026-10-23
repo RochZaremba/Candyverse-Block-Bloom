@@ -62,19 +62,23 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('apk', type=Path)
     parser.add_argument('--debug', action='store_true', help='Explicit development artifact audit, not publication approval.')
+    parser.add_argument('--preview', action='store_true', help='Audit the separate preview application ID; requires --debug.')
     parser.add_argument('--sdk', type=Path, default=Path(os.environ.get('ANDROID_SDK_ROOT', Path.home()/'Android/Sdk')))
     args = parser.parse_args()
+    if args.preview and not args.debug:
+        parser.error('--preview requires --debug; preview is not a signed release.')
+    expected_id = APP_ID + ('.preview' if args.preview else '')
     tools = sorted((args.sdk/'build-tools').iterdir(), key=lambda p: [int(v) for v in re.findall(r'\d+', p.name)])[-1]
     aapt = str(tools/'aapt2')
     apk = str(args.apk.resolve())
     badging = command(aapt, 'dump', 'badging', apk)
     manifest = command(aapt, 'dump', 'xmltree', apk, '--file', 'AndroidManifest.xml')
-    if f"package: name='{APP_ID}'" not in badging:
+    if f"package: name='{expected_id}'" not in badging:
         raise ValueError('Unexpected application ID.')
     if "minSdkVersion:'24'" not in badging or "targetSdkVersion:'36'" not in badging:
         raise ValueError('Expected minSdk24 and targetSdk36.')
     permissions = set(re.findall(r"uses-permission: name='([^']+)'", badging))
-    expected = {APP_ID+'.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'}
+    expected = {expected_id+'.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'}
     if args.debug:
         expected.add('android.permission.INTERNET')
     if permissions-expected:
@@ -109,7 +113,7 @@ def main():
     signature = command(str(tools/'apksigner'), 'verify', '--verbose', '--print-certs', apk)
     if not args.debug and 'Android Debug' in signature:
         raise ValueError('Release artifact is signed with a development certificate.')
-    print(f'PASS: {APP_ID}, SDK24/36, permissions={sorted(permissions)}, backup exclusions.')
+    print(f'PASS: {expected_id}, SDK24/36, permissions={sorted(permissions)}, backup exclusions.')
     print(f'PASS: {len(aligned)} 64-bit ELF libraries and APK ZIP alignment at16KB; APK signature valid.')
     if args.debug:
         print('Development APK only; runtime QA and a signed final release are still required.')

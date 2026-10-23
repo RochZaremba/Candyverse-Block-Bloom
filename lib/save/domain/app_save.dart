@@ -332,6 +332,7 @@ Map<String, Object?> _encodeGame(GameState g) => {
   'score': g.score,
   'streak': g.streak,
   'lines': g.totalClearedLines,
+  'legacyMoves': g.legacyMoves,
   'sugar': g.sugarRushLevel,
   'lucky': g.luckyJellyLevel,
   'rng': g.rngState,
@@ -385,6 +386,7 @@ GameState _decodeGame(
     score: _int(d, 'score'),
     streak: _int(d, 'streak'),
     totalClearedLines: _int(d, 'lines'),
+    legacyMoves: d.containsKey('legacyMoves') ? _int(d, 'legacyMoves') : 0,
     sugarRushLevel: _int(d, 'sugar', max: 2),
     luckyJellyLevel: _int(d, 'lucky', max: 2),
     rngState: _int(d, 'rng', min: 1),
@@ -409,7 +411,10 @@ GameState _decodeGame(
   }
   if (g.streak > g.totalClearedLines ||
       g.pendingUpgradeChoices >
-          (g.evolution?.moves ?? 0) ~/ 5 + g.totalClearedLines ~/ 5 ||
+          // Accept already-earned queues from pre-cadence saves as well.
+          (g.evolution?.moves ?? 0) ~/ 5 +
+              g.totalClearedLines ~/ 5 +
+              g.legacyMoves ~/ GameState.upgradeMoveInterval ||
       g.upgradeChoices.any(
         (u) => !GameEngine.seeded(seed: 0).availableUpgrades(g).contains(u),
       )) {

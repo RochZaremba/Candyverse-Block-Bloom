@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:candyverse/core/presentation/candy_controls.dart';
 import 'package:candyverse/core/theme/app_theme.dart';
 import 'package:candyverse/game/application/game_controller.dart';
 import 'package:candyverse/game/domain/board.dart';
@@ -77,8 +76,9 @@ void main() {
     GameController controller, {
     String language = 'en',
     double scale = 1,
+    double height = 740,
   }) async {
-    tester.view.physicalSize = const Size(320, 740);
+    tester.view.physicalSize = Size(320, height);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -150,10 +150,12 @@ void main() {
       expect(c.state.evolution!.rainbowCooldown, 4);
       expect(c.state.evolution!.rainbowPrimed, isTrue);
       expect(c.state.pendingCoins, 2);
-      final button = tester.widget<CandyAction>(
-        find.byKey(const Key('evolution-rainbow')),
-      );
-      expect(button.onPressed, isNull);
+      final snapshot = c.state;
+      await tap(tester, find.byKey(const Key('evolution-rainbow')));
+      expect(find.text('Rainbow recharging'), findsOneWidget);
+      expect(find.text('Place 4 more pieces to swap a shape.'), findsOneWidget);
+      expect(c.state, same(snapshot));
+      await tap(tester, find.text('Got it'));
       await tap(tester, find.byKey(const Key('evolution-bomb')));
       await tap(tester, find.byKey(const Key('power-color-blueberry')));
       await tap(tester, find.byKey(const Key('cell-2-2')));
@@ -201,6 +203,19 @@ void main() {
       expect(c.state.pendingCoins, 2);
     },
   );
+  testWidgets(
+    'an empty bomb charge explains unavailability and preserves the run',
+    (tester) async {
+      final c = controller(evolution: Evolution(explosive: 1));
+      await show(tester, c);
+      final snapshot = c.state;
+      await tap(tester, find.byKey(const Key('evolution-bomb')));
+      expect(find.text('Bomb unavailable'), findsOneWidget);
+      expect(c.state, same(snapshot));
+      await tap(tester, find.text('Got it'));
+      expect(find.byKey(const Key('cell-2-2')).hitTestable(), findsOneWidget);
+    },
+  );
   for (final language in ['pl', 'en']) {
     testWidgets(
       'cards show real ranks and synergy unlock at320 ${language}200%',
@@ -241,12 +256,33 @@ void main() {
       },
     );
     testWidgets(
-      'powers remain scrollable with full text at320 ${language}200%',
+      'board and powers stay visible without scrolling at320 ${language}200%',
       (tester) async {
         final c = controller();
-        await show(tester, c, language: language, scale: 2);
-        await tester.ensureVisible(find.byType(EvolutionPanel));
-        await tester.pumpAndSettle();
+        await show(tester, c, language: language, scale: 2, height: 592);
+        expect(find.byType(SingleChildScrollView), findsNothing);
+        expect(find.byKey(const Key('cell-7-7')).hitTestable(), findsOneWidget);
+        for (var slot = 0; slot < 3; slot++) {
+          expect(
+            find.byKey(ValueKey('tray-$slot')).hitTestable(),
+            findsOneWidget,
+          );
+        }
+        await tap(tester, find.byKey(const Key('game-info')));
+        expect(find.byType(EvolutionPanel), findsOneWidget);
+        expect(
+          find.text(
+            language == 'pl'
+                ? 'Następna karta za 30 ruchów.'
+                : 'Next card in 30 moves.',
+          ),
+          findsWidgets,
+        );
+        await expectLater(
+          find.byType(Overlay).first,
+          matchesGoldenFile('goldens/game_help_${language}_320.png'),
+        );
+        await tap(tester, find.text(language == 'pl' ? 'Zamknij' : 'Close'));
         expect(tester.takeException(), isNull);
         await expectLater(
           find.byType(GameScreen),

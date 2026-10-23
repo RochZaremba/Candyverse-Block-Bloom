@@ -33,6 +33,31 @@ void main() {
       if (save.activeRun == null) break;
     }
   });
+  test('legacy placement counter survives resume and absent old counter starts at zero', () {
+    final e = GameEngine.seeded(seed: 45);
+    final legacy = e.start(legacy: true).copyWith(legacyMoves: 29);
+    final save = AppSaveV1().startRun(45).checkpoint(1, legacy);
+    final restored = AppSaveV1.decode(save.encode());
+    expect(restored.activeRun!.game.acceptedMoves, 29);
+    final game = restored.activeRun!.game;
+    final piece = game.tray.first!;
+    final next = e
+        .placePiece(
+          game,
+          PlacePiece(
+            slot: 0,
+            origin: e.getLegalPlacements(game.board, piece).first,
+          ),
+        )
+        .state;
+    expect(next.phase, RunPhase.upgrade);
+    expect(next.pendingUpgradeChoices, 1);
+    final old = jsonDecode(save.encode()) as Map<String, dynamic>;
+    (old['activeRun']['game'] as Map).remove('legacyMoves');
+    expect(AppSaveV1.decode(jsonEncode(old)).activeRun!.game.acceptedMoves, 0);
+    old['activeRun']['game']['legacyMoves'] = -1;
+    expect(() => AppSaveV1.decode(jsonEncode(old)), throwsFormatException);
+  });
   test('choice queue and eraser counters survive without reroll', () {
     var save = AppSaveV1().startRun(2);
     final engine = GameEngine.seeded(seed: 2);

@@ -1,5 +1,128 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
+## 2026-10-23 — sieć odblokowana, T-022 sprawdzone, APK Preview gotowe
+
+Źródła `5a5392b`, UI/regresje `e0659d3`, branch `fix/readable-game`.
+Po komunikacie właściciela ponowiono operacje: Flutter i API GitHub działają,
+setup JDK/SDK/Flutter/pub ukończony. Historyczne blokery sieci poniżej są rozwiązane.
+Brak dotychczasowego klucza produkcyjnego pozostaje rzeczywistą blokadą release.
+`gh secret list` odmawia dostępu integracji; nie żądano nowego tokena/nie próbowano
+odczytywać wartości sekretów.
+
+- **236/236 Flutter PASS** bez update-goldens po finalnej zmianie;93/93 domena,
+  19/19 Python; analyze0, format/docs/diff PASS.
+- Zaktualizowano i obejrzano goldeny gry/popupów PL/EN/200%. Poprawiono brakujący
+  glif znacznika tęczy oraz sprzeczną instrukcję w oknie braku miejsca.
+- Host smoke z MemoryStorage PASS,19 ruchów/20 reakcji; to nie native DataStore
+  ani20min QA. Brak lokalnego urządzenia/KVM; nie ponawiamy telefonu właściciela.
+- Zbudowano i statycznie audytowano **Candyverse Preview1.3.1+7 ARM64**:
+  `build/artifacts/candyverse-1.3.1-7-preview-arm64.apk`.
+  Pakiet `.preview`, osobny zapis, SDK24/36, debug, ELF/ZIP16KB i podpis PASS.
+  SHA256 `e3b4af6a949ae571adea4f229ebc3c6db91cd0768ee6ae5e484e282e16c80f59`.
+  To podgląd instalowany obok produkcyjnej gry, nie podpisana aktualizacja.
+
+[PR#20](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/20) otwarty.
+CI uruchomione, bez przypisywania jeszcze PASS: Flutter39973231986,
+native39973232003; macierz39973231870 pobiera stary przypięty1.3.0+6,
+więc nie potwierdza nowego podpisanego APK. Main nie scalony.
+
+Utworzono [szkic v1.3.1-rc.1](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/tag/untagged-635b051daa139b216239),
+id421967585, draft=true, źródło pełny SHA5a5392b. Upload Preview do
+uploads.github.com został odrzucony **HTTP401 Bad credentials**; API GitHub
+pozwala na utworzenie PR/szkicu, ale nie ustanawia prawa uploadu na drugim
+hoście. Sprawdzono assets=[] i poprawiono opis szkicu: nic nie załączono,
+niczego nie opublikowano. Nie uruchamiano loginu ani nie szukano wartości tokena.
+APK pozostaje w workspace i jest podlinkowane w czacie. Do publikacji trzeba
+również przywrócić poprawną autoryzację uploadu przez istniejące połączenie.
+
+[Obrazy i pełne ograniczenia kontroli](READABILITY_REVIEW.md).
+Podpisany release/Play nieopublikowane; istniejący1.3.0+6 bez zmian.
+**Następny krok:** udostępnić istniejący klucz przez bezpieczny mechanizm poza
+Git/chatem i wskazać CANDYVERSE_KEY_PROPERTIES; po zielonych kontrolach PR
+zbudować/audytować/przetestować podpisany APK/AAB oraz opublikować autoryzowany release.
+
+
+## 2026-10-23 — właściciel zlecił kolejny release: 1.3.1+7, ZABLOKOWANY
+
+Przygotowano wersję źródłową **1.3.1+7** i [opis wydania](RELEASE_1_3_1_NOTES.md)
+na `fix/readable-game`. Planowany tag `v1.3.1-rc.1` zgodnie z dotychczasową
+publiczną dystrybucją prerelease GitHub. Nie utworzono tagu ani GitHub Release,
+nie scalono do main, nie opublikowano w Play i nie wygenerowano APK/AAB.
+Poprzednie publiczne wydanie1.3.0+6 pozostaje bez zmian.
+
+Sprawdzono ponownie rzeczywiste operacje:
+
+- `git ls-remote origin HEAD`: PASS, main=`647425a`.
+- `flutter --version`: bootstrap Dart SDK nadal CONNECT403 do storage.googleapis.com.
+  Wszystkie wymagane testy Flutter, aktualizacja/ocena goldenów i build nadal nieuruchomione.
+- `gh api repos/RochZaremba/Candyverse-Block-Bloom` i `gh release list`:
+  Forbidden do api.github.com. GH_TOKEN jest obecny, nie żądano nowego tokena.
+  Działający Git nie ustanawia dostępu do API publikacji.
+- Brak CANDYVERSE_KEY_PROPERTIES i wcześniejszego zewnętrznego klucza
+  w tym środowisku. Nie generowano innego certyfikatu/debugowego zamiennika.
+
+W szkicu konfiguracji zachowano storage.googleapis.com i dodano
+api.github.com oraz uploads.github.com. Zapis szkicu potwierdzony;
+nie zmienia on aktywnej polityki bez zapisania/publikacji środowiska.
+Po aktywacji trzeba ponowić rzeczywiste operacje, nie zakładać uprawnień do API.
+
+**Do odblokowania:** zapisać/publikować konfigurację środowiska z tymi hostami
+oraz udostępnić dotychczasowy klucz bezpiecznym mechanizmem poza Git/chatem,
+ze wskazaniem CANDYVERSE_KEY_PROPERTIES. Oczekiwany certyfikat SHA256:
+`2064a303250785a1ef85029a03a543dc759ab6d715f1fb2f05dccdca04e70506`.
+Następnie dokończyć testy i goldeny opisane niżej, build/audyty/podpisany smoke,
+PR i zielone kontrole przed scaleniem oraz publikacją release z artefaktami.
+Właściciel już autoryzował publikację; nie prosić ponownie o jej zgodę.
+
+
+## 2026-10-23 — T-022: kod przygotowany, walidacja Flutter ZABLOKOWANA
+
+Branch `fix/readable-game`, baza aktualnego `origin/main`=`647425a`.
+Logika `e073ef7`, UI `03dc203`. PR nieutworzony: wymagane testy i nowe goldeny
+pozostają zablokowane. To gałąź robocza, nie kandydat do scalenia.
+Jawne zamówienie właściciela: czytelność, brak scrolla w grze, informacje i
+niedostępność w popupie, karty co 30–40 ruchów. [ADR-0021](adr/0021-readable-game-and-upgrade-cadence.md)
+wybiera 30 zaakceptowanych placementów zamiast dwóch progów co5 ruchów/linii.
+
+- Stały ekran: kompaktowy pasek wyniku/monet, spokojne tło, elastyczna plansza,
+  3 sloty i krótki pasek komunikatu/mocy. Pełne opisy i ustawienia pod ikoną.
+- Niedostępna moc wyjaśnia przyczynę. „Brak miejsca” otwiera ratunek albo
+  zakończenie; zamknięcie zachowuje stan. Nie usunięto mocy/synergii.
+- Evolution zachowuje istniejące moves/RNG/karty. Legacy zapisuje opcjonalne
+  legacyMoves; stary brak pola →0. Istniejące kolejki zachowane, monety bez zmian.
+- Dodane testy 60 placementów→2 karty, multiclear bez dodatkowych wyborów,
+  resume29→30/RNG, legacy i stare kolejki. Dostosowane testy popupów,
+  niedostępnej tęczy, ratunku i layoutu bez scrolla PL/EN/200% oraz native smoke.
+
+Wykonane: parser składni wszystkich Dartów PASS (tree-sitter), format zmienionych
+plików portem WASM dart_style 0.4.0 (nie zastępuje wymaganego pinu SDK),
+`git diff --check` PASS, `python3 scripts/check_docs.py` PASS,
+Python release tools **19/19 PASS**. Nie przypisywać tych wyników domenie/UI.
+
+Środowisko początkowo nie miało Flutter/Dart ani Android SDK/JDK compiler.
+Doinstalowano i sprawdzono lokalny pełny OpenJDK21.0.12.1 (javac), Android
+platform36/build-tools36/NDK28.2 oraz ADB37.0.1; licencje zaakceptowane.
+Pobrano źródło Flutter3.47.2 z GitHub (d3b14c8), ale bootstrap Dart SDK
+`storage.googleapis.com` zwraca CONNECT403. Bieżąca polityka ma package_managers
+bez tego hosta. Zapisano dodanie hosta w szkicu konfiguracji środowiska;
+nie jest jeszcze aktywne. Zapisano także `install_script` i `start_skill`
+w szkicu konfiguracji; wymagają zapisania/publikacji środowiska. Skrypt `/workspace/.candyverse-tools/install.sh`
+przetestowano do tej blokady; aktywacja narzędzi: `source /workspace/.candyverse-tools/env.sh`.
+Nie obchodzono proxy ani weryfikacji TLS.
+
+**Nie uruchomiono:** bazowych/nowych testów Flutter i Dart, flutter analyze,
+pinowanego dart format, buildu Android i natywnego smoke. Nie wygenerowano
+nowego APK ani nowych screenshotów. Istniejące goldeny gry pozostają stare:
+po odblokowaniu trzeba wygenerować i obejrzeć zmienione obrazy, następnie
+uruchomić całą zamrożoną suite bez update-goldens. Zadanie NIE jest QA DONE.
+Wersja źródłowa1.3.0+6 bez podbicia do niezweryfikowanego wydania. Brak publikacji.
+
+**Następny krok:** zapisać storage.googleapis.com w ustawieniach środowiska i
+opublikować środowisko; dokończyć Flutter/Android setup, format/analyze/testy,
+obejrzeć goldeny i zbudować debug APK przed PR. Nie ponawiać testu telefonu
+właściciela wbrew jego wcześniejszej decyzji.
+
+
 ## 2026-10-19 — Evolution1.3.0+6: scalone i opublikowane
 
 PR#17 scalony jako `b24a039`, PR#18 jako `ebb9c2a` po zielonych kontrolach.
