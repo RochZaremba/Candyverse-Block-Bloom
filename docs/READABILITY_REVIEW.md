@@ -57,4 +57,6 @@ CANDYVERSE_KEY_PROPERTIES ani dotychczasowego klucza w tym środowisku.
 Nie generowano zamiennika produkcyjnego. Publikacja podpisanego APK/AAB
 wymaga istniejącego certyfikatu, audytu i QA podpisanych artefaktów.
 Brak urządzenia/emulatora lokalnie; wcześniejsza decyzja właściciela o pominięciu
-ponownego telefonu pozostaje w mocy. Bieżący stan PR/CI/release: [STATUS](STATUS.md).
+ponownego telefonu pozostaje w mocy. Przesyłanie assetu do GitHub zwróciło HTTP401 mimo działającego API; pusty
+szkic release pozostaje nieopublikowany. APK jest lokalnie i w linku w czacie.
+Bieżący stan PR/CI/release: [STATUS](STATUS.md).

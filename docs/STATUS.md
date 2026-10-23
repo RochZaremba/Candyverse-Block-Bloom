@@ -21,6 +21,20 @@ odczytywać wartości sekretów.
   SHA256 `e3b4af6a949ae571adea4f229ebc3c6db91cd0768ee6ae5e484e282e16c80f59`.
   To podgląd instalowany obok produkcyjnej gry, nie podpisana aktualizacja.
 
+[PR#20](https://github.com/RochZaremba/Candyverse-Block-Bloom/pull/20) otwarty.
+CI uruchomione, bez przypisywania jeszcze PASS: Flutter39973231986,
+native39973232003; macierz39973231870 pobiera stary przypięty1.3.0+6,
+więc nie potwierdza nowego podpisanego APK. Main nie scalony.
+
+Utworzono [szkic v1.3.1-rc.1](https://github.com/RochZaremba/Candyverse-Block-Bloom/releases/tag/untagged-635b051daa139b216239),
+id421967585, draft=true, źródło pełny SHA5a5392b. Upload Preview do
+uploads.github.com został odrzucony **HTTP401 Bad credentials**; API GitHub
+pozwala na utworzenie PR/szkicu, ale nie ustanawia prawa uploadu na drugim
+hoście. Sprawdzono assets=[] i poprawiono opis szkicu: nic nie załączono,
+niczego nie opublikowano. Nie uruchamiano loginu ani nie szukano wartości tokena.
+APK pozostaje w workspace i jest podlinkowane w czacie. Do publikacji trzeba
+również przywrócić poprawną autoryzację uploadu przez istniejące połączenie.
+
 [Obrazy i pełne ograniczenia kontroli](READABILITY_REVIEW.md).
 Podpisany release/Play nieopublikowane; istniejący1.3.0+6 bez zmian.
 **Następny krok:** udostępnić istniejący klucz przez bezpieczny mechanizm poza
