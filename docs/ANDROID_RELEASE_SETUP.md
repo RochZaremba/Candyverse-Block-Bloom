@@ -40,12 +40,12 @@ See [Flutter's Android signing guide](https://docs.flutter.dev/deployment/androi
 
 ## Build and verify
 
-For the Roguelite Evolution candidate, after the repository tests and T-021 QA pass,
-use version1.3.0+6. Keep all previously published artifacts unchanged:
+For the readability candidate, after the repository tests and T-022 QA pass,
+use version1.3.1+7. This candidate has not been built or published yet. Keep all previously published artifacts unchanged:
 
 ```sh
-flutter build appbundle --release --build-name=1.3.0 --build-number=6
-flutter build apk --release --build-name=1.3.0 --build-number=6
+flutter build appbundle --release --build-name=1.3.1 --build-number=7
+flutter build apk --release --build-name=1.3.1 --build-number=7
 python3 scripts/audit_android_artifact.py build/app/outputs/flutter-apk/app-release.apk
 ```
 

@@ -1,5 +1,38 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
+## 2026-10-23 — właściciel zlecił kolejny release: 1.3.1+7, ZABLOKOWANY
+
+Przygotowano wersję źródłową **1.3.1+7** i [opis wydania](RELEASE_1_3_1_NOTES.md)
+na `fix/readable-game`. Planowany tag `v1.3.1-rc.1` zgodnie z dotychczasową
+publiczną dystrybucją prerelease GitHub. Nie utworzono tagu ani GitHub Release,
+nie scalono do main, nie opublikowano w Play i nie wygenerowano APK/AAB.
+Poprzednie publiczne wydanie1.3.0+6 pozostaje bez zmian.
+
+Sprawdzono ponownie rzeczywiste operacje:
+
+- `git ls-remote origin HEAD`: PASS, main=`647425a`.
+- `flutter --version`: bootstrap Dart SDK nadal CONNECT403 do storage.googleapis.com.
+  Wszystkie wymagane testy Flutter, aktualizacja/ocena goldenów i build nadal nieuruchomione.
+- `gh api repos/RochZaremba/Candyverse-Block-Bloom` i `gh release list`:
+  Forbidden do api.github.com. GH_TOKEN jest obecny, nie żądano nowego tokena.
+  Działający Git nie ustanawia dostępu do API publikacji.
+- Brak CANDYVERSE_KEY_PROPERTIES i wcześniejszego zewnętrznego klucza
+  w tym środowisku. Nie generowano innego certyfikatu/debugowego zamiennika.
+
+W szkicu konfiguracji zachowano storage.googleapis.com i dodano
+api.github.com oraz uploads.github.com. Zapis szkicu potwierdzony;
+nie zmienia on aktywnej polityki bez zapisania/publikacji środowiska.
+Po aktywacji trzeba ponowić rzeczywiste operacje, nie zakładać uprawnień do API.
+
+**Do odblokowania:** zapisać/publikować konfigurację środowiska z tymi hostami
+oraz udostępnić dotychczasowy klucz bezpiecznym mechanizmem poza Git/chatem,
+ze wskazaniem CANDYVERSE_KEY_PROPERTIES. Oczekiwany certyfikat SHA256:
+`2064a303250785a1ef85029a03a543dc759ab6d715f1fb2f05dccdca04e70506`.
+Następnie dokończyć testy i goldeny opisane niżej, build/audyty/podpisany smoke,
+PR i zielone kontrole przed scaleniem oraz publikacją release z artefaktami.
+Właściciel już autoryzował publikację; nie prosić ponownie o jej zgodę.
+
+
 ## 2026-10-23 — T-022: kod przygotowany, walidacja Flutter ZABLOKOWANA
 
 Branch `fix/readable-game`, baza aktualnego `origin/main`=`647425a`.
