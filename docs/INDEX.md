@@ -11,6 +11,7 @@
 | Zadania + zależności | [Roadmap](ROADMAP.md) |
 | Obecny rzeczywisty stan i handoff | [Status](STATUS.md) |
 | Nowa oprawa z pięciu zdjęć właściciela | [T-019 — podglądy](REFERENCE_UI_REVIEW.md) |
+| Czytelna gra1.3.1 — podgląd i kontrole | [Raport](READABILITY_REVIEW.md) |
 | Evolution1.3.0 — wydanie i QA | [Raport](EVOLUTION_RELEASE_REPORT.md) |
 | Testy i DoD | [Test Plan](TEST_PLAN.md) |
 | Publikacja Google Play | [Release](RELEASE_GOOGLE_PLAY.md) i [raport Candy Kingdom](KINGDOM_RELEASE_REPORT.md) |

@@ -1,5 +1,33 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
+## 2026-10-23 — sieć odblokowana, T-022 sprawdzone, APK Preview gotowe
+
+Źródła `5a5392b`, UI/regresje `e0659d3`, branch `fix/readable-game`.
+Po komunikacie właściciela ponowiono operacje: Flutter i API GitHub działają,
+setup JDK/SDK/Flutter/pub ukończony. Historyczne blokery sieci poniżej są rozwiązane.
+Brak dotychczasowego klucza produkcyjnego pozostaje rzeczywistą blokadą release.
+`gh secret list` odmawia dostępu integracji; nie żądano nowego tokena/nie próbowano
+odczytywać wartości sekretów.
+
+- **236/236 Flutter PASS** bez update-goldens po finalnej zmianie;93/93 domena,
+  19/19 Python; analyze0, format/docs/diff PASS.
+- Zaktualizowano i obejrzano goldeny gry/popupów PL/EN/200%. Poprawiono brakujący
+  glif znacznika tęczy oraz sprzeczną instrukcję w oknie braku miejsca.
+- Host smoke z MemoryStorage PASS,19 ruchów/20 reakcji; to nie native DataStore
+  ani20min QA. Brak lokalnego urządzenia/KVM; nie ponawiamy telefonu właściciela.
+- Zbudowano i statycznie audytowano **Candyverse Preview1.3.1+7 ARM64**:
+  `build/artifacts/candyverse-1.3.1-7-preview-arm64.apk`.
+  Pakiet `.preview`, osobny zapis, SDK24/36, debug, ELF/ZIP16KB i podpis PASS.
+  SHA256 `e3b4af6a949ae571adea4f229ebc3c6db91cd0768ee6ae5e484e282e16c80f59`.
+  To podgląd instalowany obok produkcyjnej gry, nie podpisana aktualizacja.
+
+[Obrazy i pełne ograniczenia kontroli](READABILITY_REVIEW.md).
+Podpisany release/Play nieopublikowane; istniejący1.3.0+6 bez zmian.
+**Następny krok:** udostępnić istniejący klucz przez bezpieczny mechanizm poza
+Git/chatem i wskazać CANDYVERSE_KEY_PROPERTIES; po zielonych kontrolach PR
+zbudować/audytować/przetestować podpisany APK/AAB oraz opublikować autoryzowany release.
+
+
 ## 2026-10-23 — właściciel zlecił kolejny release: 1.3.1+7, ZABLOKOWANY
 
 Przygotowano wersję źródłową **1.3.1+7** i [opis wydania](RELEASE_1_3_1_NOTES.md)

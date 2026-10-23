@@ -4,8 +4,8 @@
 
 - Uproszczony ekran gry bez przewijania, informacje i blokady w oknach.
 - Karty co30 zaakceptowanych placementów zamiast co5 ruchów/linii.
-- [Opis przygotowywanego wydania](RELEASE_1_3_1_NOTES.md). Testy/build/podpis
-  i publikacja pozostają zablokowane; szczegóły w [STATUS](STATUS.md).
+- [Opis przygotowywanego wydania](RELEASE_1_3_1_NOTES.md). 236 testów Fluttera i93 domeny PASS; APK Preview gotowe. Podpisany release
+  czeka na istniejący klucz; szczegóły w [STATUS](STATUS.md).
 
 ## 2026-10-14 — starter docs v0.1
 

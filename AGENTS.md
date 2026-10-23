@@ -72,3 +72,11 @@ Właściciel jawnie zamówił12 ulepszeń,3 ścieżki i4 synergie (T-021).
 Stosuj `docs/adr/0020-roguelite-evolution.md` zamiast limitu3 efektów dla nowych
 runów. Stare runy zachowują reguły legacy; zapisy schema1/2 migrują do3.
 Zasady offline, brak presji czasu i idempotentne nagrody pozostają wymagane.
+
+## Czytelność — zamówienie 2026-10-23
+
+T-022 i ADR-0021 zastępują częstotliwość kart również dla legacy: co30
+zaakceptowanych placementów, bez progów za linie. Wcześniej zdobyte kolejki
+pozostają. Ekran gry bez scrolla; szczegóły i przyczyny blokady w popupie.
+Osobny debug pakiet `.preview` może służyć do oceny bez klucza, ale nie jest
+podpisaną aktualizacją produkcyjną ani artefaktem do publikacji w Play.
