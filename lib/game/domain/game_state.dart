@@ -12,6 +12,7 @@ class GameState {
     this.score = 0,
     this.streak = 0,
     this.totalClearedLines = 0,
+    this.legacyMoves = 0,
     this.sugarRushLevel = 0,
     this.rngState,
     this.luckyJellyLevel = 0,
@@ -31,6 +32,8 @@ class GameState {
     if (score < 0 ||
         streak < 0 ||
         totalClearedLines < 0 ||
+        legacyMoves < 0 ||
+        (evolution != null && legacyMoves != 0) ||
         sugarRushLevel < 0 ||
         sugarRushLevel > 2 ||
         luckyJellyLevel < 0 ||
@@ -59,6 +62,13 @@ class GameState {
   final int score;
   final int streak;
   final int totalClearedLines;
+
+  /// Old saves have no placement counter; their new interval starts at zero.
+  final int legacyMoves;
+  static const upgradeMoveInterval = 30;
+  int get acceptedMoves => evolution?.moves ?? legacyMoves;
+  int get movesUntilUpgrade =>
+      upgradeMoveInterval - acceptedMoves % upgradeMoveInterval;
   final int sugarRushLevel;
   final int? rngState;
   final int luckyJellyLevel;
@@ -70,7 +80,7 @@ class GameState {
   int get pendingCoins =>
       5 * totalClearedLines * (4 + luckyJellyLevel) ~/ 4 +
       (evolution?.bonusCoins ?? 0);
-  int get nextUpgradeMilestone => (totalClearedLines ~/ 5 + 1) * 5;
+  int get nextUpgradeMilestone => acceptedMoves + movesUntilUpgrade;
 
   GameState copyWith({
     Evolution? evolution,
@@ -79,6 +89,7 @@ class GameState {
     int? score,
     int? streak,
     int? totalClearedLines,
+    int? legacyMoves,
     int? sugarRushLevel,
     int? rngState,
     int? luckyJellyLevel,
@@ -94,6 +105,7 @@ class GameState {
     score: score ?? this.score,
     streak: streak ?? this.streak,
     totalClearedLines: totalClearedLines ?? this.totalClearedLines,
+    legacyMoves: legacyMoves ?? this.legacyMoves,
     sugarRushLevel: sugarRushLevel ?? this.sugarRushLevel,
     rngState: rngState ?? this.rngState,
     luckyJellyLevel: luckyJellyLevel ?? this.luckyJellyLevel,

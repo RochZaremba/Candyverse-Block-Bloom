@@ -54,16 +54,16 @@ void main() {
     expect(s.phase, RunPhase.playing);
   });
   test(
-    'fifth accepted move offers cards, rejection and powers do not advance',
+    '30th accepted move offers one card; rejection and powers do not advance',
     () {
       final e = engine();
-      var s = run(e: Evolution(moves: 4));
+      var s = run(e: Evolution(moves: 29));
       expect(
         e.placePiece(s, PlacePiece(slot: -1, origin: (row: 0, col: 0))).state,
         same(s),
       );
       s = e.placePiece(s, PlacePiece(slot: 0, origin: (row: 0, col: 0))).state;
-      expect(s.evolution!.moves, 5);
+      expect(s.evolution!.moves, 30);
       expect(s.phase, RunPhase.upgrade);
       expect(s.upgradeChoices.toSet(), {
         Upgrade.explosiveCandy,
@@ -75,13 +75,13 @@ void main() {
     },
   );
   test(
-    'multi-clear and movement thresholds independently queue every earned card',
+    'multi-clear at move 30 earns one card, independent of line thresholds',
     () {
       final e = engine();
       final result = e
           .placePiece(
             run(
-              e: Evolution(moves: 4),
+              e: Evolution(moves: 29),
               board: full().withCells({(row: 0, col: 0): null}),
               lines: 4,
             ),
@@ -89,10 +89,77 @@ void main() {
           )
           .state;
       expect(result.totalClearedLines, 20);
-      expect(result.pendingUpgradeChoices, 5);
-      expect(result.evolution!.moves, 5);
+      expect(result.pendingUpgradeChoices, 1);
+      expect(result.evolution!.moves, 30);
     },
   );
+  test(
+    '60 accepted placements earn exactly two cards despite repeated clears',
+    () {
+      final e = engine();
+      var s = run();
+      var cards = 0;
+      for (var move = 1; move <= 60; move++) {
+        final slot = s.tray.indexWhere((p) => p != null);
+        final result = e.placePiece(
+          s,
+          PlacePiece(slot: slot, origin: (row: 0, col: (move - 1) % 8)),
+        );
+        expect(result.accepted, isTrue);
+        s = result.state;
+        expect(s.acceptedMoves, move);
+        if (move % 30 == 0) {
+          expect(s.phase, RunPhase.upgrade);
+          expect(s.pendingUpgradeChoices, 1);
+          s = e.chooseUpgrade(s, s.upgradeChoices.first);
+          cards++;
+        } else {
+          expect(
+            s.phase,
+            RunPhase.playing,
+            reason: 'Unexpected interruption at move $move',
+          );
+        }
+      }
+      expect(cards, 2);
+      expect(s.totalClearedLines, 7);
+      expect(s.movesUntilUpgrade, 30);
+    },
+  );
+  test('resume at move 29 gives the same 30th-move card order and RNG', () {
+    final e = GameEngine.seeded(seed: 14);
+    final save = AppSaveV1()
+        .startRun(14)
+        .checkpoint(1, run(e: Evolution(moves: 29)));
+    final restored = AppSaveV1.decode(save.encode());
+    const action = PlacePiece(slot: 0, origin: (row: 0, col: 0));
+    final first = e.placePiece(save.activeRun!.game, action).state;
+    final replay = e.placePiece(restored.activeRun!.game, action).state;
+    expect(first.pendingUpgradeChoices, 1);
+    expect(first.evolution!.moves, 30);
+    expect(replay.upgradeChoices, first.upgradeChoices);
+    expect(replay.rngState, first.rngState);
+    expect(
+      save.checkpoint(1, first).encode(),
+      restored.checkpoint(1, replay).encode(),
+    );
+  });
+  test('an older earned card survives migration without a new line reward', () {
+    final e = engine();
+    final pending = e.resolvePhase(
+      run(e: Evolution(moves: 5)).copyWith(pendingUpgradeChoices: 1),
+    );
+    final save = AppSaveV1().startRun(1).checkpoint(1, pending);
+    final data = jsonDecode(save.encode()) as Map<String, dynamic>;
+    (data['activeRun']['game'] as Map).remove('legacyMoves');
+    final restored = AppSaveV1.decode(jsonEncode(data));
+    final state = restored.activeRun!.game;
+    expect(state.upgradeChoices, pending.upgradeChoices);
+    expect(state.rngState, pending.rngState);
+    final chosen = e.chooseUpgrade(state, state.upgradeChoices.first);
+    expect(chosen.phase, RunPhase.playing);
+    expect(chosen.movesUntilUpgrade, 25);
+  });
   test('only cleared rows charge, including carry and level 4 threshold', () {
     final e = engine();
     final rowBoard = Board.empty().withCells({
@@ -205,44 +272,50 @@ void main() {
       expect(after.evolution!.rainbowPrimed, isFalse);
     },
   );
-  test('rainbow replay is independent of constructor seed; cooldown uses placements', () {
-    final e = GameEngine.seeded(seed: 71);
-    final s = run(e: Evolution(rainbow: 1));
-    final a = e.useRainbow(s, 2);
-    final b = GameEngine.seeded(seed: 900).useRainbow(s, 2);
-    expect(a.tray[2]!.id, b.tray[2]!.id);
-    expect(a.rngState, b.rngState);
-    expect(a.evolution!.rainbowCooldown, 6);
-    expect(e.useRainbow(a, 2), same(a));
-    final moved = e
-        .placePiece(a, PlacePiece(slot: 0, origin: (row: 0, col: 0)))
-        .state;
-    expect(moved.evolution!.rainbowCooldown, 5);
-    final pending = e.resolvePhase(a.copyWith(pendingUpgradeChoices: 1));
-    final faster = e.chooseUpgrade(pending, Upgrade.quickMagic);
-    expect(faster.evolution!.rainbowCooldown, 4);
-  });
-  test('no-space rescue offers a fitting different shape, full board cannot reroll-save', () {
-    final e = engine();
-    final big = pieceCatalog.last;
-    final almost = full().withCells({(row: 7, col: 7): null});
-    final s = e.resolvePhase(
-      run(e: Evolution(rainbow: 1), board: almost, tray: [big, big, big]),
-    );
-    expect(s.phase, RunPhase.needsEraserDecision);
-    final rescue = e.useRainbow(s, 1);
-    expect(rescue.tray[1]!.id, 'horizontal_1');
-    expect(rescue.phase, RunPhase.playing);
-    expect(
-      e.resolvePhase(run(e: Evolution(rainbow: 1), board: full())).phase,
-      RunPhase.gameOver,
-    );
-    final bomb = e.resolvePhase(
-      run(e: Evolution(explosive: 1, bombCharges: 1), board: full()),
-    );
-    expect(bomb.phase, RunPhase.needsEraserDecision);
-    expect(e.detonateBomb(bomb, (row: 0, col: 0)).phase, RunPhase.playing);
-  });
+  test(
+    'rainbow replay is independent of constructor seed; cooldown uses placements',
+    () {
+      final e = GameEngine.seeded(seed: 71);
+      final s = run(e: Evolution(rainbow: 1));
+      final a = e.useRainbow(s, 2);
+      final b = GameEngine.seeded(seed: 900).useRainbow(s, 2);
+      expect(a.tray[2]!.id, b.tray[2]!.id);
+      expect(a.rngState, b.rngState);
+      expect(a.evolution!.rainbowCooldown, 6);
+      expect(e.useRainbow(a, 2), same(a));
+      final moved = e
+          .placePiece(a, PlacePiece(slot: 0, origin: (row: 0, col: 0)))
+          .state;
+      expect(moved.evolution!.rainbowCooldown, 5);
+      final pending = e.resolvePhase(a.copyWith(pendingUpgradeChoices: 1));
+      final faster = e.chooseUpgrade(pending, Upgrade.quickMagic);
+      expect(faster.evolution!.rainbowCooldown, 4);
+    },
+  );
+  test(
+    'no-space rescue offers a fitting different shape, full board cannot reroll-save',
+    () {
+      final e = engine();
+      final big = pieceCatalog.last;
+      final almost = full().withCells({(row: 7, col: 7): null});
+      final s = e.resolvePhase(
+        run(e: Evolution(rainbow: 1), board: almost, tray: [big, big, big]),
+      );
+      expect(s.phase, RunPhase.needsEraserDecision);
+      final rescue = e.useRainbow(s, 1);
+      expect(rescue.tray[1]!.id, 'horizontal_1');
+      expect(rescue.phase, RunPhase.playing);
+      expect(
+        e.resolvePhase(run(e: Evolution(rainbow: 1), board: full())).phase,
+        RunPhase.gameOver,
+      );
+      final bomb = e.resolvePhase(
+        run(e: Evolution(explosive: 1, bombCharges: 1), board: full()),
+      );
+      expect(bomb.phase, RunPhase.needsEraserDecision);
+      expect(e.detonateBomb(bomb, (row: 0, col: 0)).phase, RunPhase.playing);
+    },
+  );
   test('Paws combo rewards, Constellation recharge and reset boundaries', () {
     final e = engine();
     final rowBoard = Board.empty().withCells({
@@ -302,20 +375,23 @@ void main() {
       expect(replay.rngState, chosen.rngState);
     },
   );
-  test('bonus reward is finalized once across restart, no wallet gain before finish', () {
-    var p = AppSaveV1(wallet: 10).startRun(8);
-    final finished = run(
-      e: Evolution(paws: 2, bonusCoins: 17),
-      board: full(),
-      lines: 2,
-    ).copyWith(phase: RunPhase.gameOver);
-    p = p.checkpoint(1, finished);
-    expect(p.wallet, 37);
-    expect(p.lastResult!.bonusCoins, 17);
-    final restored = AppSaveV1.decode(p.encode());
-    expect(restored.completeRun(1).wallet, 37);
-    expect(restored.startRun(100).activeRun!.game.evolution!.bonusCoins, 0);
-  });
+  test(
+    'bonus reward is finalized once across restart, no wallet gain before finish',
+    () {
+      var p = AppSaveV1(wallet: 10).startRun(8);
+      final finished = run(
+        e: Evolution(paws: 2, bonusCoins: 17),
+        board: full(),
+        lines: 2,
+      ).copyWith(phase: RunPhase.gameOver);
+      p = p.checkpoint(1, finished);
+      expect(p.wallet, 37);
+      expect(p.lastResult!.bonusCoins, 17);
+      final restored = AppSaveV1.decode(p.encode());
+      expect(restored.completeRun(1).wallet, 37);
+      expect(restored.startRun(100).activeRun!.game.evolution!.bonusCoins, 0);
+    },
+  );
   for (final version in [1, 2]) {
     test('schema$version migrates without changing legacy run or RNG', () {
       var p = AppSaveV1(wallet: 25).startRun(23);

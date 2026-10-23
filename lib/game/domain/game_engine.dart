@@ -188,6 +188,7 @@ class GameEngine {
     final points = moveScore.points + (combo ? 40 * (evolution?.paws ?? 0) : 0);
     final progressed = state.copyWith(
       evolution: evolution,
+      legacyMoves: state.legacyMoves + (evolution == null ? 1 : 0),
       totalClearedLines: state.totalClearedLines + clear.lineCount,
     );
     return PlacementResult._(
@@ -196,6 +197,7 @@ class GameEngine {
           board: clear.board,
           tray: nextTray,
           evolution: evolution,
+          legacyMoves: progressed.legacyMoves,
           score: state.score + points,
           streak: moveScore.streak,
           totalClearedLines: state.totalClearedLines + clear.lineCount,

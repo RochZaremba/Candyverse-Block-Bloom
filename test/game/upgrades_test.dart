@@ -11,6 +11,7 @@ GameEngine engine() => GameEngine(traySource: (_) => [dot, dot, dot]);
 GameState state({
   Board? board,
   int lines = 0,
+  int moves = 0,
   int pending = 0,
   int sugar = 0,
   int lucky = 0,
@@ -21,6 +22,7 @@ GameState state({
   tray: [dot, dot, dot],
   rngState: 1234,
   totalClearedLines: lines,
+  legacyMoves: moves,
   pendingUpgradeChoices: pending,
   sugarRushLevel: sugar,
   luckyJellyLevel: lucky,
@@ -29,35 +31,61 @@ GameState state({
 );
 
 void main() {
-  test('crossing 5, 10 and 15 in one move queues every choice', () {
-    final e = engine();
-    final board = Board.fromRows(
-      List.generate(
-        8,
-        (r) => List.generate(8, (c) => r == 0 && c == 0 ? null : 'candyPink'),
-      ),
-    );
-    final result = e.placePiece(
-      state(board: board, lines: 4),
-      PlacePiece(slot: 0, origin: (row: 0, col: 0)),
-    );
-    expect(result.state.totalClearedLines, 20);
-    expect(result.state.pendingUpgradeChoices, 4);
-    var next = result.state;
-    for (var i = 0; i < 4; i++) {
-      expect(next.phase, RunPhase.upgrade);
-      expect(next.upgradeChoices.toSet().length, next.upgradeChoices.length);
-      next = e.chooseUpgrade(
-        next,
-        i < 2 ? Upgrade.sugarRush : Upgrade.luckyJelly,
+  test(
+    'legacy move 30 preserves three earned choices and adds exactly one',
+    () {
+      final e = engine();
+      final board = Board.fromRows(
+        List.generate(
+          8,
+          (r) => List.generate(8, (c) => r == 0 && c == 0 ? null : 'candyPink'),
+        ),
       );
-      expect(next.pendingUpgradeChoices, 3 - i);
-    }
-    expect(next.phase, RunPhase.playing);
-    expect(next.sugarRushLevel, 2);
-    expect(next.luckyJellyLevel, 2);
-  });
+      final result = e.placePiece(
+        state(board: board, lines: 4, moves: 29, pending: 3),
+        PlacePiece(slot: 0, origin: (row: 0, col: 0)),
+      );
+      expect(result.state.totalClearedLines, 20);
+      expect(result.state.pendingUpgradeChoices, 4);
+      var next = result.state;
+      for (var i = 0; i < 4; i++) {
+        expect(next.phase, RunPhase.upgrade);
+        expect(next.upgradeChoices.toSet().length, next.upgradeChoices.length);
+        next = e.chooseUpgrade(
+          next,
+          i < 2 ? Upgrade.sugarRush : Upgrade.luckyJelly,
+        );
+        expect(next.pendingUpgradeChoices, 3 - i);
+      }
+      expect(next.phase, RunPhase.playing);
+      expect(next.sugarRushLevel, 2);
+      expect(next.luckyJellyLevel, 2);
+    },
+  );
 
+  test(
+    'legacy cards use 30 placements and a line clear does not interrupt early',
+    () {
+      final e = engine();
+      final board = Board.empty().withCells({
+        for (var c = 0; c < 7; c++) (row: 0, col: c): 'candyPink',
+      });
+      final before = state(board: board, lines: 4, moves: 28);
+      final clear = e
+          .placePiece(before, PlacePiece(slot: 0, origin: (row: 0, col: 7)))
+          .state;
+      expect(clear.totalClearedLines, 5);
+      expect(clear.phase, RunPhase.playing);
+      expect(clear.legacyMoves, 29);
+      expect(clear.movesUntilUpgrade, 1);
+      final next = e
+          .placePiece(clear, PlacePiece(slot: 1, origin: (row: 1, col: 0)))
+          .state;
+      expect(next.phase, RunPhase.upgrade);
+      expect(next.pendingUpgradeChoices, 1);
+      expect(next.legacyMoves, 30);
+    },
+  );
   test('seeded card order and queued choices replay from snapshot', () {
     final e = GameEngine.seeded(seed: 19);
     final pending = e.start(legacy: true).copyWith(pendingUpgradeChoices: 3);
@@ -237,6 +265,7 @@ void main() {
     final e = engine();
     final fullLevels = state(
       lines: 29,
+      moves: 29,
       sugar: 2,
       lucky: 2,
       acquired: 2,

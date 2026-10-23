@@ -9,7 +9,7 @@ class BombPreview {
 
 extension EvolutionRules on GameEngine {
   int _milestones(GameState s) =>
-      (s.evolution?.moves ?? 0) ~/ 5 + s.totalClearedLines ~/ 5;
+      s.acceptedMoves ~/ GameState.upgradeMoveInterval;
 
   Evolution _markBombs(Evolution e, Board board) {
     final bombs = e.bombs
