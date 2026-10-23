@@ -1,3 +1,8 @@
+> Aktualizacja 2026-10-23: częstotliwość wyborów z historycznych sekcji poniżej
+> zastępuje [ADR-0021](adr/0021-readable-game-and-upgrade-cadence.md): jedna karta
+> co **30 zaakceptowanych ułożeń klocka**, bez dodatkowych progów za linie.
+> Zasady mocy Evolution określa [ADR-0020](adr/0020-roguelite-evolution.md).
+
 # Game Design Document (GDD) — kontrakt rozgrywki
 
 **Wersja:** 0.1 · Każda zmiana reguł wpływająca na zapisy lub testy wymaga aktualizacji tego dokumentu i ewentualnie ADR.

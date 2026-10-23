@@ -48,3 +48,9 @@ Właściciel2026-10-15 zatwierdził rozszerzenie zakresu. Szczegóły i kryteria
 | T-016 | Menu i domyślny EN | T-012 |2 przyciski, gear, zachowanie starego języka | feat/kingdom-navigation |
 | T-017 | Płynne przejścia / komunikaty | T-016 | brak flash, candy UI z maskotką i dostępność | feat/kingdom-navigation |
 | T-018 | Celebracje i QA | T-013–T-017 | efekty, testy/goldeny/build/native smoke i nowy kandydat | feat/candy-kingdom-expansion |
+
+## Czytelność gry — zamówienie 2026-10-23
+
+| ID | Zadanie | Zależności | Kryterium akceptacji | Preferowany branch |
+| --- | --- | --- | --- | --- |
+| T-022 | Uproszczenie gry i rzadsze karty | T-021 | Plansza/tray bez scrolla przy 320dp/200%, informacje i blokady w popupie, karta co 30 poprawnych ruchów, save/resume/RNG i regresje UI | fix/readable-game |

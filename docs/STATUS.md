@@ -1,5 +1,53 @@
 # STATUS — rzeczywisty stan i przekazanie prac
 
+## 2026-10-23 — T-022: kod przygotowany, walidacja Flutter ZABLOKOWANA
+
+Branch `fix/readable-game`, baza aktualnego `origin/main`=`647425a`.
+Logika `e073ef7`, UI `03dc203`. PR nieutworzony: wymagane testy i nowe goldeny
+pozostają zablokowane. To gałąź robocza, nie kandydat do scalenia.
+Jawne zamówienie właściciela: czytelność, brak scrolla w grze, informacje i
+niedostępność w popupie, karty co 30–40 ruchów. [ADR-0021](adr/0021-readable-game-and-upgrade-cadence.md)
+wybiera 30 zaakceptowanych placementów zamiast dwóch progów co5 ruchów/linii.
+
+- Stały ekran: kompaktowy pasek wyniku/monet, spokojne tło, elastyczna plansza,
+  3 sloty i krótki pasek komunikatu/mocy. Pełne opisy i ustawienia pod ikoną.
+- Niedostępna moc wyjaśnia przyczynę. „Brak miejsca” otwiera ratunek albo
+  zakończenie; zamknięcie zachowuje stan. Nie usunięto mocy/synergii.
+- Evolution zachowuje istniejące moves/RNG/karty. Legacy zapisuje opcjonalne
+  legacyMoves; stary brak pola →0. Istniejące kolejki zachowane, monety bez zmian.
+- Dodane testy 60 placementów→2 karty, multiclear bez dodatkowych wyborów,
+  resume29→30/RNG, legacy i stare kolejki. Dostosowane testy popupów,
+  niedostępnej tęczy, ratunku i layoutu bez scrolla PL/EN/200% oraz native smoke.
+
+Wykonane: parser składni wszystkich Dartów PASS (tree-sitter), format zmienionych
+plików portem WASM dart_style 0.4.0 (nie zastępuje wymaganego pinu SDK),
+`git diff --check` PASS, `python3 scripts/check_docs.py` PASS,
+Python release tools **19/19 PASS**. Nie przypisywać tych wyników domenie/UI.
+
+Środowisko początkowo nie miało Flutter/Dart ani Android SDK/JDK compiler.
+Doinstalowano i sprawdzono lokalny pełny OpenJDK21.0.12.1 (javac), Android
+platform36/build-tools36/NDK28.2 oraz ADB37.0.1; licencje zaakceptowane.
+Pobrano źródło Flutter3.47.2 z GitHub (d3b14c8), ale bootstrap Dart SDK
+`storage.googleapis.com` zwraca CONNECT403. Bieżąca polityka ma package_managers
+bez tego hosta. Zapisano dodanie hosta w szkicu konfiguracji środowiska;
+nie jest jeszcze aktywne. Zapisano także `install_script` i `start_skill`
+w szkicu konfiguracji; wymagają zapisania/publikacji środowiska. Skrypt `/workspace/.candyverse-tools/install.sh`
+przetestowano do tej blokady; aktywacja narzędzi: `source /workspace/.candyverse-tools/env.sh`.
+Nie obchodzono proxy ani weryfikacji TLS.
+
+**Nie uruchomiono:** bazowych/nowych testów Flutter i Dart, flutter analyze,
+pinowanego dart format, buildu Android i natywnego smoke. Nie wygenerowano
+nowego APK ani nowych screenshotów. Istniejące goldeny gry pozostają stare:
+po odblokowaniu trzeba wygenerować i obejrzeć zmienione obrazy, następnie
+uruchomić całą zamrożoną suite bez update-goldens. Zadanie NIE jest QA DONE.
+Wersja źródłowa1.3.0+6 bez podbicia do niezweryfikowanego wydania. Brak publikacji.
+
+**Następny krok:** zapisać storage.googleapis.com w ustawieniach środowiska i
+opublikować środowisko; dokończyć Flutter/Android setup, format/analyze/testy,
+obejrzeć goldeny i zbudować debug APK przed PR. Nie ponawiać testu telefonu
+właściciela wbrew jego wcześniejszej decyzji.
+
+
 ## 2026-10-19 — Evolution1.3.0+6: scalone i opublikowane
 
 PR#17 scalony jako `b24a039`, PR#18 jako `ebb9c2a` po zielonych kontrolach.

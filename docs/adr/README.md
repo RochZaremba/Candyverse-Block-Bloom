@@ -46,3 +46,5 @@ Istniejące ADR-y:
 - [0019 Candy feedback and navigation](0019-candy-feedback-and-navigation.md)
 
 - [0020 Roguelite Evolution](0020-roguelite-evolution.md)
+
+- [0021 Readable game and upgrade cadence](0021-readable-game-and-upgrade-cadence.md)

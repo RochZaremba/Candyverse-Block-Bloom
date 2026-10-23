@@ -1,3 +1,8 @@
+2026-10-23: [ADR-0021](adr/0021-readable-game-and-upgrade-cadence.md) używa
+utrwalonego `Evolution.moves` do progów co 30 placementów. Opcjonalne
+`legacyMoves` w schema3 dodaje licznik historycznym runom (brak → 0),
+bez zmiany kart, RNG i salda. Interwał jest wspólną stałą `GameState`.
+
 # Architektura aplikacji
 
 2026-10-16: warstwę prezentacji rozszerza

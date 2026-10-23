@@ -1,3 +1,7 @@
+> 2026-10-23: [ADR-0021](adr/0021-readable-game-and-upgrade-cadence.md) upraszcza
+> ekran gry: spokojne tło, plansza i trzy sloty bez przewijania, szczegóły oraz
+> przyczyny niedostępności pod ikoną w oknie. Tekst skaluje się do 200%.
+
 # Visual Direction — Candyverse
 
 ## Referencje właściciela — 2026-10-16
