@@ -129,7 +129,11 @@ void main() {
       await tester.tap(find.text('PLAY'));
       await tester.pumpAndSettle();
       expect(find.byType(GameScreen), findsOneWidget);
-      expect(find.text('Card: 5 moves / 5 lines'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('game-info')));
+      await tester.pumpAndSettle();
+      expect(find.text('Next card in 30 moves.'), findsWidgets);
+      await tester.tap(find.text('Close'));
+      await tester.pumpAndSettle();
       final controller = tester
           .widget<GameScreen>(find.byType(GameScreen))
           .controller!;

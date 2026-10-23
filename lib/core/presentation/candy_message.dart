@@ -63,8 +63,9 @@ class CandyNotice extends StatelessWidget {
         ? const SizedBox.shrink()
         : IconButton(
             onPressed: onDismiss,
-            tooltip: AppStrings.of(context)
-                .text('Zamknij komunikat', 'Dismiss message'),
+            tooltip: AppStrings.of(
+              context,
+            ).text('Zamknij komunikat', 'Dismiss message'),
             constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
             icon: const Icon(Icons.close_rounded, color: candyInk),
           );
@@ -149,11 +150,13 @@ class CandyDialog extends StatelessWidget {
     required this.title,
     required this.content,
     this.actions = const [],
+    this.showFriends = true,
     super.key,
   });
   final Widget title;
   final Widget content;
   final List<Widget> actions;
+  final bool showFriends;
   @override
   Widget build(BuildContext context) => Dialog(
     backgroundColor: Colors.transparent,
@@ -164,7 +167,7 @@ class CandyDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CandyFriends(height: 120),
+            if (showFriends) const CandyFriends(height: 120),
             CandyPanel(
               radius: 34,
               padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),

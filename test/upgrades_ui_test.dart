@@ -39,6 +39,7 @@ void main() {
   GameController create({
     Board? board,
     int lines = 0,
+    int moves = 0,
     int pending = 0,
     int erasers = 0,
   }) {
@@ -49,6 +50,7 @@ void main() {
         board: board ?? Board.empty(),
         tray: [dot, dot, dot],
         totalClearedLines: lines,
+        legacyMoves: moves,
         pendingUpgradeChoices: pending,
         eraserAcquired: erasers,
         eraserUses: erasers,
@@ -94,7 +96,7 @@ void main() {
       final board = Board.empty().withCells({
         for (var c = 0; c < 7; c++) (row: 0, col: c): 'candyPink',
       });
-      final controller = create(board: board, lines: 4);
+      final controller = create(board: board, lines: 4, moves: 29);
       await show(tester, controller);
       await tester.tap(find.byKey(const ValueKey('tray-0')));
       await tester.pump();
@@ -112,7 +114,9 @@ void main() {
       expect(controller.state.luckyJellyLevel, 1);
       expect(controller.state.pendingCoins, 31);
       expect(find.text('31'), findsOneWidget);
-      expect(find.text('Następne ulepszenie: 5/10 linii'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('game-info')));
+      await tester.pumpAndSettle();
+      expect(find.text('Następna karta za 30 ruchów.'), findsOneWidget);
     },
   );
 
@@ -124,7 +128,7 @@ void main() {
         erasers: 1,
       );
       await show(tester, controller);
-      await tester.tap(find.text('Rainbow Eraser (1)'));
+      await tester.tap(find.byKey(const Key('game-eraser')));
       await tester.pump();
       await tester.tap(find.byKey(const ValueKey('cell-0-0')));
       await tester.pumpAndSettle();
@@ -151,7 +155,10 @@ void main() {
     final controller = create(board: full, erasers: 1);
     await show(tester, controller);
     expect(find.text('Zagraj ponownie'), findsNothing);
-    expect(find.text('Rainbow Eraser (1)'), findsOneWidget);
+    expect(find.byKey(const Key('game-eraser')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('game-status')));
+    await tester.pumpAndSettle();
+    expect(find.text('Brak miejsca na klocek'), findsOneWidget);
     await tester.tap(find.text('Zakończ podejście'));
     await tester.pumpAndSettle();
     expect(controller.isGameOver, isTrue);
@@ -213,6 +220,7 @@ void main() {
   ) async {
     final controller = create(
       lines: 4,
+      moves: 29,
       board: Board.empty().withCells({
         for (var c = 0; c < 7; c++) (row: 0, col: c): 'candyPink',
       }),
@@ -231,7 +239,7 @@ void main() {
       erasers: 1,
     );
     await show(tester, controller);
-    await tester.tap(find.text('Rainbow Eraser (1)'));
+    await tester.tap(find.byKey(const Key('game-eraser')));
     await tester.pump();
     await tester.tap(find.byKey(const ValueKey('cell-0-0')));
     await tester.pumpAndSettle();
@@ -252,8 +260,11 @@ void main() {
       erasers: 1,
     );
     await show(tester, controller);
-    await tester.tap(find.text('Rainbow Eraser (1)'));
+    await tester.tap(find.byKey(const Key('game-eraser')));
     await tester.pump();
+    await tester.tap(find.byKey(const Key('game-status')));
+    await tester.pumpAndSettle();
+    expect(find.text('Brak miejsca na klocek'), findsOneWidget);
     await tester.tap(find.text('Zakończ podejście'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Zagraj ponownie'));

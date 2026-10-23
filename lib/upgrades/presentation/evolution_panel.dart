@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/localization/app_strings.dart';
+import '../../game/domain/game_state.dart';
 import '../../core/presentation/candy_controls.dart';
 import '../domain/evolution.dart';
 
@@ -10,11 +11,12 @@ class EvolutionPanel extends StatelessWidget {
     required this.onBomb,
     required this.onRainbow,
     this.targeting = false,
+    this.showActions = true,
     super.key,
   });
   final Evolution evolution;
   final VoidCallback? onBomb, onRainbow;
-  final bool targeting;
+  final bool targeting, showActions;
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +36,8 @@ class EvolutionPanel extends StatelessWidget {
               e.maxed
                   ? s.text('Wszystkie ścieżki rozwinięte', 'All paths evolved')
                   : s.text(
-                      'Następna karta za ${5 - e.moves % 5} ruchów lub próg linii.',
-                      'Next card in ${5 - e.moves % 5} moves or a line milestone.',
+                      'Następna karta za ${GameState.upgradeMoveInterval - e.moves % GameState.upgradeMoveInterval} ruchów.',
+                      'Next card in ${GameState.upgradeMoveInterval - e.moves % GameState.upgradeMoveInterval} moves.',
                     ),
               textAlign: TextAlign.center,
             ),
@@ -58,15 +60,16 @@ class EvolutionPanel extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              CandyAction(
-                key: const Key('evolution-bomb'),
-                height: 54,
-                fontSize: 18,
-                label: targeting
-                    ? s.text('Anuluj celowanie', 'Cancel targeting')
-                    : s.text('Użyj bomby', 'Use bomb'),
-                onPressed: onBomb,
-              ),
+              if (showActions)
+                CandyAction(
+                  key: const Key('evolution-bomb'),
+                  height: 54,
+                  fontSize: 18,
+                  label: targeting
+                      ? s.text('Anuluj celowanie', 'Cancel targeting')
+                      : s.text('Użyj bomby', 'Use bomb'),
+                  onPressed: onBomb,
+                ),
             ],
             if (e.rainbow > 0) ...[
               const SizedBox(height: 6),
@@ -78,13 +81,14 @@ class EvolutionPanel extends StatelessWidget {
                         'Rainbow in ${e.rainbowCooldown} moves',
                       ),
               ),
-              CandyAction(
-                key: const Key('evolution-rainbow'),
-                height: 54,
-                fontSize: 18,
-                label: s.text('Wymień kształt', 'Swap shape'),
-                onPressed: onRainbow,
-              ),
+              if (showActions)
+                CandyAction(
+                  key: const Key('evolution-rainbow'),
+                  height: 54,
+                  fontSize: 18,
+                  label: s.text('Wymień kształt', 'Swap shape'),
+                  onPressed: onRainbow,
+                ),
             ],
             if (e.paws > 0)
               Text(

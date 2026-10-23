@@ -41,27 +41,29 @@ class QaStorage implements SaveStorage {
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  testWidgets('Android native persistence, six screens and active smoke', (
-    tester,
-  ) async {
-    final report = <String, dynamic>{};
-    binding.reportData = report;
-    await runSmokeScenario(
-      tester,
-      binding: binding,
-      repo: SaveRepository(QaStorage()),
-      reportData: report,
-      storageKind: 'native-data-store',
-      minutes: const int.fromEnvironment(
-        'CANDYVERSE_SMOKE_MINUTES',
-        defaultValue: 0,
-      ),
-      captureUi: const bool.fromEnvironment('CANDYVERSE_CAPTURE_FLUTTER_UI'),
-      nativeScreenshots: const bool.fromEnvironment(
-        'CANDYVERSE_NATIVE_SCREENSHOTS',
-      ),
-    );
-  }, timeout: const Timeout(Duration(hours: 1)));
+  testWidgets(
+    'Android native persistence, six screens and active smoke',
+    (tester) async {
+      final report = <String, dynamic>{};
+      binding.reportData = report;
+      await runSmokeScenario(
+        tester,
+        binding: binding,
+        repo: SaveRepository(QaStorage()),
+        reportData: report,
+        storageKind: 'native-data-store',
+        minutes: const int.fromEnvironment(
+          'CANDYVERSE_SMOKE_MINUTES',
+          defaultValue: 0,
+        ),
+        captureUi: const bool.fromEnvironment('CANDYVERSE_CAPTURE_FLUTTER_UI'),
+        nativeScreenshots: const bool.fromEnvironment(
+          'CANDYVERSE_NATIVE_SCREENSHOTS',
+        ),
+      );
+    },
+    timeout: const Timeout(Duration(hours: 1)),
+  );
 }
 
 /// The same UI sequence can validate its assumptions on the host. Only the
@@ -198,6 +200,7 @@ Future<void> runSmokeScenario(
     tray: [dot, dot, dot],
     rngState: 2,
     totalClearedLines: 9,
+    legacyMoves: 29,
     score: 1500,
     eraserAcquired: 1,
     eraserUses: 1,
@@ -257,7 +260,7 @@ Future<void> runSmokeScenario(
   await tap(find.byKey(const ValueKey('cell-1-1')));
   await checkpoint();
   final eraserBefore = controller.state;
-  await tap(find.text('Rainbow Eraser (1)'));
+  await tap(find.byKey(const Key('game-eraser')));
   await tap(find.byKey(const ValueKey('cell-1-1')));
   await tap(find.text('Cancel'));
   expect(controller.state, same(eraserBefore));
@@ -299,7 +302,8 @@ Future<void> runSmokeScenario(
     for (var r = 0; r < 8; r++)
       for (var c = 0; c < 8; c++) game.board.at((row: r, col: c)),
   ];
-  await tap(find.byTooltip('Sound and motion'));
+  await tap(find.byKey(const Key('game-info')));
+  await tap(find.text('Sound and motion'));
   await until(() => find.byType(SettingsScreen).evaluate().isNotEmpty);
   await capture('candy-settings-return');
   await tap(find.byTooltip('Back'));

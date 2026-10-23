@@ -244,26 +244,12 @@ class _GameScreenState extends State<GameScreen> {
     if (!mounted) return;
     setState(() {
       targetingBomb = true;
+      erasing = false;
       bombColor = color;
       selected = null;
       preview = null;
       pointer = null;
     });
-    _revealBoard();
-  }
-
-  void _revealBoard() {
-    final boardContext = boardKey.currentContext;
-    final box = boardContext?.findRenderObject() as RenderBox?;
-    if (boardContext == null || box == null || !box.hasSize) return;
-    final media = MediaQuery.of(context);
-    final top = box.localToGlobal(Offset.zero).dy;
-    if (top < media.padding.top) {
-      unawaited(Scrollable.ensureVisible(boardContext));
-    } else if (top + box.size.height >
-        media.size.height - media.padding.bottom) {
-      unawaited(Scrollable.ensureVisible(boardContext, alignment: 1));
-    }
   }
 
   Future<void> _bomb(Cell cell) async {
@@ -412,6 +398,7 @@ class _GameScreenState extends State<GameScreen> {
       preview = null;
       pointer = null;
       targetingBomb = false;
+      erasing = false;
     });
     controller.useRainbow(slot, color: color);
     if (!identical(before, controller.state)) {
@@ -453,8 +440,9 @@ class _GameScreenState extends State<GameScreen> {
     }
     final result = controller.place(selected!, origin);
     if (result.accepted) {
-      FeedbackScope.maybeOf(context)
-          ?.play(result.clear!.lineCount > 0 ? CandyCue.clear : CandyCue.place);
+      FeedbackScope.maybeOf(
+        context,
+      )?.play(result.clear!.lineCount > 0 ? CandyCue.clear : CandyCue.place);
       fxEvent = CandyFxEvent(
         id: ++fxId,
         placed: result.placedCells,
@@ -514,10 +502,22 @@ class _GameScreenState extends State<GameScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          CandyArt(
-            controller.isGameOver ? 'result-scene' : 'game-scene',
-            fit: BoxFit.fill,
-          ),
+          if (controller.isGameOver)
+            const CandyArt('result-scene', fit: BoxFit.fill)
+          else
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xffdcf5ff),
+                    Color(0xfff1e5ff),
+                    Color(0xffffe7f3),
+                  ],
+                ),
+              ),
+            ),
           SafeArea(child: controller.isGameOver ? _result() : _game()),
         ],
       ),
@@ -527,224 +527,78 @@ class _GameScreenState extends State<GameScreen> {
   Widget _game() => LayoutBuilder(
     builder: (context, constraints) {
       final width = math.min(constraints.maxWidth - 24, 440.0);
-      final compact = MediaQuery.textScalerOf(context).scale(16) <= 20;
-      final hasEraser =
-          controller.state.eraserUses > 0 &&
-          controller.state.board.occupiedCount > 0;
-      final headerHeight = math.min(constraints.maxHeight * .235, width * .43);
-      final boardWidth = compact
-          ? math.min(
-              width * .84,
-              math.max(
-                216.0,
-                constraints.maxHeight -
-                    headerHeight -
-                    220 -
-                    (hasEraser ? 48 : 0),
-              ),
-            )
-          : width * .88;
       return Stack(
         key: stackKey,
         children: [
-          SingleChildScrollView(
-            child: Center(
-              child: SizedBox(
-                width: width,
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: headerHeight,
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            child: Row(
-                              children: [
-                                CandyIconButton(
-                                  symbol: CandySymbol.back,
-                                  onPressed: _leave,
-                                  label: AppStrings.of(context)
-                                      .translate('Wróć do menu'),
-                                ),
-                                Expanded(
-                                  child: appText(
-                                    context,
-                                    '',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w900,
-                                      color: theme.color('ink'),
-                                    ),
-                                  ),
-                                ),
-                                CandyIconButton(
-                                  symbol: CandySymbol.settings,
-                                  label: AppStrings.of(context)
-                                      .translate('Dźwięk i ruch'),
-                                  onPressed: () {
-                                    final session = AppSessionScope.maybeOf(
-                                      context,
-                                    );
-                                    if (session == null) {
-                                      showFeedbackSettings(
-                                        context,
-                                        theme: theme,
-                                      );
-                                      return;
-                                    }
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute<void>(
-                                        builder: (_) => SettingsScreen(
-                                          theme: theme,
-                                          session: session,
-                                        ),
-                                      ),
-                                    );
-                                  },
+          Center(
+            child: SizedBox(
+              width: width,
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  CandyPanel(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 2,
+                      vertical: 4,
+                    ),
+                    radius: 22,
+                    child: Row(
+                      children: [
+                        CandyIconButton(
+                          symbol: CandySymbol.back,
+                          onPressed: _leave,
+                          label: AppStrings.of(
+                            context,
+                          ).translate('Wróć do menu'),
+                        ),
+                        Expanded(
+                          child: _gameMetric(
+                            'WYNIK',
+                            '${controller.state.score}',
+                          ),
+                        ),
+                        Expanded(
+                          child: _gameMetric(
+                            'MONETY W GRZE',
+                            '${controller.state.pendingCoins}',
+                          ),
+                        ),
+                        CandyIconButton(
+                          key: const Key('game-info'),
+                          symbol: CandySymbol.info,
+                          label: AppStrings.of(
+                            context,
+                          ).text('Pomoc i moce', 'Help and powers'),
+                          onPressed: _showDetails,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: LayoutBuilder(
+                      builder: (context, space) => Center(
+                        child: SizedBox.square(
+                          dimension: math.min(space.maxWidth, space.maxHeight),
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xfffff2d8),
+                              borderRadius: BorderRadius.circular(
+                                theme.panelRadius,
+                              ),
+                              border: Border.all(
+                                color: const Color(0xffe3b9dd),
+                                width: 3,
+                              ),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color(0x204b146d),
+                                  blurRadius: 12,
+                                  offset: Offset(0, 4),
                                 ),
                               ],
                             ),
-                          ),
-                          Positioned(
-                            left: width * .28,
-                            right: width * .28,
-                            bottom: headerHeight * .06,
-                            child: Text(
-                              'Przyszła\nreklama',
-                              textScaler: TextScaler.noScaling,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontFamily: 'LilitaOne',
-                                fontSize: width * .055,
-                                color: const Color(0xff913493),
-                                height: 1,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: width * .12),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _metric(
-                              'WYNIK',
-                              '${controller.state.score}',
-                              compact: compact,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _metric(
-                              'MONETY W GRZE',
-                              '${controller.state.pendingCoins}',
-                              compact: compact,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: width * .12),
-                      child: CandyPanel(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        radius: 20,
-                        child: appText(
-                          context,
-                          controller.state.evolution == null
-                              ? 'Następne ulepszenie: ${controller.state.totalClearedLines}/${controller.state.nextUpgradeMilestone} linii'
-                              : controller.state.evolution!.maxed
-                              ? AppStrings.of(context).text(
-                                  'Wszystkie ścieżki rozwinięte',
-                                  'All paths evolved',
-                                )
-                              : AppStrings.of(context).text(
-                                  'Karta: ${5 - controller.state.evolution!.moves % 5} ruchów / ${controller.state.nextUpgradeMilestone} linii',
-                                  'Card: ${5 - controller.state.evolution!.moves % 5} moves / ${controller.state.nextUpgradeMilestone} lines',
-                                ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                    if (controller.state.eraserUses > 0 &&
-                        controller.state.board.occupiedCount > 0 &&
-                        controller.state.phase != RunPhase.upgrade)
-                      FilledButton.icon(
-                        onPressed: confirmingErase
-                            ? null
-                            : () => setState(() {
-                                erasing = !erasing;
-                                selected = null;
-                                preview = null;
-                                pointer = null;
-                              }),
-                        icon: const Icon(Icons.auto_fix_high_rounded),
-                        label: appText(
-                          context,
-                          erasing
-                              ? 'Anuluj wybór pola'
-                              : 'Rainbow Eraser (${controller.state.eraserUses})',
-                        ),
-                      ),
-                    if (erasing)
-                      appText(
-                        context,
-                        'Dotknij zajętego pola, aby je wymazać.',
-                        textAlign: TextAlign.center,
-                      ),
-                    if (controller.state.phase ==
-                        RunPhase.needsEraserDecision) ...[
-                      appText(
-                        context,
-                        controller.state.evolution == null
-                            ? 'Klocki nie pasują. Możesz spróbować wymazać jedno pole.'
-                            : AppStrings.of(context).text(
-                                'Brak miejsca. Użyj dostępnej mocy albo zakończ podejście.',
-                                'No space. Use an available power or finish the run.',
-                              ),
-                        textAlign: TextAlign.center,
-                      ),
-                      TextButton(
-                        onPressed: confirmingErase
-                            ? null
-                            : controller.declineEraser,
-                        child: appText(context, 'Zakończ podejście'),
-                      ),
-                    ],
-                    SizedBox(height: compact ? 8 : 18),
-                    Center(
-                      child: SizedBox(
-                        width: boardWidth,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: const Color(0xffffe5ad),
-                            borderRadius: BorderRadius.circular(
-                              theme.panelRadius,
-                            ),
-                            border: Border.all(
-                              color: const Color(0xffffa8dd),
-                              width: 5,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xccff8cdb),
-                                blurRadius: 18,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          child: AspectRatio(
-                            aspectRatio: 1,
                             child: Stack(
                               fit: StackFit.expand,
                               children: [
@@ -758,55 +612,18 @@ class _GameScreenState extends State<GameScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: compact ? 8 : 20),
-                    Row(
-                      children: [
-                        for (var slot = 0; slot < 3; slot++)
-                          Expanded(child: _slot(slot, compact: compact)),
-                      ],
-                    ),
-                    if (controller.state.evolution != null)
-                      EvolutionPanel(
-                        evolution: controller.state.evolution!,
-                        targeting: targetingBomb,
-                        onBomb:
-                            controller.blocked ||
-                                controller.state.phase == RunPhase.upgrade ||
-                                controller.state.evolution!.bombCharges == 0 ||
-                                controller.state.board.occupiedCount == 0
-                            ? null
-                            : _targetBomb,
-                        onRainbow:
-                            controller.blocked ||
-                                controller.state.phase == RunPhase.upgrade ||
-                                !controller.state.evolution!.rainbowReady
-                            ? null
-                            : _rainbow,
-                      ),
-                    const SizedBox(height: 12),
-                    Semantics(
-                      liveRegion: true,
-                      child: CandyPanel(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        radius: 20,
-                        child: appText(
-                          context,
-                          feedback,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: candyInk,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: compact ? 8 : 24),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      for (var slot = 0; slot < 3; slot++)
+                        Expanded(child: _slot(slot, compact: true)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  _gameTools(),
+                  const SizedBox(height: 8),
+                ],
               ),
             ),
           ),
@@ -847,8 +664,9 @@ class _GameScreenState extends State<GameScreen> {
                           if (controller.saving) ...[
                             Semantics(
                               liveRegion: true,
-                              label: AppStrings.of(context)
-                                  .translate('Zapisuję…'),
+                              label: AppStrings.of(
+                                context,
+                              ).translate('Zapisuję…'),
                               child: const SizedBox.shrink(),
                             ),
                           ] else ...[
@@ -859,8 +677,9 @@ class _GameScreenState extends State<GameScreen> {
                               ),
                               action: CandyAction(
                                 onPressed: controller.retrySave,
-                                label: AppStrings.of(context)
-                                    .translate('Ponów zapis'),
+                                label: AppStrings.of(
+                                  context,
+                                ).translate('Ponów zapis'),
                                 fontSize: 20,
                                 height: 58,
                               ),
@@ -881,6 +700,377 @@ class _GameScreenState extends State<GameScreen> {
       );
     },
   );
+
+  Widget _gameMetric(String label, String value) => Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      appText(
+        context,
+        label,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+          color: candyInk,
+        ),
+      ),
+      FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          value,
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w900,
+            color: candyInk,
+          ),
+        ),
+      ),
+    ],
+  );
+
+  void _toggleEraser() => setState(() {
+    erasing = !erasing;
+    targetingBomb = false;
+    selected = null;
+    preview = null;
+    pointer = null;
+  });
+
+  Widget _gameTools() {
+    final s = AppStrings.of(context);
+    final state = controller.state;
+    final e = state.evolution;
+    final rescue = state.phase == RunPhase.needsEraserDecision;
+    final message = targetingBomb
+        ? s.text('Wskaż cel bomby', 'Choose a bomb target')
+        : erasing
+        ? s.translate('Dotknij zajętego pola, aby je wymazać.')
+        : rescue
+        ? s.text('Brak miejsca', 'No space')
+        : feedback == 'Tu klocek się nie mieści. Wybierz inne pole.'
+        ? s.text('Tu nie pasuje', 'Does not fit here')
+        : selected != null
+        ? s.text('Wybierz pole', 'Choose a cell')
+        : feedback == 'Przeciągnij klocek lub wybierz go i dotknij pola.'
+        ? s.text('Wybierz klocek', 'Choose a piece')
+        : s.translate(feedback);
+    return CandyPanel(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      radius: 20,
+      child: Row(
+        children: [
+          Expanded(
+            child: Semantics(
+              liveRegion: true,
+              child: InkWell(
+                key: const Key('game-status'),
+                borderRadius: BorderRadius.circular(16),
+                onTap: _showDetails,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 48),
+                  child: Row(
+                    children: [
+                      Icon(
+                        rescue
+                            ? Icons.warning_amber_rounded
+                            : Icons.info_outline_rounded,
+                        color: candyInk,
+                        size: 22,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          message,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: candyInk,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          if (e != null && e.explosive > 0)
+            _powerButton(
+              'evolution-bomb',
+              Icons.flare_rounded,
+              targetingBomb ? '×' : '${e.bombCharges}',
+              s.text('Bomba', 'Bomb'),
+              _bombButton,
+            ),
+          if (e != null && e.rainbow > 0)
+            _powerButton(
+              'evolution-rainbow',
+              Icons.cached_rounded,
+              e.rainbowReady ? '✓' : '${e.rainbowCooldown}',
+              s.text('Wymień kształt', 'Swap shape'),
+              _rainbowButton,
+            ),
+          if (state.eraserUses > 0)
+            _powerButton(
+              'game-eraser',
+              Icons.auto_fix_high_rounded,
+              erasing ? '×' : '${state.eraserUses}',
+              'Rainbow Eraser',
+              _toggleEraser,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _powerButton(
+    String id,
+    IconData icon,
+    String count,
+    String label,
+    VoidCallback action,
+  ) => Tooltip(
+    message: '$label: $count',
+    child: Semantics(
+      label: '$label: $count',
+      button: true,
+      child: SizedBox(
+        width: 48,
+        height: 48,
+        child: Material(
+          color: const Color(0xfff0dff7),
+          borderRadius: BorderRadius.circular(14),
+          child: InkWell(
+            key: Key(id),
+            borderRadius: BorderRadius.circular(14),
+            onTap: confirmingErase || controller.blocked ? null : action,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Icon(icon, size: 26, color: candyInk),
+                Positioned(
+                  right: 2,
+                  bottom: 0,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 3),
+                      child: Text(
+                        count,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: candyInk,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  void _bombButton() {
+    if (targetingBomb ||
+        (controller.state.evolution!.bombCharges > 0 &&
+            controller.state.board.occupiedCount > 0)) {
+      _targetBomb();
+    } else {
+      _explainPower(
+        AppStrings.of(context).text('Bomba niedostępna', 'Bomb unavailable'),
+        AppStrings.of(context).text(
+          'Usuwaj pełne wiersze, aby zdobyć ładunek bomby. Do wybuchu potrzebne jest zajęte pole.',
+          'Clear full rows to earn a bomb charge. An explosion needs an occupied cell.',
+        ),
+      );
+    }
+  }
+
+  bool get _rainbowCanRescue => List.generate(3, (i) => i).any(
+    (slot) => controller.engine
+        .rainbowAlternatives(controller.state, slot)
+        .any(
+          (piece) => controller.engine
+              .getLegalPlacements(controller.state.board, piece)
+              .isNotEmpty,
+        ),
+  );
+
+  void _rainbowButton() {
+    if (controller.state.phase == RunPhase.needsEraserDecision &&
+        controller.state.evolution!.rainbowReady &&
+        !_rainbowCanRescue) {
+      _explainPower(
+        AppStrings.of(
+          context,
+        ).text('Brak miejsca na nowy kształt', 'No room for a new shape'),
+        AppStrings.of(context).text(
+          'Żaden inny kształt nie pasuje. Najpierw zrób miejsce bombą lub gumką.',
+          'No alternative shape fits. Make room with a bomb or eraser first.',
+        ),
+      );
+    } else if (controller.state.evolution!.rainbowReady) {
+      _rainbow();
+    } else {
+      _explainPower(
+        AppStrings.of(context).text('Tęcza ładuje się', 'Rainbow recharging'),
+        AppStrings.of(context).text(
+          'Ułóż jeszcze ${controller.state.evolution!.rainbowCooldown} klocków, aby wymienić kształt.',
+          'Place ${controller.state.evolution!.rainbowCooldown} more pieces to swap a shape.',
+        ),
+      );
+    }
+  }
+
+  Future<void> _explainPower(String title, String message) => showDialog<void>(
+    context: context,
+    builder: (dialogContext) => CandyDialog(
+      showFriends: false,
+      title: Text(title),
+      content: Text(message),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(dialogContext),
+          child: Text(AppStrings.of(context).text('Rozumiem', 'Got it')),
+        ),
+      ],
+    ),
+  );
+
+  Future<void> _showDetails() async {
+    final state = controller.state;
+    final rescue = state.phase == RunPhase.needsEraserDecision;
+    final s = AppStrings.of(context);
+    final action = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => CandyDialog(
+        showFriends: false,
+        title: Text(
+          rescue
+              ? s.text('Brak miejsca na klocek', 'No room for a piece')
+              : s.text('Pomoc i moce', 'Help and powers'),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              rescue
+                  ? s.text(
+                      'Żaden klocek nie pasuje. Użyj dostępnej mocy, aby zrobić miejsce, albo zakończ podejście.',
+                      'None of the pieces fit. Use an available power to make room, or finish this run.',
+                    )
+                  : s.translate(
+                      'Przeciągnij klocek lub wybierz go i dotknij pola.',
+                    ),
+            ),
+            if (!rescue) ...[
+              Text(
+                s.text(
+                  'Zapełniaj wiersze i kolumny, aby je usuwać.',
+                  'Fill rows and columns to clear them.',
+                ),
+              ),
+              Text(
+                s.text(
+                  'Monety trafią na wyspę po zakończeniu podejścia.',
+                  'Coins reach your island when the run ends.',
+                ),
+              ),
+            ],
+            const SizedBox(height: 12),
+            Text(s.translate(feedback)),
+            const SizedBox(height: 12),
+            if (state.evolution == null)
+              Text(
+                s.text(
+                  controller.engine.availableUpgrades(state).isEmpty
+                      ? 'Wszystkie ścieżki rozwinięte'
+                      : 'Następna karta za ${state.movesUntilUpgrade} ruchów.',
+                  controller.engine.availableUpgrades(state).isEmpty
+                      ? 'All paths evolved'
+                      : 'Next card in ${state.movesUntilUpgrade} moves.',
+                ),
+              ),
+            if (state.evolution != null)
+              EvolutionPanel(
+                evolution: state.evolution!,
+                onBomb: null,
+                onRainbow: null,
+                showActions: false,
+              ),
+          ],
+        ),
+        actions: [
+          if (rescue &&
+              state.evolution != null &&
+              state.evolution!.bombCharges > 0)
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, 'bomb'),
+              child: Text(s.text('Użyj bomby', 'Use bomb')),
+            ),
+          if (rescue &&
+              state.evolution != null &&
+              state.evolution!.rainbowReady &&
+              _rainbowCanRescue)
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, 'rainbow'),
+              child: Text(s.text('Wymień kształt', 'Swap shape')),
+            ),
+          if (rescue && state.eraserUses > 0)
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, 'eraser'),
+              child: const Text('Rainbow Eraser'),
+            ),
+          if (rescue)
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, 'finish'),
+              child: appText(context, 'Zakończ podejście'),
+            ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(s.text('Zamknij', 'Close')),
+          ),
+          if (!rescue)
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, 'settings'),
+              child: appText(context, 'Dźwięk i ruch'),
+            ),
+        ],
+      ),
+    );
+    if (!mounted || controller.blocked || !identical(state, controller.state))
+      return;
+    switch (action) {
+      case 'bomb':
+        _targetBomb();
+      case 'rainbow':
+        _rainbow();
+      case 'eraser':
+        _toggleEraser();
+      case 'finish':
+        controller.declineEraser();
+      case 'settings':
+        final session = AppSessionScope.maybeOf(context);
+        if (session == null) {
+          showFeedbackSettings(context, theme: theme);
+        } else {
+          await Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => SettingsScreen(theme: theme, session: session),
+            ),
+          );
+        }
+    }
+  }
 
   Widget _metric(String label, String value, {bool compact = false}) =>
       CandyMetric(
@@ -1020,7 +1210,6 @@ class _GameScreenState extends State<GameScreen> {
                         selected = selected == slot ? null : slot;
                       }
                     });
-                    if (selected != null) _revealBoard();
                   },
             onVerticalDragStart: !playing || piece == null
                 ? null
@@ -1244,9 +1433,9 @@ class _GameScreenState extends State<GameScreen> {
                     fontSize: 16,
                     height: 48,
                     icon: Icons.home_rounded,
-                    onPressed: () =>
-                        Navigator.of(context)
-                            .popUntil((route) => route.isFirst),
+                    onPressed: () => Navigator.of(
+                      context,
+                    ).popUntil((route) => route.isFirst),
                   ),
                 ),
                 const SizedBox(height: 12),

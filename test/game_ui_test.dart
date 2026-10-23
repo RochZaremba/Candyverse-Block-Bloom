@@ -281,10 +281,16 @@ void main() {
       await gesture.up();
       await tester.pump();
       expect(controller.state, same(before));
+      expect(find.text('Tu nie pasuje'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('game-status')));
+      await tester.pumpAndSettle();
       expect(
         find.text('Tu klocek się nie mieści. Wybierz inne pole.'),
         findsOneWidget,
       );
+      expect(controller.state, same(before));
+      await tester.tap(find.text('Zamknij'));
+      await tester.pumpAndSettle();
       await drag(tester, 0, 1, 1, drop: false);
       expect(controller.state, same(before));
       expect(
@@ -453,14 +459,20 @@ void main() {
   );
 
   testWidgets(
-    'small 320x640 screen at text2 remains playable through scrolling',
+    'small 320x640 screen at text2 shows board and tray without scrolling',
     (tester) async {
       final controller = singles();
       addTearDown(controller.dispose);
       await show(tester, controller, width: 320, height: 640, scale: 2);
       final tray = find.byKey(const ValueKey('tray-0'));
-      await tester.ensureVisible(tray);
-      await tester.pumpAndSettle();
+      expect(find.byType(SingleChildScrollView), findsNothing);
+      for (var i = 0; i < 3; i++) {
+        expect(find.byKey(ValueKey('tray-$i')).hitTestable(), findsOneWidget);
+      }
+      expect(
+        find.byKey(const ValueKey('cell-7-7')).hitTestable(),
+        findsOneWidget,
+      );
       await tester.tap(tray);
       await tester.pump();
       await tester.tap(find.byKey(const ValueKey('cell-7-7')));
