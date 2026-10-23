@@ -278,6 +278,10 @@ void main() {
           ),
           findsWidgets,
         );
+        await expectLater(
+          find.byType(Overlay).first,
+          matchesGoldenFile('goldens/game_help_${language}_320.png'),
+        );
         await tap(tester, find.text(language == 'pl' ? 'Zamknij' : 'Close'));
         expect(tester.takeException(), isNull);
         await expectLater(

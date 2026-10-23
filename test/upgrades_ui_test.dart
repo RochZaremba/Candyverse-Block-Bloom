@@ -159,6 +159,10 @@ void main() {
     await tester.tap(find.byKey(const Key('game-status')));
     await tester.pumpAndSettle();
     expect(find.text('Brak miejsca na klocek'), findsOneWidget);
+    await expectLater(
+      find.byType(Overlay).first,
+      matchesGoldenFile('goldens/game_no_space_412.png'),
+    );
     await tester.tap(find.text('Zakończ podejście'));
     await tester.pumpAndSettle();
     expect(controller.isGameOver, isTrue);

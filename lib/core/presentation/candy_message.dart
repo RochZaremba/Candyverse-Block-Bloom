@@ -63,9 +63,8 @@ class CandyNotice extends StatelessWidget {
         ? const SizedBox.shrink()
         : IconButton(
             onPressed: onDismiss,
-            tooltip: AppStrings.of(
-              context,
-            ).text('Zamknij komunikat', 'Dismiss message'),
+            tooltip: AppStrings.of(context)
+                .text('Zamknij komunikat', 'Dismiss message'),
             constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
             icon: const Icon(Icons.close_rounded, color: candyInk),
           );

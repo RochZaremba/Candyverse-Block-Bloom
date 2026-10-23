@@ -272,50 +272,44 @@ void main() {
       expect(after.evolution!.rainbowPrimed, isFalse);
     },
   );
-  test(
-    'rainbow replay is independent of constructor seed; cooldown uses placements',
-    () {
-      final e = GameEngine.seeded(seed: 71);
-      final s = run(e: Evolution(rainbow: 1));
-      final a = e.useRainbow(s, 2);
-      final b = GameEngine.seeded(seed: 900).useRainbow(s, 2);
-      expect(a.tray[2]!.id, b.tray[2]!.id);
-      expect(a.rngState, b.rngState);
-      expect(a.evolution!.rainbowCooldown, 6);
-      expect(e.useRainbow(a, 2), same(a));
-      final moved = e
-          .placePiece(a, PlacePiece(slot: 0, origin: (row: 0, col: 0)))
-          .state;
-      expect(moved.evolution!.rainbowCooldown, 5);
-      final pending = e.resolvePhase(a.copyWith(pendingUpgradeChoices: 1));
-      final faster = e.chooseUpgrade(pending, Upgrade.quickMagic);
-      expect(faster.evolution!.rainbowCooldown, 4);
-    },
-  );
-  test(
-    'no-space rescue offers a fitting different shape, full board cannot reroll-save',
-    () {
-      final e = engine();
-      final big = pieceCatalog.last;
-      final almost = full().withCells({(row: 7, col: 7): null});
-      final s = e.resolvePhase(
-        run(e: Evolution(rainbow: 1), board: almost, tray: [big, big, big]),
-      );
-      expect(s.phase, RunPhase.needsEraserDecision);
-      final rescue = e.useRainbow(s, 1);
-      expect(rescue.tray[1]!.id, 'horizontal_1');
-      expect(rescue.phase, RunPhase.playing);
-      expect(
-        e.resolvePhase(run(e: Evolution(rainbow: 1), board: full())).phase,
-        RunPhase.gameOver,
-      );
-      final bomb = e.resolvePhase(
-        run(e: Evolution(explosive: 1, bombCharges: 1), board: full()),
-      );
-      expect(bomb.phase, RunPhase.needsEraserDecision);
-      expect(e.detonateBomb(bomb, (row: 0, col: 0)).phase, RunPhase.playing);
-    },
-  );
+  test('rainbow replay is independent of constructor seed; cooldown uses placements', () {
+    final e = GameEngine.seeded(seed: 71);
+    final s = run(e: Evolution(rainbow: 1));
+    final a = e.useRainbow(s, 2);
+    final b = GameEngine.seeded(seed: 900).useRainbow(s, 2);
+    expect(a.tray[2]!.id, b.tray[2]!.id);
+    expect(a.rngState, b.rngState);
+    expect(a.evolution!.rainbowCooldown, 6);
+    expect(e.useRainbow(a, 2), same(a));
+    final moved = e
+        .placePiece(a, PlacePiece(slot: 0, origin: (row: 0, col: 0)))
+        .state;
+    expect(moved.evolution!.rainbowCooldown, 5);
+    final pending = e.resolvePhase(a.copyWith(pendingUpgradeChoices: 1));
+    final faster = e.chooseUpgrade(pending, Upgrade.quickMagic);
+    expect(faster.evolution!.rainbowCooldown, 4);
+  });
+  test('no-space rescue offers a fitting different shape, full board cannot reroll-save', () {
+    final e = engine();
+    final big = pieceCatalog.last;
+    final almost = full().withCells({(row: 7, col: 7): null});
+    final s = e.resolvePhase(
+      run(e: Evolution(rainbow: 1), board: almost, tray: [big, big, big]),
+    );
+    expect(s.phase, RunPhase.needsEraserDecision);
+    final rescue = e.useRainbow(s, 1);
+    expect(rescue.tray[1]!.id, 'horizontal_1');
+    expect(rescue.phase, RunPhase.playing);
+    expect(
+      e.resolvePhase(run(e: Evolution(rainbow: 1), board: full())).phase,
+      RunPhase.gameOver,
+    );
+    final bomb = e.resolvePhase(
+      run(e: Evolution(explosive: 1, bombCharges: 1), board: full()),
+    );
+    expect(bomb.phase, RunPhase.needsEraserDecision);
+    expect(e.detonateBomb(bomb, (row: 0, col: 0)).phase, RunPhase.playing);
+  });
   test('Paws combo rewards, Constellation recharge and reset boundaries', () {
     final e = engine();
     final rowBoard = Board.empty().withCells({
@@ -375,23 +369,20 @@ void main() {
       expect(replay.rngState, chosen.rngState);
     },
   );
-  test(
-    'bonus reward is finalized once across restart, no wallet gain before finish',
-    () {
-      var p = AppSaveV1(wallet: 10).startRun(8);
-      final finished = run(
-        e: Evolution(paws: 2, bonusCoins: 17),
-        board: full(),
-        lines: 2,
-      ).copyWith(phase: RunPhase.gameOver);
-      p = p.checkpoint(1, finished);
-      expect(p.wallet, 37);
-      expect(p.lastResult!.bonusCoins, 17);
-      final restored = AppSaveV1.decode(p.encode());
-      expect(restored.completeRun(1).wallet, 37);
-      expect(restored.startRun(100).activeRun!.game.evolution!.bonusCoins, 0);
-    },
-  );
+  test('bonus reward is finalized once across restart, no wallet gain before finish', () {
+    var p = AppSaveV1(wallet: 10).startRun(8);
+    final finished = run(
+      e: Evolution(paws: 2, bonusCoins: 17),
+      board: full(),
+      lines: 2,
+    ).copyWith(phase: RunPhase.gameOver);
+    p = p.checkpoint(1, finished);
+    expect(p.wallet, 37);
+    expect(p.lastResult!.bonusCoins, 17);
+    final restored = AppSaveV1.decode(p.encode());
+    expect(restored.completeRun(1).wallet, 37);
+    expect(restored.startRun(100).activeRun!.game.evolution!.bonusCoins, 0);
+  });
   for (final version in [1, 2]) {
     test('schema$version migrates without changing legacy run or RNG', () {
       var p = AppSaveV1(wallet: 25).startRun(23);

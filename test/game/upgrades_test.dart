@@ -237,27 +237,29 @@ void main() {
       );
     },
   );
-  for (final milestone in [5, 10, 15]) {
-    test('single clear crosses milestone $milestone exactly once', () {
+  for (final milestone in [30, 60, 90]) {
+    test('placement crosses move milestone $milestone exactly once', () {
       final e = engine();
       final board = Board.empty().withCells({
         for (var c = 0; c < 7; c++) (row: 0, col: c): 'pink',
       });
       final reached = e
           .placePiece(
-            state(board: board, lines: milestone - 1),
+            state(board: board, lines: 4, moves: milestone - 1),
             PlacePiece(slot: 0, origin: (row: 0, col: 7)),
           )
           .state;
       expect(reached.pendingUpgradeChoices, 1);
-      expect(reached.totalClearedLines, milestone);
+      expect(reached.totalClearedLines, 5);
+      expect(reached.acceptedMoves, milestone);
       final chosen = e.chooseUpgrade(reached, Upgrade.luckyJelly);
       final placed = e
           .placePiece(chosen, PlacePiece(slot: 1, origin: (row: 1, col: 1)))
           .state;
       expect(placed.phase, RunPhase.playing);
       expect(placed.pendingUpgradeChoices, 0);
-      expect(placed.totalClearedLines, milestone);
+      expect(placed.totalClearedLines, 5);
+      expect(placed.acceptedMoves, milestone + 1);
     });
   }
 

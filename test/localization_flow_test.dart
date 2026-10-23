@@ -203,6 +203,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('PLAY'));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('game-status')));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Finish run'));
     await tester.pumpAndSettle();
     expect(find.text('Lovely puzzle!'), findsOneWidget);

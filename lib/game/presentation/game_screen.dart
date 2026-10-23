@@ -440,9 +440,8 @@ class _GameScreenState extends State<GameScreen> {
     }
     final result = controller.place(selected!, origin);
     if (result.accepted) {
-      FeedbackScope.maybeOf(
-        context,
-      )?.play(result.clear!.lineCount > 0 ? CandyCue.clear : CandyCue.place);
+      FeedbackScope.maybeOf(context)
+          ?.play(result.clear!.lineCount > 0 ? CandyCue.clear : CandyCue.place);
       fxEvent = CandyFxEvent(
         id: ++fxId,
         placed: result.placedCells,
@@ -547,9 +546,8 @@ class _GameScreenState extends State<GameScreen> {
                         CandyIconButton(
                           symbol: CandySymbol.back,
                           onPressed: _leave,
-                          label: AppStrings.of(
-                            context,
-                          ).translate('Wróć do menu'),
+                          label: AppStrings.of(context)
+                              .translate('Wróć do menu'),
                         ),
                         Expanded(
                           child: _gameMetric(
@@ -566,9 +564,8 @@ class _GameScreenState extends State<GameScreen> {
                         CandyIconButton(
                           key: const Key('game-info'),
                           symbol: CandySymbol.info,
-                          label: AppStrings.of(
-                            context,
-                          ).text('Pomoc i moce', 'Help and powers'),
+                          label: AppStrings.of(context)
+                              .text('Pomoc i moce', 'Help and powers'),
                           onPressed: _showDetails,
                         ),
                       ],
@@ -664,9 +661,8 @@ class _GameScreenState extends State<GameScreen> {
                           if (controller.saving) ...[
                             Semantics(
                               liveRegion: true,
-                              label: AppStrings.of(
-                                context,
-                              ).translate('Zapisuję…'),
+                              label: AppStrings.of(context)
+                                  .translate('Zapisuję…'),
                               child: const SizedBox.shrink(),
                             ),
                           ] else ...[
@@ -677,9 +673,8 @@ class _GameScreenState extends State<GameScreen> {
                               ),
                               action: CandyAction(
                                 onPressed: controller.retrySave,
-                                label: AppStrings.of(
-                                  context,
-                                ).translate('Ponów zapis'),
+                                label: AppStrings.of(context)
+                                    .translate('Ponów zapis'),
                                 fontSize: 20,
                                 height: 58,
                               ),
@@ -860,14 +855,20 @@ class _GameScreenState extends State<GameScreen> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 3),
-                      child: Text(
-                        count,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: candyInk,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
+                      child: count == '✓'
+                          ? const Icon(
+                              Icons.check_rounded,
+                              size: 14,
+                              color: candyInk,
+                            )
+                          : Text(
+                              count,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: candyInk,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
                     ),
                   ),
                 ),
@@ -910,9 +911,8 @@ class _GameScreenState extends State<GameScreen> {
         controller.state.evolution!.rainbowReady &&
         !_rainbowCanRescue) {
       _explainPower(
-        AppStrings.of(
-          context,
-        ).text('Brak miejsca na nowy kształt', 'No room for a new shape'),
+        AppStrings.of(context)
+            .text('Brak miejsca na nowy kształt', 'No room for a new shape'),
         AppStrings.of(context).text(
           'Żaden inny kształt nie pasuje. Najpierw zrób miejsce bombą lub gumką.',
           'No alternative shape fits. Make room with a bomb or eraser first.',
@@ -987,9 +987,11 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ],
             const SizedBox(height: 12),
-            Text(s.translate(feedback)),
+            if (!rescue &&
+                feedback != 'Przeciągnij klocek lub wybierz go i dotknij pola.')
+              Text(s.translate(feedback)),
             const SizedBox(height: 12),
-            if (state.evolution == null)
+            if (!rescue && state.evolution == null)
               Text(
                 s.text(
                   controller.engine.availableUpgrades(state).isEmpty
@@ -1000,7 +1002,7 @@ class _GameScreenState extends State<GameScreen> {
                       : 'Next card in ${state.movesUntilUpgrade} moves.',
                 ),
               ),
-            if (state.evolution != null)
+            if (!rescue && state.evolution != null)
               EvolutionPanel(
                 evolution: state.evolution!,
                 onBomb: null,
@@ -1047,8 +1049,9 @@ class _GameScreenState extends State<GameScreen> {
         ],
       ),
     );
-    if (!mounted || controller.blocked || !identical(state, controller.state))
+    if (!mounted || controller.blocked || !identical(state, controller.state)) {
       return;
+    }
     switch (action) {
       case 'bomb':
         _targetBomb();
@@ -1433,9 +1436,9 @@ class _GameScreenState extends State<GameScreen> {
                     fontSize: 16,
                     height: 48,
                     icon: Icons.home_rounded,
-                    onPressed: () => Navigator.of(
-                      context,
-                    ).popUntil((route) => route.isFirst),
+                    onPressed: () =>
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst),
                   ),
                 ),
                 const SizedBox(height: 12),

@@ -41,29 +41,27 @@ class QaStorage implements SaveStorage {
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  testWidgets(
-    'Android native persistence, six screens and active smoke',
-    (tester) async {
-      final report = <String, dynamic>{};
-      binding.reportData = report;
-      await runSmokeScenario(
-        tester,
-        binding: binding,
-        repo: SaveRepository(QaStorage()),
-        reportData: report,
-        storageKind: 'native-data-store',
-        minutes: const int.fromEnvironment(
-          'CANDYVERSE_SMOKE_MINUTES',
-          defaultValue: 0,
-        ),
-        captureUi: const bool.fromEnvironment('CANDYVERSE_CAPTURE_FLUTTER_UI'),
-        nativeScreenshots: const bool.fromEnvironment(
-          'CANDYVERSE_NATIVE_SCREENSHOTS',
-        ),
-      );
-    },
-    timeout: const Timeout(Duration(hours: 1)),
-  );
+  testWidgets('Android native persistence, six screens and active smoke', (
+    tester,
+  ) async {
+    final report = <String, dynamic>{};
+    binding.reportData = report;
+    await runSmokeScenario(
+      tester,
+      binding: binding,
+      repo: SaveRepository(QaStorage()),
+      reportData: report,
+      storageKind: 'native-data-store',
+      minutes: const int.fromEnvironment(
+        'CANDYVERSE_SMOKE_MINUTES',
+        defaultValue: 0,
+      ),
+      captureUi: const bool.fromEnvironment('CANDYVERSE_CAPTURE_FLUTTER_UI'),
+      nativeScreenshots: const bool.fromEnvironment(
+        'CANDYVERSE_NATIVE_SCREENSHOTS',
+      ),
+    );
+  }, timeout: const Timeout(Duration(hours: 1)));
 }
 
 /// The same UI sequence can validate its assumptions on the host. Only the
@@ -364,6 +362,7 @@ Future<void> runSmokeScenario(
     ),
   );
   await tap(find.text('PLAY'));
+  await tap(find.byKey(const Key('game-status')));
   await tap(find.text('Finish run'));
   await checkpoint();
   expect(session!.save.wallet, 375);
@@ -474,6 +473,7 @@ Future<void> runSmokeScenario(
           ),
         );
       } else if (game.state.phase == RunPhase.needsEraserDecision) {
+        await tap(find.byKey(const Key('game-status')));
         await tap(find.text('Finish run'));
       } else {
         final slot = game.state.tray.indexWhere(
@@ -501,6 +501,7 @@ Future<void> runSmokeScenario(
       await checkpoint();
     }
     if (game.state.phase == RunPhase.needsEraserDecision) {
+      await tap(find.byKey(const Key('game-status')));
       await tap(find.text('Finish run'));
       await checkpoint();
     }
